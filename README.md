@@ -1,176 +1,51 @@
-# The Metroverse
+# Metroverse Jobs
 
-## by the Growth Lab at Harvard's Center for International Development
+A static visualization tool for US Bureau of Labor Statistics (BLS) occupation data, built on the [Metroverse](https://github.com/harvard-growth-lab/metroverse-front-end) frontend by Harvard Growth Lab.
 
-> This package is part of Harvard Growth Lab’s portfolio of software packages, digital products and interactive data visualizations. To browse our entire portfolio, please visit The Viz Hub at [growthlab.app](https://growthlab.app/). To learn more about our research, please visit [Harvard Growth Lab’s](https://growthlab.cid.harvard.edu/) home page.
+## Features
 
-License - [Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/) © [The President and Fellows of Harvard College](https://www.harvard.edu/)
+- **Economic Composition Treemap**: Interactive canvas treemap showing occupation distribution by employment or GDP
+- **Region Profiles**: View data for National, State, and Metropolitan regions
+- **Multiple Color Modes**: Color by SOC Major Group, Annual Wage, or Complexity Score
+- **Shareable URLs**: All filter settings encoded in URL query parameters
+- **Static Deployment**: No backend required, works on GitHub Pages
 
+## Data Sources
 
-## Table of Contents
-- [Getting Started](#getting-started)
-- [Primary Technologies](#primary-technologies)
-- [Deployments](#deployments)
-- [Utilities and Global Styling](#utilities-and-global-styling)
-    - [Utility Functions](#utility-functions)
-    - [Global Styling](#global-styling)
-- [Custom NPM packages](#custom-npm-packages)
-    - [react-canvas-treemap](#react-canvas-treemap)
-    - [react-city-space-mapbox](#react-city-space-mapbox)
-    - [react-comparison-bar-chart](#react-comparison-bar-chart)
-    - [react-fast-charts](#react-fast-charts)
-    - [react-panel-search](#react-panel-search)
-    - [react-pswot-plot](#react-pswot-plot)
-    - [react-vertical-bar-chart](#react-vertical-bar-chart)
-- [App Sections](#app-sections)
-    - [Landing Page](#landing-page)
-    - [Informational Pages](#informational-pages)
-    - [City Profiles](#city-profiles)
+- [BLS Occupational Employment and Wage Statistics (OES)](https://www.bls.gov/oes/)
+- [O*NET Online](https://www.onetonline.org/) (for complexity scores)
 
+## Getting Started
 
-<a name="getting-started"/>
-
-## Getting started
-
-Once this repo has been cloned, navigate to the directory via command line and run
-
-`npm install`
-
-This will install all of your dependencies.
-
-Next, at the root directory create a `.env` file. Within the `.env` file, include the following contents (with the `XXXX` replaced by the corresponding variable values):
-
-```
-REACT_APP_API_URL=XXXX
-REACT_APP_MAPBOX_ACCESS_TOKEN=XXXX
+```bash
+npm install    # Install dependencies (Node 16 recommended)
+npm start      # Dev server at localhost:3000
+npm run build  # Production build
 ```
 
-You can now run the project locally with
+No `.env` file is required - this project uses static data files instead of API calls.
 
-`npm start`
+## Generating Data
 
-You should now be able to see the project running at localhost:3000
-
-As you work on projects on this repo, make sure to run 
-
-`npm run lint:fix`
-
-before pushing any code to make sure it keeps consistent standards.
-
-<a name="primary-technologies"/>
+```bash
+# Requires ../bls2/ project with pipeline data
+python scripts/generate-static-data.py
+```
 
 ## Primary Technologies
 
-The Metroverse front-end is built using the following core technologies. Please familiarize yourself with them to have a better understanding of the codebase.
+- **[TypeScript](https://www.typescriptlang.org/), v3.7** - core language
+- **[React](https://reactjs.org/), v16.13** - core framework
+- **[Styled Components](https://styled-components.com/), v5.1** - CSS-in-JS styling
+- **[D3](https://d3js.org/), v5.16** - data processing and utilities
+- **[Fluent](https://projectfluent.org/), v0.13** - internationalization
+- **[react-canvas-treemap](https://github.com/cid-harvard/react-canvas-treemap)** - treemap visualization (MIT)
+- **[react-panel-search](https://github.com/cid-harvard/react-panel-search)** - hierarchical search
 
-- **[TypeScript](https://www.npmjs.com/package/typescript/v/3.7.2), v3.7.2** - the core language of the project
-- **[React](https://reactjs.org/docs/getting-started.html), v16.13.1** - the core framework of the project
-- **[Styled Components](https://styled-components.com/docs), v5.1.1** - the primary way of implementing CSS properties in the project
-- **[GraphQL](https://www.apollographql.com/docs/react/), v15.3.0** - the primary way of interacting with the back-end API
-- **[D3](https://github.com/d3/d3/wiki), v5.16.0** - used for an number of core visualizations and client-side data processing
-- **[Fluent](https://projectfluent.org/), v0.13.0** - the primary way of integrating text copy into the front-end
-- **[Mapbox](https://docs.mapbox.com/mapbox-gl-js/api/), v1.12.0** - the backbone for all geographical maps in the project
+## License
 
-<a name="deployments"/>
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) - Same as the original Metroverse.
 
-## Deployments
+## Attribution
 
-Deployments to staging environments as well as production environments are conducted using the [cid-harvard/cities-playbooks](https://github.com/cid-harvard/cities-playbooks) repo. Please see the [cid-harvard/cities-playbooks](https://github.com/cid-harvard/cities-playbooks) repo for all documentation regarding deployments.
-
-<a name="utilities-and-global-styling"/>
-
-## Utilities and Global Styling
-
-There are a number of utility functions, global variables, and global components available for use throughout the project. See the following sections on a brief overview of what there is and where you can find them.
-
-<a name="utility-functions"/>
-
-### Utility Functions
-
-There are two top level sources for utility functions. The first is found at `src/Utils.ts` which includes one-off functions that are used throughout the app as well as global variables such as the default year currently in use for API calls. Please familiarize yourself with the functions and values stored in this file.
-
-The other source of global utility functions is within the folder `src/utilities`. This folder is where more complex utility patterns live. An example within here is the `rapidTooltip.ts`. This file is used for creating consistent logic and styling of tooltips in data visualizations that handle their own state outside of React. This pattern is most commonly seen in D3 based visualizations that are passed a `ref` object to render tooltips into. This optimizes these tooltips for performance as they are able to respond directly to D3's internal state management instead of having to also pass through React's state management.
-
-Additional `Util.ts` files can be found throughout the app within various directories. They generally house logic that are utilized throughout that specific component, hook, or page. It is important to familiarize yourself with the Util file associated with the component you are working on as it may already include some of the logic you are looking to implement.
-
-<a name="global-styling"/>
-
-### Global Styling
-
-The Metroverse uses the [`styled-components`](https://styled-components.com/docs) library to do most of it's styling work. While the majority of styles are defined at the component level (as is the advantage of using a CSS-in-JS approach), there are some styles defined at a global level as well as numerous style variables and basic components that are easily available throughout the app.
-
-Within the `src/styling` directory you can find the `GlobalGrid.ts` and `GlobalStyles.tsx` files. These respectively control the global layout and global styling found throughout the app.
-
-The other main file found in this directory is `styleUtils.ts`. This file contains all of the global color, font, and sizing variables as well as many basic components like buttons, titles, and labels. Please familiarize yourself with the contents of this file to prevent code duplication and speed up the development process.
-
-<a name="custom-npm-packages"/>
-
-## Custom NPM packages
-
-The Metroverse utilizes a number of custom NPM packages that have been specifically developed for either the Metroverse itself or other Harvard Growth Lab Projects. Each of these modules has been designed to be reusable on other projects as well by making them as project agnostic as possible. See below for more information on each of the packages and where to find further documentation for them.
-
-<a name="react-canvas-treemap"/>
-
-### react-canvas-treemap
-
-The [`react-canvas-treemap`](https://www.npmjs.com/package/react-canvas-treemap) is a canvas based treemap originally designed for the [Atlas of International Complexity](https://atlas.cid.harvard.edu/) and later ported into its own npm module for use in other projects such as the Metroverse. Please refer to its own [GitHub repo](https://github.com/cid-harvard/react-canvas-treemap) for documentation or for any development changes that need to be made to this visualization.
-
-<a name="react-city-space-mapbox"/>
-
-### react-city-space-mapbox
-
-The [`react-city-space-mapbox`](https://www.npmjs.com/package/react-city-space-mapbox) is a dynamic Mapbox-based visualization that allows toggling of the Growth Lab "City Space" and the true geographic centers of each city. Please refer to its own [GitHub repo](https://github.com/cid-harvard/react-city-space-mapbox) for documentation or for any development changes that need to be made to this visualization.
-
-<a name="react-comparison-bar-chart"/>
-
-### react-comparison-bar-chart
-
-The [`react-comparison-bar-chart`](https://www.npmjs.com/package/react-comparison-bar-chart) is a vertical bar chart that allows the positive/negative comparison between two sets of data of the same categories. Please refer to its own [GitHub repo](https://github.com/cid-harvard/react-comparison-bar-chart) for documentation or for any development changes that need to be made to this visualization.
-
-<a name="react-fast-charts"/>
-
-### react-fast-charts
-
-The [`react-fast-charts`](https://www.npmjs.com/package/react-fast-charts) package is a collection of React-D3 visualizations used throughout the Growth Lab's projects. Please refer to its own [GitHub repo](https://github.com/cid-harvard/react-fast-charts) for documentation or for any development changes that need to be made to its visualizations.
-
-<a name="react-panel-search"/>
-
-### react-panel-search
-
-The [`react-panel-search`](https://www.npmjs.com/package/react-panel-search) is the package that contains the logic for the nested search bars found throughout the Metroverse. Please refer to its own [GitHub repo](https://github.com/cid-harvard/react-panel-search) for documentation or for any development changes that need to be made to this component.
-
-<a name="react-pswot-plot"/>
-
-### react-pswot-plot
-
-The [`react-pswot-plot`](https://www.npmjs.com/package/react-pswot-plot) is a traditional SWOT chart but with the additional of a "Potential" quadrant in the form of Beeswarm plot. It displays all of the data where the x-axis value is equal to zero. Please refer to its own [GitHub repo](https://github.com/cid-harvard/react-pswot-plot) for documentation or for any development changes that need to be made to this visualization.
-
-<a name="react-vertical-bar-chart"/>
-
-### react-vertical-bar-chart
-
-The [`react-vertical-bar-chart`](https://www.npmjs.com/package/react-vertical-bar-chart) is a scroll-able bar chart that allows for the visual comparison of a large number of categories without overloading the screen. Please refer to its own [GitHub repo](https://github.com/cid-harvard/react-vertical-bar-chart) for documentation or for any development changes that need to be made to this visualization.
-
-<a name="app-sections"/>
-
-## App Sections
-
-The Metroverse web application is broken up into three distinct sections. Each section is made up of reusable components and logic that often crosses between sections. See below for more information on each section.
-
-<a name="landing-page"/>
-
-### Landing Page
-
-The logic for the landing page of the Metroverse is found at `src/landing`. It handles all of the code for the initial landing page map and pop-up.
-
-<a name="informational-pages"/>
-
-### Informational Pages
-
-The logic for the informational pages of the Metroverse can be found at `src/informational`. Informational pages are classified as all pages that contain static information about the app, such as the `About` page or `Contact` page. All of the routing information is found within the index file of the directory, and properly name sub-directories contain the logic for the individual pages.
-
-<a name="city-profiles"/>
-
-### City Profiles
-
-The logic for the city profile pages of the Metroverse can be found at `src/cities/single`. The City Profile pages are classified as all pages that make up the dynamic content of the City Profiles aspect of the app. All of the routing information is found within the index file of the directory, and properly name sub-directories contain the logic for the individual pages.
+Based on [Metroverse](https://metroverse.cid.harvard.edu/) by the Harvard Growth Lab, Center for International Development at Harvard University. See [ATTRIBUTION.md](ATTRIBUTION.md) for details.
