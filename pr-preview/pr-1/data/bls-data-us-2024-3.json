@@ -1,0 +1,114 @@
+{
+  "metadata": {
+    "lastUpdated": "2026-02-16",
+    "years": [
+      2024
+    ],
+    "source": "BLS OES + O*NET",
+    "level": 3,
+    "country": "us"
+  },
+  "regions": [
+    {
+      "regionId": "national-united-states",
+      "name": "United States",
+      "regionType": "National"
+    }
+  ],
+  "occupations": [
+    {
+      "socCode": "15-1200",
+      "name": "Computer Occupations",
+      "level": 3,
+      "majorGroupId": "15",
+      "majorGroupName": "Computer and Mathematical"
+    },
+    {
+      "socCode": "31-1100",
+      "name": "Home Health and Personal Care Aides; and Nursing Assistants, Orderlies, and Psychiatric Aides",
+      "level": 3,
+      "majorGroupId": "31",
+      "majorGroupName": "Healthcare Support"
+    },
+    {
+      "socCode": "51-5100",
+      "name": "Printing Workers",
+      "level": 3,
+      "majorGroupId": "51",
+      "majorGroupName": "Production"
+    }
+  ],
+  "majorGroups": [
+    {
+      "groupId": "15",
+      "name": "Computer and Mathematical",
+      "color": "#488098"
+    },
+    {
+      "groupId": "31",
+      "name": "Healthcare Support",
+      "color": "#70AD47"
+    },
+    {
+      "groupId": "51",
+      "name": "Production",
+      "color": "#CD853F"
+    }
+  ],
+  "regionData": {
+    "national-united-states": {
+      "2024": [
+        {
+          "socCode": "15-1200",
+          "totEmp": 4786660,
+          "gdp": 558938288200,
+          "aMean": 116770,
+          "complexity": 0.3595
+        },
+        {
+          "socCode": "31-1100",
+          "totEmp": 5464490,
+          "gdp": 200492138100,
+          "aMean": 36690,
+          "complexity": 0.129
+        },
+        {
+          "socCode": "51-5100",
+          "totEmp": 204640,
+          "gdp": 9466646400,
+          "aMean": 46260,
+          "complexity": 0.0061
+        }
+      ]
+    }
+  },
+  "aggregates": {
+    "2024": {
+      "byOccupation": {
+        "15-1200": {
+          "totalEmploy": 4786660,
+          "avgWage": 116770.0,
+          "avgComplexity": 0.3595
+        },
+        "31-1100": {
+          "totalEmploy": 5464490,
+          "avgWage": 36690.0,
+          "avgComplexity": 0.129
+        },
+        "51-5100": {
+          "totalEmploy": 204640,
+          "avgWage": 46260.0,
+          "avgComplexity": 0.0061
+        }
+      },
+      "minMaxStats": {
+        "minWage": 36690,
+        "maxWage": 116770,
+        "medianWage": 46260,
+        "minComplexity": 0.0061,
+        "maxComplexity": 0.3595,
+        "medianComplexity": 0.129
+      }
+    }
+  }
+}
