@@ -18,6 +18,7 @@ import styled from "styled-components/macro";
 import useGlobalLocationData from "../../../../../hooks/useGlobalLocationData";
 import useSectorMap from "../../../../../hooks/useSectorMap";
 import useClusterMap from "../../../../../hooks/useClusterMap";
+import { useLevelLoader } from "../../../../../hooks/useLevelLoader";
 import DownloadImageOverlay from "./DownloadImageOverlay";
 import useQueryParams from "../../../../../hooks/useQueryParams";
 import useFluent from "../../../../../hooks/useFluent";
@@ -47,6 +48,7 @@ interface Props {
 
 const EconomicComposition = (props: Props) => {
   const { cityId } = props;
+  useLevelLoader();
   const [highlighted, setHighlighted] = useState<string | undefined>(undefined);
   const clearHighlighted = useCallback(
     () => setHighlighted(undefined),

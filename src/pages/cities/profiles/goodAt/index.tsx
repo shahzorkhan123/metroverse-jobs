@@ -15,6 +15,7 @@ import EducationLegend from "../../../../components/dataViz/legend/EducationLege
 import WageLegend from "../../../../components/dataViz/legend/WageLegend";
 import useSectorMap from "../../../../hooks/useSectorMap";
 import useClusterMap from "../../../../hooks/useClusterMap";
+import { useLevelLoader } from "../../../../hooks/useLevelLoader";
 import UtilityBar from "../../../../components/navigation/secondaryHeader/UtilityBar";
 import {
   ColorBy,
@@ -36,6 +37,7 @@ import { useRouteMatch } from "react-router-dom";
 
 const CityGoodAt = () => {
   const cityId = useCurrentCityId();
+  useLevelLoader();
 
   const { cluster_level, digit_level, color_by, aggregation } =
     useQueryParams();

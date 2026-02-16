@@ -1,4 +1,4 @@
-/** TypeScript interfaces for the static BLS data JSON (bls-data.json) */
+/** TypeScript interfaces for the static BLS data JSON files */
 
 export interface BLSRegion {
   regionId: string;
@@ -53,6 +53,9 @@ export interface BLSData {
     lastUpdated: string;
     years: number[];
     source: string;
+    country?: string;
+    maxLevel?: number;
+    level?: number;
   };
   regions: BLSRegion[];
   occupations: BLSOccupation[];
@@ -65,4 +68,22 @@ export interface BLSData {
   aggregates: {
     [year: string]: BLSAggregates;
   };
+}
+
+/** Meta catalog file (bls-data.json) */
+export interface BLSMetaCatalog {
+  datasets: {
+    country: string;
+    year: number;
+    file: string;
+    levels: number[];
+  }[];
+  levelFiles: {
+    [countryYear: string]: {
+      [level: string]: string;
+    };
+  };
+  countries: { code: string; name: string }[];
+  years: number[];
+  lastUpdated: string;
 }
