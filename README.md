@@ -2,11 +2,45 @@
 
 A static visualization tool for US Bureau of Labor Statistics (BLS) occupation data, built on the [Metroverse](https://github.com/harvard-growth-lab/metroverse-front-end) frontend by Harvard Growth Lab.
 
+## Screenshots
+
+### Landing Page
+Region selector with National, Metropolitan, and State groupings.
+
+![Landing Page](docs/screenshots/01-landing-page.png)
+
+### Region Overview
+3-dropdown navigation: Country, Year, and Region selector.
+
+![Region Overview](docs/screenshots/02-overview-dropdowns.png)
+
+### Economic Composition Treemap
+Interactive treemap showing occupation distribution by employment share. US National data with 22 SOC major groups.
+
+![Treemap - US National](docs/screenshots/03-treemap-composition.png)
+
+### Viz Options Panel
+Toggle between Employees/Income view, set digit level (1-6), color by sector/education/wage.
+
+![Viz Options](docs/screenshots/04-viz-options.png)
+
+### Tooltip with SOC Code
+Hover any occupation to see SOC code, year, share, and employment count.
+
+![Tooltip](docs/screenshots/05-treemap-tooltip.png)
+
+### State-Level View (California)
+Region switching updates treemap data. California shown with 58.1k workers across 22 occupation groups.
+
+![California Treemap](docs/screenshots/06-california-treemap.png)
+
 ## Features
 
-- **Economic Composition Treemap**: Interactive canvas treemap showing occupation distribution by employment or GDP
+- **Economic Composition Treemap**: Interactive canvas treemap showing occupation distribution by employment or income
 - **Region Profiles**: View data for National, State, and Metropolitan regions
+- **3-Dropdown Navigation**: Country, Year, and Region selectors with grouped optgroups
 - **Multiple Color Modes**: Color by SOC Major Group, Annual Wage, or Complexity Score
+- **Configurable Digit Levels**: View data at sector (1-digit) through detailed (6-digit) SOC levels
 - **Shareable URLs**: All filter settings encoded in URL query parameters
 - **Static Deployment**: No backend required, works on GitHub Pages
 
@@ -40,7 +74,6 @@ python scripts/generate-static-data.py
 - **[D3](https://d3js.org/), v5.16** - data processing and utilities
 - **[Fluent](https://projectfluent.org/), v0.13** - internationalization
 - **[react-canvas-treemap](https://github.com/cid-harvard/react-canvas-treemap)** - treemap visualization (MIT)
-- **[react-panel-search](https://github.com/cid-harvard/react-panel-search)** - hierarchical search
 
 ## License
 

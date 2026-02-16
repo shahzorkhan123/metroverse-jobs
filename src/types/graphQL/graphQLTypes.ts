@@ -12,10 +12,10 @@ export enum ClusterLevel {
   C3 = 3,
 }
 
-export const defaultDigitLevel: DigitLevel = DigitLevel.Three;
+export const defaultDigitLevel: DigitLevel = DigitLevel.Two;
 
 export enum CompositionType {
-  Companies = "establishments",
+  Companies = "income",
   Employees = "employees",
 }
 

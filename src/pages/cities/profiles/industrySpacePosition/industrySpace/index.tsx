@@ -91,7 +91,7 @@ const IndustrySpacePosition = (props: Props) => {
   let nodeSizingMaxText: string | undefined;
   if (aggregateIndustryDataMap.data && !aggregateIndustryDataMap.loading) {
     if (nodeSizing === NodeSizing.globalCompanies) {
-      nodeSizingTitle = "Node Size by Global Number of Establishments";
+      nodeSizingTitle = "Node Size by Global Income";
       nodeSizingMinText = formatNumberLong(
         aggregateIndustryDataMap.data.globalMinMax.minSumNumCompany,
       );
@@ -108,7 +108,7 @@ const IndustrySpacePosition = (props: Props) => {
       );
     }
     if (nodeSizing === NodeSizing.cityCompanies && rcaData) {
-      nodeSizingTitle = "Node Size by Number of Establishments in City";
+      nodeSizingTitle = "Node Size by Income in Region";
       const [min, max] = extent(
         rcaData.naicsData
           .map((d) => d.numCompany)

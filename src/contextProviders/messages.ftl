@@ -127,10 +127,10 @@ global-formatted-size-by = {
   $type ->
   *[uniform] Uniform
   [rca] Relative Presence
-  [global_companies] Global establishment size
+  [global_companies] Global income
   [global_employees] Global employee size
-  [city_companies] City establishment size
-  [city_employees] City employee size
+  [city_companies] Region income
+  [city_employees] Region employee size
   [population] Population
   [gdpPpp] GDP Per Capita
 }
@@ -295,7 +295,7 @@ cities-single-page-titles-question-4 = What is my city's position\nin the Indust
 cities-single-page-titles-question-5 = What are the growth\nopportunities?
 
 tooltip-number-employees = Number of Employees
-tooltip-number-companies = Number of Establishments
+tooltip-number-companies = Income
 tooltip-number-generic = Estimated number of { $value }
 tooltip-share-generic = Share of { $value }
 tooltip-intensity-generic = Specialization of { $value }
