@@ -97,6 +97,7 @@ export const defaultClusterLevel: ClusterLevel = ClusterLevel.C3;
 export const defaultColorBy: ColorBy = ColorBy.sector;
 
 export interface GlobalQueryParams {
+  year: string | undefined;
   country: string | undefined;
   benchmark: string | undefined;
   digit_level: string | undefined;

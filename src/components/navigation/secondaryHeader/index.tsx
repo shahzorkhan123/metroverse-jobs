@@ -4,8 +4,6 @@ import styled from "styled-components/macro";
 import {
   backgroundMedium,
   defaultPadding,
-  secondaryFont,
-  SearchContainerLight,
 } from "../../../styling/styleUtils";
 import { UtilityBarPortal } from "./UtilityBar";
 import { columnsToRowsBreakpoint } from "../Utils";
@@ -35,39 +33,12 @@ const Root = styled(SecondaryHeaderContainer)`
   }
 `;
 
-const SearchContainer = styled(SearchContainerLight)`
-  max-width: 800px;
-  width: 100%;
-  font-family: ${secondaryFont};
-
-  .react-panel-search-search-bar-input {
-    background-color: ${backgroundMedium};
-    padding: 0.4rem 0.5rem;
-    font-size: 0.75rem;
-
-    &:focus::placeholder {
-      color: ${backgroundMedium};
-    }
-  }
-
-  .react-panel-search-search-bar-search-icon {
-    display: none;
-  }
-
-  .react-panel-search-search-bar-dropdown-arrow,
-  .react-panel-search-search-bar-clear-button {
-    background-color: ${backgroundMedium};
-  }
-`;
-
 const SecondaryHeader = () => {
   return (
     <Root>
-      <SearchContainer>
-        <Switch>
-          <Route path={CityRoutes.CityBase} component={CitySearch} />
-        </Switch>
-      </SearchContainer>
+      <Switch>
+        <Route path={CityRoutes.CityBase} component={CitySearch} />
+      </Switch>
       <UtilityBarPortal />
     </Root>
   );

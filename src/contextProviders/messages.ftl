@@ -81,7 +81,7 @@ global-ui-aggregation-mode = Aggregation Method
 global-ui-digit-level = digit level
 global-ui-sector-level = Sector level
 global-ui-year = Year
-global-ui-naics-code = NAICS Code
+global-ui-naics-code = SOC Code
 
 global-ui-cluster-aggregation-level = {
   $cluster ->

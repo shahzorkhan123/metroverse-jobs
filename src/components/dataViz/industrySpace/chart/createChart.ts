@@ -483,7 +483,7 @@ const createChart = (input: Input) => {
         (c) => c.clusterId === d.country,
       );
       const rows = [
-        ["NAICS Code:", d.code ? d.code : ""],
+        ["SOC Code:", d.code ? d.code : ""],
         ["Year:", defaultYear.toString()],
         [
           "High Aggregation<br />Knowledge Cluster:",
