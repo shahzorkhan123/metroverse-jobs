@@ -1,0 +1,39 @@
+{
+  "files": {
+    "main.css": "/metroverse-jobs/static/css/main.59adfc21.chunk.css",
+    "main.js": "/metroverse-jobs/static/js/main.f9d08756.chunk.js",
+    "main.js.map": "/metroverse-jobs/static/js/main.f9d08756.chunk.js.map",
+    "runtime-main.js": "/metroverse-jobs/static/js/runtime-main.77186e84.js",
+    "runtime-main.js.map": "/metroverse-jobs/static/js/runtime-main.77186e84.js.map",
+    "static/js/2.b910d9ab.chunk.js": "/metroverse-jobs/static/js/2.b910d9ab.chunk.js",
+    "static/js/2.b910d9ab.chunk.js.map": "/metroverse-jobs/static/js/2.b910d9ab.chunk.js.map",
+    "index.html": "/metroverse-jobs/index.html",
+    "precache-manifest.912a8911c2a454dde7a7fa3487edee96.js": "/metroverse-jobs/precache-manifest.912a8911c2a454dde7a7fa3487edee96.js",
+    "service-worker.js": "/metroverse-jobs/service-worker.js",
+    "static/css/main.59adfc21.chunk.css.map": "/metroverse-jobs/static/css/main.59adfc21.chunk.css.map",
+    "static/js/2.b910d9ab.chunk.js.LICENSE.txt": "/metroverse-jobs/static/js/2.b910d9ab.chunk.js.LICENSE.txt",
+    "static/media/fonts.css": "/metroverse-jobs/static/media/OfficeCodePro-RegularItalic.c8fd5a9a.woff2",
+    "static/media/benchmark_comparator.svg": "/metroverse-jobs/static/media/benchmark_comparator.1146d6d7.svg",
+    "static/media/cities-logo-dark.svg": "/metroverse-jobs/static/media/cities-logo-dark.f92ed258.svg",
+    "static/media/cities-logo.svg": "/metroverse-jobs/static/media/cities-logo.15ef040b.svg",
+    "static/media/datareliability.svg": "/metroverse-jobs/static/media/datareliability.37b910ab.svg",
+    "static/media/data~tHUHAyCj.svg": "/metroverse-jobs/static/media/data~tHUHAyCj.0ed67368.svg",
+    "static/media/download~bjCODHXh.svg": "/metroverse-jobs/static/media/download~bjCODHXh.02e9c647.svg",
+    "static/media/gdppercapita.svg": "/metroverse-jobs/static/media/gdppercapita.b6ad9a64.svg",
+    "static/media/github.svg": "/metroverse-jobs/static/media/github.35accb26.svg",
+    "static/media/industry_space.png": "/metroverse-jobs/static/media/industry_space.fe933ea1.png",
+    "static/media/population.svg": "/metroverse-jobs/static/media/population.510f7828.svg",
+    "static/media/ranking.svg": "/metroverse-jobs/static/media/ranking.b15df652.svg",
+    "static/media/swot.png": "/metroverse-jobs/static/media/swot.5175caea.png",
+    "static/media/topindustries.svg": "/metroverse-jobs/static/media/topindustries.52bc3ab8.svg",
+    "static/media/topknowledgecluster.svg": "/metroverse-jobs/static/media/topknowledgecluster.85228d9d.svg",
+    "static/media/topsimilarcities.svg": "/metroverse-jobs/static/media/topsimilarcities.1e1a8756.svg",
+    "static/media/treemap.png": "/metroverse-jobs/static/media/treemap.21370ddc.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.77186e84.js",
+    "static/js/2.b910d9ab.chunk.js",
+    "static/css/main.59adfc21.chunk.css",
+    "static/js/main.f9d08756.chunk.js"
+  ]
+}

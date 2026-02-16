@@ -1,0 +1,5889 @@
+{
+  "metadata": {
+    "lastUpdated": "2026-02-08",
+    "years": [
+      2024
+    ],
+    "source": "BLS OES + O*NET"
+  },
+  "regions": [
+    {
+      "regionId": "metro-atlanta-sandy-springs-alpharetta-ga",
+      "name": "Atlanta-Sandy Springs-Alpharetta, GA",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-baltimore-columbia-towson-md",
+      "name": "Baltimore-Columbia-Towson, MD",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-boston-cambridge-newton-ma-nh",
+      "name": "Boston-Cambridge-Newton, MA-NH",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-chicago-naperville-elgin-il-in-wi",
+      "name": "Chicago-Naperville-Elgin, IL-IN-WI",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-dallas-fort-worth-arlington-tx",
+      "name": "Dallas-Fort Worth-Arlington, TX",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-denver-aurora-lakewood-co",
+      "name": "Denver-Aurora-Lakewood, CO",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-detroit-warren-dearborn-mi",
+      "name": "Detroit-Warren-Dearborn, MI",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-houston-the-woodlands-sugar-land-tx",
+      "name": "Houston-The Woodlands-Sugar Land, TX",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-los-angeles-long-beach-anaheim-ca",
+      "name": "Los Angeles-Long Beach-Anaheim, CA",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-miami-fort-lauderdale-pompano-beach-fl",
+      "name": "Miami-Fort Lauderdale-Pompano Beach, FL",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-minneapolis-st-paul-bloomington-mn-wi",
+      "name": "Minneapolis-St. Paul-Bloomington, MN-WI",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-new-york-newark-jersey-city-ny-nj-pa",
+      "name": "New York-Newark-Jersey City, NY-NJ-PA",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-philadelphia-camden-wilmington-pa-nj-de-md",
+      "name": "Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-phoenix-mesa-chandler-az",
+      "name": "Phoenix-Mesa-Chandler, AZ",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-riverside-san-bernardino-ontario-ca",
+      "name": "Riverside-San Bernardino-Ontario, CA",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-san-diego-chula-vista-carlsbad-ca",
+      "name": "San Diego-Chula Vista-Carlsbad, CA",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-san-francisco-oakland-berkeley-ca",
+      "name": "San Francisco-Oakland-Berkeley, CA",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-seattle-tacoma-bellevue-wa",
+      "name": "Seattle-Tacoma-Bellevue, WA",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-st-louis-mo-il",
+      "name": "St. Louis, MO-IL",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-tampa-st-petersburg-clearwater-fl",
+      "name": "Tampa-St. Petersburg-Clearwater, FL",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "metro-washington-arlington-alexandria-dc-va-md-wv",
+      "name": "Washington-Arlington-Alexandria, DC-VA-MD-WV",
+      "regionType": "Metro"
+    },
+    {
+      "regionId": "national-united-states",
+      "name": "United States",
+      "regionType": "National"
+    },
+    {
+      "regionId": "state-alabama",
+      "name": "Alabama",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-alaska",
+      "name": "Alaska",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-arizona",
+      "name": "Arizona",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-arkansas",
+      "name": "Arkansas",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-california",
+      "name": "California",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-colorado",
+      "name": "Colorado",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-connecticut",
+      "name": "Connecticut",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-delaware",
+      "name": "Delaware",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-florida",
+      "name": "Florida",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-georgia",
+      "name": "Georgia",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-hawaii",
+      "name": "Hawaii",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-idaho",
+      "name": "Idaho",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-illinois",
+      "name": "Illinois",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-indiana",
+      "name": "Indiana",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-iowa",
+      "name": "Iowa",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-kansas",
+      "name": "Kansas",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-kentucky",
+      "name": "Kentucky",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-louisiana",
+      "name": "Louisiana",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-maine",
+      "name": "Maine",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-maryland",
+      "name": "Maryland",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-massachusetts",
+      "name": "Massachusetts",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-michigan",
+      "name": "Michigan",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-minnesota",
+      "name": "Minnesota",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-mississippi",
+      "name": "Mississippi",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-missouri",
+      "name": "Missouri",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-montana",
+      "name": "Montana",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-nebraska",
+      "name": "Nebraska",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-nevada",
+      "name": "Nevada",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-new-hampshire",
+      "name": "New Hampshire",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-new-jersey",
+      "name": "New Jersey",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-new-mexico",
+      "name": "New Mexico",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-new-york",
+      "name": "New York",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-north-carolina",
+      "name": "North Carolina",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-north-dakota",
+      "name": "North Dakota",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-ohio",
+      "name": "Ohio",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-oklahoma",
+      "name": "Oklahoma",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-oregon",
+      "name": "Oregon",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-pennsylvania",
+      "name": "Pennsylvania",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-rhode-island",
+      "name": "Rhode Island",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-south-carolina",
+      "name": "South Carolina",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-south-dakota",
+      "name": "South Dakota",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-tennessee",
+      "name": "Tennessee",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-texas",
+      "name": "Texas",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-utah",
+      "name": "Utah",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-vermont",
+      "name": "Vermont",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-virginia",
+      "name": "Virginia",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-washington",
+      "name": "Washington",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-west-virginia",
+      "name": "West Virginia",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-wisconsin",
+      "name": "Wisconsin",
+      "regionType": "State"
+    },
+    {
+      "regionId": "state-wyoming",
+      "name": "Wyoming",
+      "regionType": "State"
+    }
+  ],
+  "occupations": [
+    {
+      "socCode": "11-0000",
+      "name": "Management Occupations",
+      "level": 1,
+      "majorGroupId": "11",
+      "majorGroupName": "Management"
+    },
+    {
+      "socCode": "13-0000",
+      "name": "Business and Financial Operations",
+      "level": 1,
+      "majorGroupId": "13",
+      "majorGroupName": "Business and Financial Operations"
+    },
+    {
+      "socCode": "15-0000",
+      "name": "Computer and Mathematical",
+      "level": 1,
+      "majorGroupId": "15",
+      "majorGroupName": "Computer and Mathematical"
+    },
+    {
+      "socCode": "17-0000",
+      "name": "Architecture and Engineering",
+      "level": 1,
+      "majorGroupId": "17",
+      "majorGroupName": "Architecture and Engineering"
+    },
+    {
+      "socCode": "19-0000",
+      "name": "Life, Physical, and Social Science",
+      "level": 1,
+      "majorGroupId": "19",
+      "majorGroupName": "Life, Physical, and Social Science"
+    },
+    {
+      "socCode": "21-0000",
+      "name": "Community and Social Service",
+      "level": 1,
+      "majorGroupId": "21",
+      "majorGroupName": "Community and Social Service"
+    },
+    {
+      "socCode": "23-0000",
+      "name": "Legal Occupations",
+      "level": 1,
+      "majorGroupId": "23",
+      "majorGroupName": "Legal"
+    },
+    {
+      "socCode": "25-0000",
+      "name": "Educational Instruction",
+      "level": 1,
+      "majorGroupId": "25",
+      "majorGroupName": "Educational Instruction and Library"
+    },
+    {
+      "socCode": "27-0000",
+      "name": "Arts, Design, Entertainment",
+      "level": 1,
+      "majorGroupId": "27",
+      "majorGroupName": "Arts, Design, Entertainment, Sports, and Media"
+    },
+    {
+      "socCode": "29-0000",
+      "name": "Healthcare Practitioners",
+      "level": 1,
+      "majorGroupId": "29",
+      "majorGroupName": "Healthcare Practitioners and Technical"
+    }
+  ],
+  "majorGroups": [
+    {
+      "groupId": "11",
+      "name": "Management",
+      "color": "#A973BE"
+    },
+    {
+      "groupId": "13",
+      "name": "Business and Financial Operations",
+      "color": "#F1866C"
+    },
+    {
+      "groupId": "15",
+      "name": "Computer and Mathematical",
+      "color": "#488098"
+    },
+    {
+      "groupId": "17",
+      "name": "Architecture and Engineering",
+      "color": "#6A6AAD"
+    },
+    {
+      "groupId": "19",
+      "name": "Life, Physical, and Social Science",
+      "color": "#77C898"
+    },
+    {
+      "groupId": "21",
+      "name": "Community and Social Service",
+      "color": "#93CFD0"
+    },
+    {
+      "groupId": "23",
+      "name": "Legal",
+      "color": "#D35162"
+    },
+    {
+      "groupId": "25",
+      "name": "Educational Instruction and Library",
+      "color": "#FFC135"
+    },
+    {
+      "groupId": "27",
+      "name": "Arts, Design, Entertainment, Sports, and Media",
+      "color": "#F28188"
+    },
+    {
+      "groupId": "29",
+      "name": "Healthcare Practitioners and Technical",
+      "color": "#5B9BD5"
+    }
+  ],
+  "regionData": {
+    "metro-atlanta-sandy-springs-alpharetta-ga": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10794,
+          "gdp": 1402442832,
+          "aMean": 129928,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8319,
+          "gdp": 624349269,
+          "aMean": 75051,
+          "complexity": 0.4027
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4329,
+          "gdp": 459034173,
+          "aMean": 106037,
+          "complexity": 0.2758
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2427,
+          "gdp": 194089617,
+          "aMean": 79971,
+          "complexity": 0.0724
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1261,
+          "gdp": 99707270,
+          "aMean": 79070,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2467,
+          "gdp": 132677727,
+          "aMean": 53781,
+          "complexity": 0.0253
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1428,
+          "gdp": 152644632,
+          "aMean": 106894,
+          "complexity": 0.0406
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 9771,
+          "gdp": 621416058,
+          "aMean": 63598,
+          "complexity": 0.4005
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1967,
+          "gdp": 118895315,
+          "aMean": 60445,
+          "complexity": 0.0147
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 8711,
+          "gdp": 771376472,
+          "aMean": 88552,
+          "complexity": 0.5156
+        }
+      ]
+    },
+    "metro-baltimore-columbia-towson-md": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 13839,
+          "gdp": 2161679478,
+          "aMean": 156202,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 13932,
+          "gdp": 1376774172,
+          "aMean": 98821,
+          "complexity": 0.6019
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 6226,
+          "gdp": 785079922,
+          "aMean": 126097,
+          "complexity": 0.3018
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3601,
+          "gdp": 376228879,
+          "aMean": 104479,
+          "complexity": 0.0944
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 2036,
+          "gdp": 190127788,
+          "aMean": 93383,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2945,
+          "gdp": 209301150,
+          "aMean": 71070,
+          "complexity": 0.0097
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 2077,
+          "gdp": 297089926,
+          "aMean": 143038,
+          "complexity": 0.0543
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 12852,
+          "gdp": 1080069228,
+          "aMean": 84039,
+          "complexity": 0.4514
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 3174,
+          "gdp": 263756226,
+          "aMean": 83099,
+          "complexity": 0.0373
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 13768,
+          "gdp": 1532020432,
+          "aMean": 111274,
+          "complexity": 0.6806
+        }
+      ]
+    },
+    "metro-boston-cambridge-newton-ma-nh": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10384,
+          "gdp": 1580548640,
+          "aMean": 152210,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 12464,
+          "gdp": 1206103888,
+          "aMean": 96767,
+          "complexity": 0.7392
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5272,
+          "gdp": 644897400,
+          "aMean": 122325,
+          "complexity": 0.3484
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2908,
+          "gdp": 338529004,
+          "aMean": 116413,
+          "complexity": 0.135
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1471,
+          "gdp": 144725806,
+          "aMean": 98386,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2977,
+          "gdp": 210235740,
+          "aMean": 70620,
+          "complexity": 0.0456
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1733,
+          "gdp": 228835718,
+          "aMean": 132046,
+          "complexity": 0.0586
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10892,
+          "gdp": 907510548,
+          "aMean": 83319,
+          "complexity": 0.5313
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2533,
+          "gdp": 211221804,
+          "aMean": 83388,
+          "complexity": 0.0463
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 12535,
+          "gdp": 1523491365,
+          "aMean": 121539,
+          "complexity": 0.9603
+        }
+      ]
+    },
+    "metro-chicago-naperville-elgin-il-in-wi": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8096,
+          "gdp": 1389977952,
+          "aMean": 171687,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8710,
+          "gdp": 856132030,
+          "aMean": 98293,
+          "complexity": 0.574
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4656,
+          "gdp": 633430176,
+          "aMean": 136046,
+          "complexity": 0.3963
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2533,
+          "gdp": 281439097,
+          "aMean": 111109,
+          "complexity": 0.1155
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1230,
+          "gdp": 136735410,
+          "aMean": 111167,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2400,
+          "gdp": 172778400,
+          "aMean": 71991,
+          "complexity": 0.0288
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1052,
+          "gdp": 149682768,
+          "aMean": 142284,
+          "complexity": 0.0103
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7307,
+          "gdp": 619429004,
+          "aMean": 84772,
+          "complexity": 0.3852
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1981,
+          "gdp": 162852067,
+          "aMean": 82207,
+          "complexity": 0.0208
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7528,
+          "gdp": 823939600,
+          "aMean": 109450,
+          "complexity": 0.5483
+        }
+      ]
+    },
+    "metro-dallas-fort-worth-arlington-tx": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 13343,
+          "gdp": 1836223631,
+          "aMean": 137617,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 11107,
+          "gdp": 1006582982,
+          "aMean": 90626,
+          "complexity": 0.4966
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5819,
+          "gdp": 696429558,
+          "aMean": 119682,
+          "complexity": 0.3084
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3163,
+          "gdp": 315477620,
+          "aMean": 99740,
+          "complexity": 0.0773
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 2030,
+          "gdp": 188138370,
+          "aMean": 92679,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 3442,
+          "gdp": 224525102,
+          "aMean": 65231,
+          "complexity": 0.0221
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1783,
+          "gdp": 225348021,
+          "aMean": 126387,
+          "complexity": 0.0226
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 13229,
+          "gdp": 942407502,
+          "aMean": 71238,
+          "complexity": 0.4577
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 3046,
+          "gdp": 250670570,
+          "aMean": 82295,
+          "complexity": 0.0379
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 12913,
+          "gdp": 1463301160,
+          "aMean": 113320,
+          "complexity": 0.7737
+        }
+      ]
+    },
+    "metro-denver-aurora-lakewood-co": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10621,
+          "gdp": 1519567712,
+          "aMean": 143072,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8645,
+          "gdp": 798002660,
+          "aMean": 92308,
+          "complexity": 0.4846
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4190,
+          "gdp": 567690530,
+          "aMean": 135487,
+          "complexity": 0.3201
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2947,
+          "gdp": 305783667,
+          "aMean": 103761,
+          "complexity": 0.1331
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1299,
+          "gdp": 119465133,
+          "aMean": 91967,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2391,
+          "gdp": 160137225,
+          "aMean": 66975,
+          "complexity": 0.029
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1352,
+          "gdp": 206120512,
+          "aMean": 152456,
+          "complexity": 0.0619
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 9666,
+          "gdp": 823485204,
+          "aMean": 85194,
+          "complexity": 0.5028
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2060,
+          "gdp": 161808880,
+          "aMean": 78548,
+          "complexity": 0.0302
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10449,
+          "gdp": 1294641549,
+          "aMean": 123901,
+          "complexity": 0.8394
+        }
+      ]
+    },
+    "metro-detroit-warren-dearborn-mi": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 15642,
+          "gdp": 2000283318,
+          "aMean": 127879,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 13163,
+          "gdp": 1218735844,
+          "aMean": 92588,
+          "complexity": 0.5814
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 6752,
+          "gdp": 762368320,
+          "aMean": 112910,
+          "complexity": 0.337
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3677,
+          "gdp": 380146645,
+          "aMean": 103385,
+          "complexity": 0.1323
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1655,
+          "gdp": 133109995,
+          "aMean": 80429,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 3838,
+          "gdp": 196927780,
+          "aMean": 51310,
+          "complexity": 0.0342
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1609,
+          "gdp": 187593310,
+          "aMean": 116590,
+          "complexity": 0.0292
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 14665,
+          "gdp": 1036932820,
+          "aMean": 70708,
+          "complexity": 0.4841
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 3348,
+          "gdp": 230191740,
+          "aMean": 68755,
+          "complexity": 0.052
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 14008,
+          "gdp": 1294213128,
+          "aMean": 92391,
+          "complexity": 0.6219
+        }
+      ]
+    },
+    "metro-houston-the-woodlands-sugar-land-tx": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 13374,
+          "gdp": 1674531792,
+          "aMean": 125208,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 11627,
+          "gdp": 924299992,
+          "aMean": 79496,
+          "complexity": 0.5012
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 6781,
+          "gdp": 617837253,
+          "aMean": 91113,
+          "complexity": 0.2974
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3435,
+          "gdp": 322519020,
+          "aMean": 93892,
+          "complexity": 0.1011
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 2161,
+          "gdp": 185281979,
+          "aMean": 85739,
+          "complexity": 0.0098
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 3371,
+          "gdp": 173913261,
+          "aMean": 51591,
+          "complexity": 0.0023
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1607,
+          "gdp": 193807414,
+          "aMean": 120602,
+          "complexity": 0.0155
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 13447,
+          "gdp": 894682698,
+          "aMean": 66534,
+          "complexity": 0.4815
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2774,
+          "gdp": 170503910,
+          "aMean": 61465,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 12018,
+          "gdp": 1143572790,
+          "aMean": 95155,
+          "complexity": 0.647
+        }
+      ]
+    },
+    "metro-los-angeles-long-beach-anaheim-ca": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 11537,
+          "gdp": 1743990605,
+          "aMean": 151165,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 10805,
+          "gdp": 1139127930,
+          "aMean": 105426,
+          "complexity": 0.6078
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 6083,
+          "gdp": 805523026,
+          "aMean": 132422,
+          "complexity": 0.3915
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2927,
+          "gdp": 326088289,
+          "aMean": 111407,
+          "complexity": 0.0807
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1881,
+          "gdp": 201865158,
+          "aMean": 107318,
+          "complexity": 0.0001
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2874,
+          "gdp": 201659958,
+          "aMean": 70167,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1631,
+          "gdp": 235601212,
+          "aMean": 144452,
+          "complexity": 0.022
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10344,
+          "gdp": 784157952,
+          "aMean": 75808,
+          "complexity": 0.3777
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2742,
+          "gdp": 251041068,
+          "aMean": 91554,
+          "complexity": 0.032
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 11005,
+          "gdp": 1361802720,
+          "aMean": 123744,
+          "complexity": 0.7522
+        }
+      ]
+    },
+    "metro-miami-fort-lauderdale-pompano-beach-fl": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10515,
+          "gdp": 1590498900,
+          "aMean": 151260,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 11580,
+          "gdp": 1176574320,
+          "aMean": 101604,
+          "complexity": 0.7066
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 6137,
+          "gdp": 873565128,
+          "aMean": 142344,
+          "complexity": 0.4918
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3066,
+          "gdp": 382857552,
+          "aMean": 124872,
+          "complexity": 0.144
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1670,
+          "gdp": 179747110,
+          "aMean": 107633,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 3146,
+          "gdp": 225747522,
+          "aMean": 71757,
+          "complexity": 0.0326
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1372,
+          "gdp": 200897844,
+          "aMean": 146427,
+          "complexity": 0.015
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10925,
+          "gdp": 821013750,
+          "aMean": 75150,
+          "complexity": 0.4546
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2335,
+          "gdp": 187432785,
+          "aMean": 80271,
+          "complexity": 0.0054
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 9324,
+          "gdp": 1010236752,
+          "aMean": 108348,
+          "complexity": 0.5887
+        }
+      ]
+    },
+    "metro-minneapolis-st-paul-bloomington-mn-wi": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 12709,
+          "gdp": 1797370325,
+          "aMean": 141425,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 12869,
+          "gdp": 1202865430,
+          "aMean": 93470,
+          "complexity": 0.6408
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 6144,
+          "gdp": 757751808,
+          "aMean": 123332,
+          "complexity": 0.3719
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2892,
+          "gdp": 304547844,
+          "aMean": 105307,
+          "complexity": 0.0981
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1484,
+          "gdp": 142150876,
+          "aMean": 95789,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2951,
+          "gdp": 212711031,
+          "aMean": 72081,
+          "complexity": 0.0426
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1503,
+          "gdp": 211013685,
+          "aMean": 140395,
+          "complexity": 0.0416
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 12722,
+          "gdp": 896926444,
+          "aMean": 70502,
+          "complexity": 0.456
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2942,
+          "gdp": 245212758,
+          "aMean": 83349,
+          "complexity": 0.0623
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 11096,
+          "gdp": 1376458800,
+          "aMean": 124050,
+          "complexity": 0.7457
+        }
+      ]
+    },
+    "metro-new-york-newark-jersey-city-ny-nj-pa": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 13487,
+          "gdp": 1991099297,
+          "aMean": 147631,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 12862,
+          "gdp": 1279961930,
+          "aMean": 99515,
+          "complexity": 0.6063
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5266,
+          "gdp": 725128200,
+          "aMean": 137700,
+          "complexity": 0.2991
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3441,
+          "gdp": 363373041,
+          "aMean": 105601,
+          "complexity": 0.0988
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1776,
+          "gdp": 184924224,
+          "aMean": 104124,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 3259,
+          "gdp": 200946681,
+          "aMean": 61659,
+          "complexity": 0.0089
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1698,
+          "gdp": 226051344,
+          "aMean": 133128,
+          "complexity": 0.0228
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 11704,
+          "gdp": 896023128,
+          "aMean": 76557,
+          "complexity": 0.3937
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2459,
+          "gdp": 200831448,
+          "aMean": 81672,
+          "complexity": 0.0088
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 12937,
+          "gdp": 1454571595,
+          "aMean": 112435,
+          "complexity": 0.7029
+        }
+      ]
+    },
+    "metro-philadelphia-camden-wilmington-pa-nj-de-md": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8736,
+          "gdp": 1076659584,
+          "aMean": 123244,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 9904,
+          "gdp": 878583840,
+          "aMean": 88710,
+          "complexity": 0.7953
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3858,
+          "gdp": 409179480,
+          "aMean": 106060,
+          "complexity": 0.3101
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2465,
+          "gdp": 243214155,
+          "aMean": 98667,
+          "complexity": 0.1386
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1300,
+          "gdp": 109089500,
+          "aMean": 83915,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2544,
+          "gdp": 150569184,
+          "aMean": 59186,
+          "complexity": 0.0429
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1345,
+          "gdp": 173679850,
+          "aMean": 129130,
+          "complexity": 0.0668
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7950,
+          "gdp": 571135950,
+          "aMean": 71841,
+          "complexity": 0.4775
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2176,
+          "gdp": 141335552,
+          "aMean": 64952,
+          "complexity": 0.0333
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7302,
+          "gdp": 713091414,
+          "aMean": 97657,
+          "complexity": 0.6242
+        }
+      ]
+    },
+    "metro-phoenix-mesa-chandler-az": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 11328,
+          "gdp": 1591255488,
+          "aMean": 140471,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 10554,
+          "gdp": 840879396,
+          "aMean": 79674,
+          "complexity": 0.4919
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4288,
+          "gdp": 405974976,
+          "aMean": 94677,
+          "complexity": 0.1975
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2819,
+          "gdp": 278883670,
+          "aMean": 98930,
+          "complexity": 0.1114
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1404,
+          "gdp": 114355800,
+          "aMean": 81450,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2384,
+          "gdp": 138341136,
+          "aMean": 58029,
+          "complexity": 0.0162
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1433,
+          "gdp": 153362526,
+          "aMean": 107022,
+          "complexity": 0.0264
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7996,
+          "gdp": 478736512,
+          "aMean": 59872,
+          "complexity": 0.2467
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2257,
+          "gdp": 146323567,
+          "aMean": 64831,
+          "complexity": 0.0216
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 9016,
+          "gdp": 893079880,
+          "aMean": 99055,
+          "complexity": 0.5273
+        }
+      ]
+    },
+    "metro-riverside-san-bernardino-ontario-ca": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10259,
+          "gdp": 1721255020,
+          "aMean": 167780,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 11426,
+          "gdp": 1360242448,
+          "aMean": 119048,
+          "complexity": 0.7686
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5405,
+          "gdp": 747160175,
+          "aMean": 138235,
+          "complexity": 0.3757
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3065,
+          "gdp": 363386400,
+          "aMean": 118560,
+          "complexity": 0.1297
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1605,
+          "gdp": 161032860,
+          "aMean": 100332,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2757,
+          "gdp": 219283509,
+          "aMean": 79537,
+          "complexity": 0.0373
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1384,
+          "gdp": 200176224,
+          "aMean": 144636,
+          "complexity": 0.0251
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10731,
+          "gdp": 1013188827,
+          "aMean": 94417,
+          "complexity": 0.5462
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1942,
+          "gdp": 168384994,
+          "aMean": 86707,
+          "complexity": 0.0047
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10288,
+          "gdp": 1386873840,
+          "aMean": 134805,
+          "complexity": 0.7857
+        }
+      ]
+    },
+    "metro-san-diego-chula-vista-carlsbad-ca": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8152,
+          "gdp": 1150883056,
+          "aMean": 141178,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 9680,
+          "gdp": 824368160,
+          "aMean": 85162,
+          "complexity": 0.6879
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4052,
+          "gdp": 463897272,
+          "aMean": 114486,
+          "complexity": 0.3434
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2407,
+          "gdp": 263450964,
+          "aMean": 109452,
+          "complexity": 0.1519
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1154,
+          "gdp": 104546630,
+          "aMean": 90595,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2040,
+          "gdp": 137914200,
+          "aMean": 67605,
+          "complexity": 0.0319
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1313,
+          "gdp": 154051664,
+          "aMean": 117328,
+          "complexity": 0.0473
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7688,
+          "gdp": 543141824,
+          "aMean": 70648,
+          "complexity": 0.4192
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2082,
+          "gdp": 143435226,
+          "aMean": 68893,
+          "complexity": 0.0372
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10140,
+          "gdp": 1080143220,
+          "aMean": 106523,
+          "complexity": 0.9324
+        }
+      ]
+    },
+    "metro-san-francisco-oakland-berkeley-ca": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 13154,
+          "gdp": 2214817904,
+          "aMean": 168376,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 14435,
+          "gdp": 1431879825,
+          "aMean": 99195,
+          "complexity": 0.6127
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5712,
+          "gdp": 757719648,
+          "aMean": 132654,
+          "complexity": 0.2792
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3038,
+          "gdp": 331005290,
+          "aMean": 108955,
+          "complexity": 0.0681
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1906,
+          "gdp": 193289366,
+          "aMean": 101411,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 3389,
+          "gdp": 230204603,
+          "aMean": 67927,
+          "complexity": 0.0183
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1664,
+          "gdp": 208812032,
+          "aMean": 125488,
+          "complexity": 0.0077
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 13875,
+          "gdp": 997126875,
+          "aMean": 71865,
+          "complexity": 0.3976
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 3133,
+          "gdp": 250317301,
+          "aMean": 79897,
+          "complexity": 0.0282
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10977,
+          "gdp": 1256614029,
+          "aMean": 114477,
+          "complexity": 0.526
+        }
+      ]
+    },
+    "metro-seattle-tacoma-bellevue-wa": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8335,
+          "gdp": 1254384160,
+          "aMean": 150496,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7351,
+          "gdp": 800082840,
+          "aMean": 108840,
+          "complexity": 0.5991
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4044,
+          "gdp": 531984156,
+          "aMean": 131549,
+          "complexity": 0.3625
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1873,
+          "gdp": 233654877,
+          "aMean": 124749,
+          "complexity": 0.0992
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1192,
+          "gdp": 121269312,
+          "aMean": 101736,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1840,
+          "gdp": 136257520,
+          "aMean": 74053,
+          "complexity": 0.0132
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1084,
+          "gdp": 163586440,
+          "aMean": 150910,
+          "complexity": 0.0373
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7535,
+          "gdp": 589191790,
+          "aMean": 78194,
+          "complexity": 0.413
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1800,
+          "gdp": 156778200,
+          "aMean": 87099,
+          "complexity": 0.0313
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6152,
+          "gdp": 789683024,
+          "aMean": 128362,
+          "complexity": 0.5899
+        }
+      ]
+    },
+    "metro-st-louis-mo-il": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 11640,
+          "gdp": 1938979560,
+          "aMean": 166579,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 12978,
+          "gdp": 1368322452,
+          "aMean": 105434,
+          "complexity": 0.6772
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5809,
+          "gdp": 781083949,
+          "aMean": 134461,
+          "complexity": 0.345
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3444,
+          "gdp": 427717248,
+          "aMean": 124192,
+          "complexity": 0.1451
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1580,
+          "gdp": 171216700,
+          "aMean": 108365,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2922,
+          "gdp": 233210664,
+          "aMean": 79812,
+          "complexity": 0.0351
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1814,
+          "gdp": 286668234,
+          "aMean": 158031,
+          "complexity": 0.0653
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 12157,
+          "gdp": 1075894500,
+          "aMean": 88500,
+          "complexity": 0.5118
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2724,
+          "gdp": 245919996,
+          "aMean": 90279,
+          "complexity": 0.0423
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 11239,
+          "gdp": 1450022063,
+          "aMean": 129017,
+          "complexity": 0.7234
+        }
+      ]
+    },
+    "metro-tampa-st-petersburg-clearwater-fl": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 12027,
+          "gdp": 2074320744,
+          "aMean": 172472,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 12421,
+          "gdp": 1300565647,
+          "aMean": 104707,
+          "complexity": 0.5946
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 6616,
+          "gdp": 910665936,
+          "aMean": 137646,
+          "complexity": 0.3904
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3293,
+          "gdp": 402552785,
+          "aMean": 122245,
+          "complexity": 0.1242
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1409,
+          "gdp": 165477187,
+          "aMean": 117443,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 3161,
+          "gdp": 241440341,
+          "aMean": 76381,
+          "complexity": 0.0398
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1724,
+          "gdp": 287897656,
+          "aMean": 166994,
+          "complexity": 0.0641
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 11730,
+          "gdp": 945872010,
+          "aMean": 80637,
+          "complexity": 0.4088
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2480,
+          "gdp": 247893360,
+          "aMean": 99957,
+          "complexity": 0.0432
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 12214,
+          "gdp": 1708640888,
+          "aMean": 139892,
+          "complexity": 0.8084
+        }
+      ]
+    },
+    "metro-washington-arlington-alexandria-dc-va-md-wv": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 7205,
+          "gdp": 799906305,
+          "aMean": 111021,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7950,
+          "gdp": 556643100,
+          "aMean": 70018,
+          "complexity": 0.664
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4295,
+          "gdp": 417431050,
+          "aMean": 97190,
+          "complexity": 0.4717
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1794,
+          "gdp": 171054312,
+          "aMean": 95348,
+          "complexity": 0.1313
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1077,
+          "gdp": 75982350,
+          "aMean": 70550,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2000,
+          "gdp": 101914000,
+          "aMean": 50957,
+          "complexity": 0.0358
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1115,
+          "gdp": 112939465,
+          "aMean": 101291,
+          "complexity": 0.0511
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7562,
+          "gdp": 486130732,
+          "aMean": 64286,
+          "complexity": 0.5666
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1817,
+          "gdp": 119713045,
+          "aMean": 65885,
+          "complexity": 0.0604
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6429,
+          "gdp": 592091613,
+          "aMean": 92097,
+          "complexity": 0.7129
+        }
+      ]
+    },
+    "national-united-states": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 9270,
+          "gdp": 1172469600,
+          "aMean": 126480,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8916,
+          "gdp": 712745040,
+          "aMean": 79940,
+          "complexity": 0.5697
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4552,
+          "gdp": 454562720,
+          "aMean": 99860,
+          "complexity": 0.3281
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2449,
+          "gdp": 221144700,
+          "aMean": 90300,
+          "complexity": 0.1097
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1288,
+          "gdp": 103980240,
+          "aMean": 80730,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2321,
+          "gdp": 124127080,
+          "aMean": 53480,
+          "complexity": 0.0189
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1247,
+          "gdp": 140063040,
+          "aMean": 112320,
+          "complexity": 0.0338
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 8636,
+          "gdp": 544154360,
+          "aMean": 63010,
+          "complexity": 0.412
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1951,
+          "gdp": 128961100,
+          "aMean": 66100,
+          "complexity": 0.0234
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 8710,
+          "gdp": 796529500,
+          "aMean": 91450,
+          "complexity": 0.6482
+        }
+      ]
+    },
+    "state-alabama": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 7002,
+          "gdp": 769309740,
+          "aMean": 109870,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7939,
+          "gdp": 511271600,
+          "aMean": 64400,
+          "complexity": 0.6271
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3608,
+          "gdp": 269719648,
+          "aMean": 74756,
+          "complexity": 0.278
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2201,
+          "gdp": 152273984,
+          "aMean": 69184,
+          "complexity": 0.1083
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1069,
+          "gdp": 77344288,
+          "aMean": 72352,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2110,
+          "gdp": 93525750,
+          "aMean": 44325,
+          "complexity": 0.0234
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1068,
+          "gdp": 97686756,
+          "aMean": 91467,
+          "complexity": 0.0294
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 6932,
+          "gdp": 352249580,
+          "aMean": 50815,
+          "complexity": 0.3973
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1625,
+          "gdp": 87997000,
+          "aMean": 54152,
+          "complexity": 0.0154
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7304,
+          "gdp": 600125856,
+          "aMean": 82164,
+          "complexity": 0.7555
+        }
+      ]
+    },
+    "state-alaska": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 7385,
+          "gdp": 816256665,
+          "aMean": 110529,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8099,
+          "gdp": 501287605,
+          "aMean": 61895,
+          "complexity": 0.5775
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4075,
+          "gdp": 314675575,
+          "aMean": 77221,
+          "complexity": 0.3271
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2258,
+          "gdp": 157872586,
+          "aMean": 69917,
+          "complexity": 0.1168
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1070,
+          "gdp": 70802970,
+          "aMean": 66171,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2061,
+          "gdp": 93047967,
+          "aMean": 45147,
+          "complexity": 0.0298
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 968,
+          "gdp": 83187016,
+          "aMean": 85937,
+          "complexity": 0.0166
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7593,
+          "gdp": 354084369,
+          "aMean": 46633,
+          "complexity": 0.38
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1651,
+          "gdp": 86738587,
+          "aMean": 52537,
+          "complexity": 0.0214
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7370,
+          "gdp": 508950090,
+          "aMean": 69057,
+          "complexity": 0.5878
+        }
+      ]
+    },
+    "state-arizona": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 7971,
+          "gdp": 1019283654,
+          "aMean": 127874,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7578,
+          "gdp": 601011180,
+          "aMean": 79310,
+          "complexity": 0.5548
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4159,
+          "gdp": 432473615,
+          "aMean": 103985,
+          "complexity": 0.3755
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2108,
+          "gdp": 177710724,
+          "aMean": 84303,
+          "complexity": 0.1043
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1103,
+          "gdp": 79687338,
+          "aMean": 72246,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2190,
+          "gdp": 104327220,
+          "aMean": 47638,
+          "complexity": 0.0262
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1135,
+          "gdp": 132464715,
+          "aMean": 116709,
+          "complexity": 0.0562
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7762,
+          "gdp": 479963270,
+          "aMean": 61835,
+          "complexity": 0.426
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1655,
+          "gdp": 101327375,
+          "aMean": 61225,
+          "complexity": 0.023
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7492,
+          "gdp": 606859492,
+          "aMean": 81001,
+          "complexity": 0.5611
+        }
+      ]
+    },
+    "state-arkansas": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8964,
+          "gdp": 1022281452,
+          "aMean": 114043,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7934,
+          "gdp": 622390564,
+          "aMean": 78446,
+          "complexity": 0.5636
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4018,
+          "gdp": 359434208,
+          "aMean": 89456,
+          "complexity": 0.2766
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2465,
+          "gdp": 206239155,
+          "aMean": 83667,
+          "complexity": 0.1094
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1274,
+          "gdp": 106010814,
+          "aMean": 83211,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2258,
+          "gdp": 114507696,
+          "aMean": 50712,
+          "complexity": 0.0093
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1138,
+          "gdp": 129098134,
+          "aMean": 113443,
+          "complexity": 0.0252
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7649,
+          "gdp": 502776419,
+          "aMean": 65731,
+          "complexity": 0.433
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1919,
+          "gdp": 115429769,
+          "aMean": 60151,
+          "complexity": 0.0103
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 8182,
+          "gdp": 657693706,
+          "aMean": 80383,
+          "complexity": 0.6021
+        }
+      ]
+    },
+    "state-california": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10990,
+          "gdp": 1303381030,
+          "aMean": 118597,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 10231,
+          "gdp": 919020037,
+          "aMean": 89827,
+          "complexity": 0.6698
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5221,
+          "gdp": 561126975,
+          "aMean": 107475,
+          "complexity": 0.3624
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2870,
+          "gdp": 255969560,
+          "aMean": 89188,
+          "complexity": 0.1002
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1653,
+          "gdp": 146045856,
+          "aMean": 88352,
+          "complexity": 0.0058
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2740,
+          "gdp": 164564400,
+          "aMean": 60060,
+          "complexity": 0.0217
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1374,
+          "gdp": 170950332,
+          "aMean": 124418,
+          "complexity": 0.0272
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10485,
+          "gdp": 679019085,
+          "aMean": 64761,
+          "complexity": 0.4637
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2087,
+          "gdp": 139275945,
+          "aMean": 66735,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10459,
+          "gdp": 963472621,
+          "aMean": 92119,
+          "complexity": 0.708
+        }
+      ]
+    },
+    "state-colorado": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 7252,
+          "gdp": 872140024,
+          "aMean": 120262,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8194,
+          "gdp": 561485656,
+          "aMean": 68524,
+          "complexity": 0.6074
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3702,
+          "gdp": 315680646,
+          "aMean": 85273,
+          "complexity": 0.2967
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2007,
+          "gdp": 159464178,
+          "aMean": 79454,
+          "complexity": 0.0992
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1071,
+          "gdp": 80963316,
+          "aMean": 75596,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2119,
+          "gdp": 115716471,
+          "aMean": 54609,
+          "complexity": 0.0439
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 970,
+          "gdp": 103354470,
+          "aMean": 106551,
+          "complexity": 0.0283
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7664,
+          "gdp": 463534048,
+          "aMean": 60482,
+          "complexity": 0.4835
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1733,
+          "gdp": 112920547,
+          "aMean": 65159,
+          "complexity": 0.0404
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7655,
+          "gdp": 636138155,
+          "aMean": 83101,
+          "complexity": 0.7017
+        }
+      ]
+    },
+    "state-connecticut": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 6612,
+          "gdp": 921772308,
+          "aMean": 139409,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 6338,
+          "gdp": 536004660,
+          "aMean": 84570,
+          "complexity": 0.5441
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3785,
+          "gdp": 368965585,
+          "aMean": 97481,
+          "complexity": 0.3467
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1725,
+          "gdp": 161753250,
+          "aMean": 93770,
+          "complexity": 0.1019
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 895,
+          "gdp": 75546950,
+          "aMean": 84410,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1773,
+          "gdp": 96268581,
+          "aMean": 54297,
+          "complexity": 0.0245
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1000,
+          "gdp": 112965000,
+          "aMean": 112965,
+          "complexity": 0.0442
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 6952,
+          "gdp": 496567456,
+          "aMean": 71428,
+          "complexity": 0.4975
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1350,
+          "gdp": 86260950,
+          "aMean": 63897,
+          "complexity": 0.0127
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6902,
+          "gdp": 626508344,
+          "aMean": 90772,
+          "complexity": 0.6511
+        }
+      ]
+    },
+    "state-delaware": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 7735,
+          "gdp": 1053004225,
+          "aMean": 136135,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7321,
+          "gdp": 560803242,
+          "aMean": 76602,
+          "complexity": 0.4943
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4052,
+          "gdp": 377909780,
+          "aMean": 93265,
+          "complexity": 0.3063
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2130,
+          "gdp": 202514010,
+          "aMean": 95077,
+          "complexity": 0.1261
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1030,
+          "gdp": 79788950,
+          "aMean": 77465,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1854,
+          "gdp": 91709964,
+          "aMean": 49466,
+          "complexity": 0.0122
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1026,
+          "gdp": 104653026,
+          "aMean": 102001,
+          "complexity": 0.0255
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7177,
+          "gdp": 427914271,
+          "aMean": 59623,
+          "complexity": 0.3577
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1618,
+          "gdp": 114844022,
+          "aMean": 70979,
+          "complexity": 0.036
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7666,
+          "gdp": 639183414,
+          "aMean": 83379,
+          "complexity": 0.5748
+        }
+      ]
+    },
+    "state-florida": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8756,
+          "gdp": 1395802716,
+          "aMean": 159411,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7805,
+          "gdp": 711441360,
+          "aMean": 91152,
+          "complexity": 0.4664
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3717,
+          "gdp": 479184489,
+          "aMean": 128917,
+          "complexity": 0.2853
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2027,
+          "gdp": 235652939,
+          "aMean": 116257,
+          "complexity": 0.0954
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1189,
+          "gdp": 113273652,
+          "aMean": 95268,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2144,
+          "gdp": 142080736,
+          "aMean": 66269,
+          "complexity": 0.0225
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 966,
+          "gdp": 119353164,
+          "aMean": 123554,
+          "complexity": 0.0047
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7949,
+          "gdp": 560348857,
+          "aMean": 70493,
+          "complexity": 0.3486
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1694,
+          "gdp": 135108358,
+          "aMean": 79757,
+          "complexity": 0.017
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7106,
+          "gdp": 832673974,
+          "aMean": 117179,
+          "complexity": 0.5609
+        }
+      ]
+    },
+    "state-georgia": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 7020,
+          "gdp": 699192000,
+          "aMean": 99600,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7593,
+          "gdp": 557007294,
+          "aMean": 73358,
+          "complexity": 0.7774
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3596,
+          "gdp": 321000536,
+          "aMean": 89266,
+          "complexity": 0.4078
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1769,
+          "gdp": 142054238,
+          "aMean": 80302,
+          "complexity": 0.1276
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 932,
+          "gdp": 60559496,
+          "aMean": 64978,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1752,
+          "gdp": 78225048,
+          "aMean": 44649,
+          "complexity": 0.0277
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 996,
+          "gdp": 95115012,
+          "aMean": 95497,
+          "complexity": 0.0541
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 6120,
+          "gdp": 356220720,
+          "aMean": 58206,
+          "complexity": 0.463
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1401,
+          "gdp": 85033695,
+          "aMean": 60695,
+          "complexity": 0.0383
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7220,
+          "gdp": 572228320,
+          "aMean": 79256,
+          "complexity": 0.8012
+        }
+      ]
+    },
+    "state-hawaii": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 11257,
+          "gdp": 1552587954,
+          "aMean": 137922,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 11137,
+          "gdp": 1015716674,
+          "aMean": 91202,
+          "complexity": 0.6234
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5575,
+          "gdp": 595348675,
+          "aMean": 106789,
+          "complexity": 0.3286
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2821,
+          "gdp": 302964116,
+          "aMean": 107396,
+          "complexity": 0.1235
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1550,
+          "gdp": 126887650,
+          "aMean": 81863,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 3155,
+          "gdp": 184624290,
+          "aMean": 58518,
+          "complexity": 0.0405
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1503,
+          "gdp": 181948671,
+          "aMean": 121057,
+          "complexity": 0.0386
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 11206,
+          "gdp": 761615790,
+          "aMean": 67965,
+          "complexity": 0.4452
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2633,
+          "gdp": 173317225,
+          "aMean": 65825,
+          "complexity": 0.0326
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10143,
+          "gdp": 1111611942,
+          "aMean": 109594,
+          "complexity": 0.6907
+        }
+      ]
+    },
+    "state-idaho": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10947,
+          "gdp": 1328429397,
+          "aMean": 121351,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 10557,
+          "gdp": 731367846,
+          "aMean": 69278,
+          "complexity": 0.5085
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5338,
+          "gdp": 438767586,
+          "aMean": 82197,
+          "complexity": 0.2676
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2925,
+          "gdp": 210614625,
+          "aMean": 72005,
+          "complexity": 0.0797
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1473,
+          "gdp": 113758317,
+          "aMean": 77229,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2569,
+          "gdp": 117631941,
+          "aMean": 45789,
+          "complexity": 0.0032
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1313,
+          "gdp": 138701381,
+          "aMean": 105637,
+          "complexity": 0.0205
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10390,
+          "gdp": 584988170,
+          "aMean": 56303,
+          "complexity": 0.3879
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2040,
+          "gdp": 128575080,
+          "aMean": 63027,
+          "complexity": 0.0122
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 9375,
+          "gdp": 805978125,
+          "aMean": 85971,
+          "complexity": 0.5699
+        }
+      ]
+    },
+    "state-illinois": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8032,
+          "gdp": 1191274112,
+          "aMean": 148316,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7880,
+          "gdp": 731106400,
+          "aMean": 92780,
+          "complexity": 0.5784
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4131,
+          "gdp": 465712416,
+          "aMean": 112736,
+          "complexity": 0.3352
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2077,
+          "gdp": 216024616,
+          "aMean": 104008,
+          "complexity": 0.1064
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1144,
+          "gdp": 99889504,
+          "aMean": 87316,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1809,
+          "gdp": 112997376,
+          "aMean": 62464,
+          "complexity": 0.012
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1056,
+          "gdp": 134597760,
+          "aMean": 127460,
+          "complexity": 0.0318
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7536,
+          "gdp": 587574384,
+          "aMean": 77969,
+          "complexity": 0.4468
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1472,
+          "gdp": 115996544,
+          "aMean": 78802,
+          "complexity": 0.0148
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6544,
+          "gdp": 728013456,
+          "aMean": 111249,
+          "complexity": 0.5755
+        }
+      ]
+    },
+    "state-indiana": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 11033,
+          "gdp": 1559084263,
+          "aMean": 141311,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 11402,
+          "gdp": 995725258,
+          "aMean": 87329,
+          "complexity": 0.6012
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5349,
+          "gdp": 568732425,
+          "aMean": 106325,
+          "complexity": 0.2989
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3062,
+          "gdp": 270898202,
+          "aMean": 88471,
+          "complexity": 0.0881
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1749,
+          "gdp": 146510232,
+          "aMean": 83768,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2889,
+          "gdp": 179126667,
+          "aMean": 62003,
+          "complexity": 0.0231
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1705,
+          "gdp": 221368675,
+          "aMean": 129835,
+          "complexity": 0.053
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10051,
+          "gdp": 717631349,
+          "aMean": 71399,
+          "complexity": 0.4043
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2421,
+          "gdp": 164533581,
+          "aMean": 67961,
+          "complexity": 0.0128
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 12047,
+          "gdp": 1118527809,
+          "aMean": 92847,
+          "complexity": 0.6881
+        }
+      ]
+    },
+    "state-iowa": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 6890,
+          "gdp": 811841810,
+          "aMean": 117829,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 6643,
+          "gdp": 485410653,
+          "aMean": 73071,
+          "complexity": 0.5501
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3512,
+          "gdp": 369163880,
+          "aMean": 105115,
+          "complexity": 0.3899
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2109,
+          "gdp": 191379096,
+          "aMean": 90744,
+          "complexity": 0.1449
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1057,
+          "gdp": 86269169,
+          "aMean": 81617,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1805,
+          "gdp": 97323795,
+          "aMean": 53919,
+          "complexity": 0.0152
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1057,
+          "gdp": 122726156,
+          "aMean": 116108,
+          "complexity": 0.0502
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 6583,
+          "gdp": 394980000,
+          "aMean": 60000,
+          "complexity": 0.4255
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1631,
+          "gdp": 115137183,
+          "aMean": 70593,
+          "complexity": 0.0398
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6284,
+          "gdp": 577794948,
+          "aMean": 91947,
+          "complexity": 0.6774
+        }
+      ]
+    },
+    "state-kansas": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10524,
+          "gdp": 1119416832,
+          "aMean": 106368,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 10725,
+          "gdp": 706616625,
+          "aMean": 65885,
+          "complexity": 0.59
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4958,
+          "gdp": 462621064,
+          "aMean": 93308,
+          "complexity": 0.3477
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2647,
+          "gdp": 225601163,
+          "aMean": 85229,
+          "complexity": 0.1123
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1585,
+          "gdp": 116589430,
+          "aMean": 73558,
+          "complexity": 0.004
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2574,
+          "gdp": 135441306,
+          "aMean": 52619,
+          "complexity": 0.0227
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1352,
+          "gdp": 124993752,
+          "aMean": 92451,
+          "complexity": 0.0123
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 9637,
+          "gdp": 575897483,
+          "aMean": 59759,
+          "complexity": 0.4602
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1995,
+          "gdp": 112569870,
+          "aMean": 56426,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 9515,
+          "gdp": 860907685,
+          "aMean": 90479,
+          "complexity": 0.7432
+        }
+      ]
+    },
+    "state-kentucky": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8577,
+          "gdp": 1324974960,
+          "aMean": 154480,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8731,
+          "gdp": 711061371,
+          "aMean": 81441,
+          "complexity": 0.497
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4479,
+          "gdp": 475732506,
+          "aMean": 106214,
+          "complexity": 0.3042
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2371,
+          "gdp": 226971088,
+          "aMean": 95728,
+          "complexity": 0.1004
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1114,
+          "gdp": 104411878,
+          "aMean": 93727,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2149,
+          "gdp": 120872654,
+          "aMean": 56246,
+          "complexity": 0.0135
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1112,
+          "gdp": 152236136,
+          "aMean": 136903,
+          "complexity": 0.0392
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7728,
+          "gdp": 581872032,
+          "aMean": 75294,
+          "complexity": 0.3912
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1674,
+          "gdp": 117988542,
+          "aMean": 70483,
+          "complexity": 0.0111
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 8418,
+          "gdp": 902813664,
+          "aMean": 107248,
+          "complexity": 0.6541
+        }
+      ]
+    },
+    "state-louisiana": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 11712,
+          "gdp": 1356425280,
+          "aMean": 115815,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 10940,
+          "gdp": 890056520,
+          "aMean": 81358,
+          "complexity": 0.6201
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5612,
+          "gdp": 597672388,
+          "aMean": 106499,
+          "complexity": 0.382
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3199,
+          "gdp": 316355508,
+          "aMean": 98892,
+          "complexity": 0.1528
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1563,
+          "gdp": 128719302,
+          "aMean": 82354,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2849,
+          "gdp": 148945720,
+          "aMean": 52280,
+          "complexity": 0.0165
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1662,
+          "gdp": 197681604,
+          "aMean": 118942,
+          "complexity": 0.0562
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10700,
+          "gdp": 616715900,
+          "aMean": 57637,
+          "complexity": 0.3975
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2409,
+          "gdp": 163033893,
+          "aMean": 67677,
+          "complexity": 0.028
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 12144,
+          "gdp": 1124643696,
+          "aMean": 92609,
+          "complexity": 0.8112
+        }
+      ]
+    },
+    "state-maine": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 11019,
+          "gdp": 1147650888,
+          "aMean": 104152,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 10185,
+          "gdp": 709313955,
+          "aMean": 69643,
+          "complexity": 0.5787
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5307,
+          "gdp": 468799152,
+          "aMean": 88336,
+          "complexity": 0.3476
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2887,
+          "gdp": 250770594,
+          "aMean": 86862,
+          "complexity": 0.138
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1540,
+          "gdp": 107167060,
+          "aMean": 69589,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2557,
+          "gdp": 130846804,
+          "aMean": 51172,
+          "complexity": 0.0228
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1419,
+          "gdp": 135721674,
+          "aMean": 95646,
+          "complexity": 0.0274
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 9532,
+          "gdp": 573426056,
+          "aMean": 60158,
+          "complexity": 0.4481
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2219,
+          "gdp": 128038519,
+          "aMean": 57701,
+          "complexity": 0.0201
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10717,
+          "gdp": 812723695,
+          "aMean": 75835,
+          "complexity": 0.6781
+        }
+      ]
+    },
+    "state-maryland": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 9125,
+          "gdp": 1235214750,
+          "aMean": 135366,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8602,
+          "gdp": 714275672,
+          "aMean": 83036,
+          "complexity": 0.5453
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3747,
+          "gdp": 385322745,
+          "aMean": 102835,
+          "complexity": 0.2581
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2410,
+          "gdp": 231658840,
+          "aMean": 96124,
+          "complexity": 0.124
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1166,
+          "gdp": 89608266,
+          "aMean": 76851,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2061,
+          "gdp": 122462559,
+          "aMean": 59419,
+          "complexity": 0.0287
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1066,
+          "gdp": 132854514,
+          "aMean": 124629,
+          "complexity": 0.0377
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 8038,
+          "gdp": 538320936,
+          "aMean": 66972,
+          "complexity": 0.3917
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1866,
+          "gdp": 125182476,
+          "aMean": 67086,
+          "complexity": 0.0311
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 8615,
+          "gdp": 786713185,
+          "aMean": 91319,
+          "complexity": 0.6085
+        }
+      ]
+    },
+    "state-massachusetts": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 6929,
+          "gdp": 1112222293,
+          "aMean": 160517,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 6018,
+          "gdp": 516536976,
+          "aMean": 85832,
+          "complexity": 0.4151
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3351,
+          "gdp": 386745612,
+          "aMean": 115412,
+          "complexity": 0.2877
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1670,
+          "gdp": 173077130,
+          "aMean": 103639,
+          "complexity": 0.0779
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1004,
+          "gdp": 93779624,
+          "aMean": 93406,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1723,
+          "gdp": 105390741,
+          "aMean": 61167,
+          "complexity": 0.0114
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 970,
+          "gdp": 121479890,
+          "aMean": 125237,
+          "complexity": 0.0272
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 6383,
+          "gdp": 506778285,
+          "aMean": 79395,
+          "complexity": 0.4055
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1490,
+          "gdp": 112801940,
+          "aMean": 75706,
+          "complexity": 0.0187
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6125,
+          "gdp": 690569250,
+          "aMean": 112746,
+          "complexity": 0.586
+        }
+      ]
+    },
+    "state-michigan": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10743,
+          "gdp": 1488345963,
+          "aMean": 138541,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8874,
+          "gdp": 843198606,
+          "aMean": 95019,
+          "complexity": 0.5265
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5364,
+          "gdp": 645594948,
+          "aMean": 120357,
+          "complexity": 0.3814
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2748,
+          "gdp": 314536080,
+          "aMean": 114460,
+          "complexity": 0.1384
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1329,
+          "gdp": 125930724,
+          "aMean": 94756,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2421,
+          "gdp": 141560712,
+          "aMean": 58472,
+          "complexity": 0.0115
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1245,
+          "gdp": 158454885,
+          "aMean": 127273,
+          "complexity": 0.0239
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 8419,
+          "gdp": 664158072,
+          "aMean": 78888,
+          "complexity": 0.3951
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2040,
+          "gdp": 145378560,
+          "aMean": 71264,
+          "complexity": 0.0143
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10008,
+          "gdp": 1025259552,
+          "aMean": 102444,
+          "complexity": 0.6601
+        }
+      ]
+    },
+    "state-minnesota": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 7657,
+          "gdp": 1199086200,
+          "aMean": 156600,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7789,
+          "gdp": 754216659,
+          "aMean": 96831,
+          "complexity": 0.5964
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4000,
+          "gdp": 453300000,
+          "aMean": 113325,
+          "complexity": 0.3233
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1963,
+          "gdp": 190091031,
+          "aMean": 96837,
+          "complexity": 0.0845
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1128,
+          "gdp": 96913248,
+          "aMean": 85916,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1926,
+          "gdp": 116665524,
+          "aMean": 60574,
+          "complexity": 0.0179
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1044,
+          "gdp": 142531056,
+          "aMean": 136524,
+          "complexity": 0.0414
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7179,
+          "gdp": 476104101,
+          "aMean": 66319,
+          "complexity": 0.344
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1509,
+          "gdp": 117006351,
+          "aMean": 77539,
+          "complexity": 0.0182
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7978,
+          "gdp": 803679786,
+          "aMean": 100737,
+          "complexity": 0.6412
+        }
+      ]
+    },
+    "state-mississippi": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8446,
+          "gdp": 1063224710,
+          "aMean": 125885,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8409,
+          "gdp": 706692360,
+          "aMean": 84040,
+          "complexity": 0.6286
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4184,
+          "gdp": 410366720,
+          "aMean": 98080,
+          "complexity": 0.3199
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2023,
+          "gdp": 181183926,
+          "aMean": 89562,
+          "complexity": 0.0812
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1199,
+          "gdp": 103273467,
+          "aMean": 86133,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2033,
+          "gdp": 108267415,
+          "aMean": 53255,
+          "complexity": 0.0052
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1032,
+          "gdp": 116053560,
+          "aMean": 112455,
+          "complexity": 0.0133
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7262,
+          "gdp": 417565000,
+          "aMean": 57500,
+          "complexity": 0.3274
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1749,
+          "gdp": 113942103,
+          "aMean": 65147,
+          "complexity": 0.0111
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7604,
+          "gdp": 712996664,
+          "aMean": 93766,
+          "complexity": 0.6352
+        }
+      ]
+    },
+    "state-missouri": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 9732,
+          "gdp": 1042190148,
+          "aMean": 107089,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 10096,
+          "gdp": 697906192,
+          "aMean": 69127,
+          "complexity": 0.6265
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4945,
+          "gdp": 483685285,
+          "aMean": 97813,
+          "complexity": 0.3942
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2633,
+          "gdp": 208659984,
+          "aMean": 79248,
+          "complexity": 0.0958
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1507,
+          "gdp": 123299726,
+          "aMean": 81818,
+          "complexity": 0.0032
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2511,
+          "gdp": 121492224,
+          "aMean": 48384,
+          "complexity": 0.0013
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1294,
+          "gdp": 133410106,
+          "aMean": 103099,
+          "complexity": 0.0142
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 8659,
+          "gdp": 504880313,
+          "aMean": 58307,
+          "complexity": 0.4171
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2133,
+          "gdp": 120326796,
+          "aMean": 56412,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 9802,
+          "gdp": 789011990,
+          "aMean": 80495,
+          "complexity": 0.7254
+        }
+      ]
+    },
+    "state-montana": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8339,
+          "gdp": 1082560641,
+          "aMean": 129819,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8991,
+          "gdp": 680268051,
+          "aMean": 75661,
+          "complexity": 0.5933
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4481,
+          "gdp": 463097907,
+          "aMean": 103347,
+          "complexity": 0.3738
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2169,
+          "gdp": 218131992,
+          "aMean": 100568,
+          "complexity": 0.1262
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1198,
+          "gdp": 93332586,
+          "aMean": 77907,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2218,
+          "gdp": 111840432,
+          "aMean": 50424,
+          "complexity": 0.0187
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1054,
+          "gdp": 117856172,
+          "aMean": 111818,
+          "complexity": 0.0248
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 8660,
+          "gdp": 573785620,
+          "aMean": 66257,
+          "complexity": 0.4857
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1970,
+          "gdp": 141408570,
+          "aMean": 71781,
+          "complexity": 0.0486
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7362,
+          "gdp": 691497936,
+          "aMean": 93928,
+          "complexity": 0.6047
+        }
+      ]
+    },
+    "state-nebraska": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 6772,
+          "gdp": 951208664,
+          "aMean": 140462,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 5793,
+          "gdp": 520309881,
+          "aMean": 89817,
+          "complexity": 0.509
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3458,
+          "gdp": 393669094,
+          "aMean": 113843,
+          "complexity": 0.3647
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1574,
+          "gdp": 153513794,
+          "aMean": 97531,
+          "complexity": 0.0911
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 832,
+          "gdp": 73595392,
+          "aMean": 88456,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1561,
+          "gdp": 98842520,
+          "aMean": 63320,
+          "complexity": 0.0288
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 956,
+          "gdp": 123802000,
+          "aMean": 129500,
+          "complexity": 0.0572
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 5681,
+          "gdp": 377082056,
+          "aMean": 66376,
+          "complexity": 0.3458
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1301,
+          "gdp": 92804233,
+          "aMean": 71333,
+          "complexity": 0.0219
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6157,
+          "gdp": 678538342,
+          "aMean": 110206,
+          "complexity": 0.6893
+        }
+      ]
+    },
+    "state-nevada": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 6969,
+          "gdp": 678494871,
+          "aMean": 97359,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 6779,
+          "gdp": 396544384,
+          "aMean": 58496,
+          "complexity": 0.5399
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3359,
+          "gdp": 282394489,
+          "aMean": 84071,
+          "complexity": 0.3536
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1964,
+          "gdp": 155998556,
+          "aMean": 79429,
+          "complexity": 0.1473
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 988,
+          "gdp": 65753376,
+          "aMean": 66552,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2064,
+          "gdp": 92591040,
+          "aMean": 44860,
+          "complexity": 0.0438
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1002,
+          "gdp": 89649942,
+          "aMean": 89471,
+          "complexity": 0.039
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 6438,
+          "gdp": 324835728,
+          "aMean": 50456,
+          "complexity": 0.4228
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1527,
+          "gdp": 79659009,
+          "aMean": 52167,
+          "complexity": 0.0227
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6480,
+          "gdp": 487697760,
+          "aMean": 75262,
+          "complexity": 0.6886
+        }
+      ]
+    },
+    "state-new-hampshire": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 11831,
+          "gdp": 1525619281,
+          "aMean": 128951,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 11573,
+          "gdp": 1062841174,
+          "aMean": 91838,
+          "complexity": 0.6653
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5381,
+          "gdp": 524389212,
+          "aMean": 97452,
+          "complexity": 0.2759
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3154,
+          "gdp": 306865276,
+          "aMean": 97294,
+          "complexity": 0.1186
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1631,
+          "gdp": 142854397,
+          "aMean": 87587,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 3110,
+          "gdp": 169068930,
+          "aMean": 54363,
+          "complexity": 0.019
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1411,
+          "gdp": 180870446,
+          "aMean": 128186,
+          "complexity": 0.0275
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10251,
+          "gdp": 689359248,
+          "aMean": 67248,
+          "complexity": 0.3952
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2232,
+          "gdp": 153713376,
+          "aMean": 68868,
+          "complexity": 0.0079
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10705,
+          "gdp": 1122312200,
+          "aMean": 104840,
+          "complexity": 0.7083
+        }
+      ]
+    },
+    "state-new-jersey": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 7899,
+          "gdp": 904159035,
+          "aMean": 114465,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8883,
+          "gdp": 688992129,
+          "aMean": 77563,
+          "complexity": 0.737
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4121,
+          "gdp": 435255899,
+          "aMean": 105619,
+          "complexity": 0.4268
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2224,
+          "gdp": 200818304,
+          "aMean": 90296,
+          "complexity": 0.1402
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1101,
+          "gdp": 86154351,
+          "aMean": 78251,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2236,
+          "gdp": 111677020,
+          "aMean": 49945,
+          "complexity": 0.0312
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1232,
+          "gdp": 127594544,
+          "aMean": 103567,
+          "complexity": 0.0507
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 8535,
+          "gdp": 512501145,
+          "aMean": 60047,
+          "complexity": 0.5212
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1665,
+          "gdp": 116769780,
+          "aMean": 70132,
+          "complexity": 0.0374
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7534,
+          "gdp": 684350890,
+          "aMean": 90835,
+          "complexity": 0.7313
+        }
+      ]
+    },
+    "state-new-mexico": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10497,
+          "gdp": 1455545511,
+          "aMean": 138663,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 12169,
+          "gdp": 1118367607,
+          "aMean": 91903,
+          "complexity": 0.7433
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5234,
+          "gdp": 581183360,
+          "aMean": 111040,
+          "complexity": 0.3344
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2953,
+          "gdp": 266071206,
+          "aMean": 90102,
+          "complexity": 0.0946
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1532,
+          "gdp": 141838688,
+          "aMean": 92584,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 3096,
+          "gdp": 183264624,
+          "aMean": 59194,
+          "complexity": 0.0315
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1652,
+          "gdp": 179179224,
+          "aMean": 108462,
+          "complexity": 0.0284
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 11693,
+          "gdp": 813926344,
+          "aMean": 69608,
+          "complexity": 0.5116
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2614,
+          "gdp": 199892580,
+          "aMean": 76470,
+          "complexity": 0.0442
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 11531,
+          "gdp": 1151693218,
+          "aMean": 99878,
+          "complexity": 0.7687
+        }
+      ]
+    },
+    "state-new-york": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 11612,
+          "gdp": 1368601932,
+          "aMean": 117861,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 9426,
+          "gdp": 767040750,
+          "aMean": 81375,
+          "complexity": 0.5193
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5632,
+          "gdp": 572081664,
+          "aMean": 101577,
+          "complexity": 0.3635
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2541,
+          "gdp": 241847298,
+          "aMean": 95178,
+          "complexity": 0.0996
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1447,
+          "gdp": 117240281,
+          "aMean": 81023,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2402,
+          "gdp": 127601446,
+          "aMean": 53123,
+          "complexity": 0.0083
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1312,
+          "gdp": 152302208,
+          "aMean": 116084,
+          "complexity": 0.028
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 9784,
+          "gdp": 625354144,
+          "aMean": 63916,
+          "complexity": 0.406
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2347,
+          "gdp": 159389464,
+          "aMean": 67912,
+          "complexity": 0.0337
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 9911,
+          "gdp": 876419819,
+          "aMean": 88429,
+          "complexity": 0.6067
+        }
+      ]
+    },
+    "state-north-carolina": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10346,
+          "gdp": 1256645852,
+          "aMean": 121462,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 11771,
+          "gdp": 1057518411,
+          "aMean": 89841,
+          "complexity": 0.8249
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5706,
+          "gdp": 650289996,
+          "aMean": 113966,
+          "complexity": 0.467
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3277,
+          "gdp": 301038328,
+          "aMean": 91864,
+          "complexity": 0.1599
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1435,
+          "gdp": 119102130,
+          "aMean": 82998,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2733,
+          "gdp": 160552818,
+          "aMean": 58746,
+          "complexity": 0.0364
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1661,
+          "gdp": 212857150,
+          "aMean": 128150,
+          "complexity": 0.0824
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 11410,
+          "gdp": 752945900,
+          "aMean": 65990,
+          "complexity": 0.5572
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2434,
+          "gdp": 180724500,
+          "aMean": 74250,
+          "complexity": 0.0542
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 11348,
+          "gdp": 999316228,
+          "aMean": 88061,
+          "complexity": 0.7738
+        }
+      ]
+    },
+    "state-north-dakota": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 7006,
+          "gdp": 990606364,
+          "aMean": 141394,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 6607,
+          "gdp": 556567073,
+          "aMean": 84239,
+          "complexity": 0.5205
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3417,
+          "gdp": 331059462,
+          "aMean": 96886,
+          "complexity": 0.2714
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1961,
+          "gdp": 179117740,
+          "aMean": 91340,
+          "complexity": 0.1035
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 967,
+          "gdp": 85391902,
+          "aMean": 88306,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1950,
+          "gdp": 118148550,
+          "aMean": 60589,
+          "complexity": 0.0362
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1041,
+          "gdp": 130961964,
+          "aMean": 125804,
+          "complexity": 0.0503
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 6361,
+          "gdp": 398338542,
+          "aMean": 62622,
+          "complexity": 0.3457
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1646,
+          "gdp": 122939740,
+          "aMean": 74690,
+          "complexity": 0.0415
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6323,
+          "gdp": 542349002,
+          "aMean": 85774,
+          "complexity": 0.5048
+        }
+      ]
+    },
+    "state-ohio": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8395,
+          "gdp": 1382060455,
+          "aMean": 164629,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7309,
+          "gdp": 648271755,
+          "aMean": 88695,
+          "complexity": 0.4268
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4361,
+          "gdp": 505435539,
+          "aMean": 115899,
+          "complexity": 0.3152
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2284,
+          "gdp": 253021520,
+          "aMean": 110780,
+          "complexity": 0.1181
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1127,
+          "gdp": 101883054,
+          "aMean": 90402,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1977,
+          "gdp": 127601511,
+          "aMean": 64543,
+          "complexity": 0.0201
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1199,
+          "gdp": 148628040,
+          "aMean": 123960,
+          "complexity": 0.0365
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7993,
+          "gdp": 616907733,
+          "aMean": 77181,
+          "complexity": 0.4023
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1837,
+          "gdp": 159471807,
+          "aMean": 86811,
+          "complexity": 0.045
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7344,
+          "gdp": 730830816,
+          "aMean": 99514,
+          "complexity": 0.4913
+        }
+      ]
+    },
+    "state-oklahoma": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 11201,
+          "gdp": 1275569880,
+          "aMean": 113880,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 11167,
+          "gdp": 741645138,
+          "aMean": 66414,
+          "complexity": 0.5405
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5218,
+          "gdp": 436976192,
+          "aMean": 83744,
+          "complexity": 0.2784
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 3219,
+          "gdp": 282808464,
+          "aMean": 87856,
+          "complexity": 0.1457
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1718,
+          "gdp": 113506542,
+          "aMean": 66069,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2697,
+          "gdp": 121076421,
+          "aMean": 44893,
+          "complexity": 0.0065
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1502,
+          "gdp": 161326816,
+          "aMean": 107408,
+          "complexity": 0.0412
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10911,
+          "gdp": 566466387,
+          "aMean": 51917,
+          "complexity": 0.3898
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2466,
+          "gdp": 148061106,
+          "aMean": 60041,
+          "complexity": 0.0297
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10520,
+          "gdp": 782866840,
+          "aMean": 74417,
+          "complexity": 0.576
+        }
+      ]
+    },
+    "state-oregon": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10689,
+          "gdp": 1431663282,
+          "aMean": 133938,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 11216,
+          "gdp": 1051141088,
+          "aMean": 93718,
+          "complexity": 0.7055
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4968,
+          "gdp": 575135424,
+          "aMean": 115768,
+          "complexity": 0.3372
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2686,
+          "gdp": 285320350,
+          "aMean": 106225,
+          "complexity": 0.1129
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1509,
+          "gdp": 139457253,
+          "aMean": 92417,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2789,
+          "gdp": 151657453,
+          "aMean": 54377,
+          "complexity": 0.0094
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1379,
+          "gdp": 154638302,
+          "aMean": 112138,
+          "complexity": 0.0117
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10258,
+          "gdp": 650829068,
+          "aMean": 63446,
+          "complexity": 0.3957
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2376,
+          "gdp": 184113864,
+          "aMean": 77489,
+          "complexity": 0.0346
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10265,
+          "gdp": 952961540,
+          "aMean": 92836,
+          "complexity": 0.6295
+        }
+      ]
+    },
+    "state-pennsylvania": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 11562,
+          "gdp": 1180595820,
+          "aMean": 102110,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 10066,
+          "gdp": 622300252,
+          "aMean": 61822,
+          "complexity": 0.4774
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5108,
+          "gdp": 407357892,
+          "aMean": 79749,
+          "complexity": 0.2761
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2997,
+          "gdp": 231931836,
+          "aMean": 77388,
+          "complexity": 0.1119
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1664,
+          "gdp": 112393216,
+          "aMean": 67544,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 3118,
+          "gdp": 135405386,
+          "aMean": 43427,
+          "complexity": 0.0215
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1594,
+          "gdp": 148390242,
+          "aMean": 93093,
+          "complexity": 0.0337
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 11615,
+          "gdp": 590355605,
+          "aMean": 50827,
+          "complexity": 0.4474
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2477,
+          "gdp": 120228626,
+          "aMean": 48538,
+          "complexity": 0.0073
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 11623,
+          "gdp": 838983009,
+          "aMean": 72183,
+          "complexity": 0.6802
+        }
+      ]
+    },
+    "state-rhode-island": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 9439,
+          "gdp": 1059631579,
+          "aMean": 112261,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 9207,
+          "gdp": 728789292,
+          "aMean": 79156,
+          "complexity": 0.6592
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4209,
+          "gdp": 386003181,
+          "aMean": 91709,
+          "complexity": 0.3061
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2477,
+          "gdp": 228376923,
+          "aMean": 92199,
+          "complexity": 0.1437
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1274,
+          "gdp": 88839842,
+          "aMean": 69733,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2340,
+          "gdp": 128339640,
+          "aMean": 54846,
+          "complexity": 0.0407
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1246,
+          "gdp": 140778064,
+          "aMean": 112984,
+          "complexity": 0.0535
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 8898,
+          "gdp": 523869750,
+          "aMean": 58875,
+          "complexity": 0.4481
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1947,
+          "gdp": 113656125,
+          "aMean": 58375,
+          "complexity": 0.0256
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 8533,
+          "gdp": 744239727,
+          "aMean": 87219,
+          "complexity": 0.6751
+        }
+      ]
+    },
+    "state-south-carolina": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 9020,
+          "gdp": 982981560,
+          "aMean": 108978,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 10087,
+          "gdp": 776890653,
+          "aMean": 77019,
+          "complexity": 0.7663
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4794,
+          "gdp": 441196614,
+          "aMean": 92031,
+          "complexity": 0.3856
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2355,
+          "gdp": 181784805,
+          "aMean": 77191,
+          "complexity": 0.0914
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1262,
+          "gdp": 101201042,
+          "aMean": 80191,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2647,
+          "gdp": 133350566,
+          "aMean": 50378,
+          "complexity": 0.0365
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1397,
+          "gdp": 142795752,
+          "aMean": 102216,
+          "complexity": 0.0472
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 9459,
+          "gdp": 535738842,
+          "aMean": 56638,
+          "complexity": 0.4928
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2252,
+          "gdp": 137259400,
+          "aMean": 60950,
+          "complexity": 0.0409
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10043,
+          "gdp": 825333740,
+          "aMean": 82180,
+          "complexity": 0.8212
+        }
+      ]
+    },
+    "state-south-dakota": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8331,
+          "gdp": 1001452848,
+          "aMean": 120208,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 8164,
+          "gdp": 608650692,
+          "aMean": 74553,
+          "complexity": 0.5715
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4151,
+          "gdp": 395515582,
+          "aMean": 95282,
+          "complexity": 0.3389
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2247,
+          "gdp": 174913221,
+          "aMean": 77843,
+          "complexity": 0.0983
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1241,
+          "gdp": 91901014,
+          "aMean": 74054,
+          "complexity": 0.0077
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2150,
+          "gdp": 92011400,
+          "aMean": 42796,
+          "complexity": 0.0078
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1097,
+          "gdp": 110291283,
+          "aMean": 100539,
+          "complexity": 0.0278
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7371,
+          "gdp": 429139620,
+          "aMean": 58220,
+          "complexity": 0.3756
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1584,
+          "gdp": 84839040,
+          "aMean": 53560,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7646,
+          "gdp": 656217950,
+          "aMean": 85825,
+          "complexity": 0.6234
+        }
+      ]
+    },
+    "state-tennessee": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 6898,
+          "gdp": 995153766,
+          "aMean": 144267,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7277,
+          "gdp": 688287768,
+          "aMean": 94584,
+          "complexity": 0.6602
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3865,
+          "gdp": 444927205,
+          "aMean": 115117,
+          "complexity": 0.3907
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1917,
+          "gdp": 192432294,
+          "aMean": 100382,
+          "complexity": 0.1111
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1082,
+          "gdp": 92105250,
+          "aMean": 85125,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1748,
+          "gdp": 113677684,
+          "aMean": 65033,
+          "complexity": 0.0239
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1026,
+          "gdp": 129230856,
+          "aMean": 125956,
+          "complexity": 0.0411
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 6874,
+          "gdp": 503795460,
+          "aMean": 73290,
+          "complexity": 0.4559
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1716,
+          "gdp": 119586324,
+          "aMean": 69689,
+          "complexity": 0.0304
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6981,
+          "gdp": 756007395,
+          "aMean": 108295,
+          "complexity": 0.7352
+        }
+      ]
+    },
+    "state-texas": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 6924,
+          "gdp": 1043370636,
+          "aMean": 150689,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 6951,
+          "gdp": 619785915,
+          "aMean": 89165,
+          "complexity": 0.558
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3580,
+          "gdp": 388959840,
+          "aMean": 108648,
+          "complexity": 0.3172
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1743,
+          "gdp": 156214632,
+          "aMean": 89624,
+          "complexity": 0.0744
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1056,
+          "gdp": 84948864,
+          "aMean": 80444,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1663,
+          "gdp": 102171394,
+          "aMean": 61438,
+          "complexity": 0.018
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 999,
+          "gdp": 117692190,
+          "aMean": 117810,
+          "complexity": 0.0342
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7158,
+          "gdp": 470022912,
+          "aMean": 65664,
+          "complexity": 0.4018
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1376,
+          "gdp": 91129728,
+          "aMean": 66228,
+          "complexity": 0.0064
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6666,
+          "gdp": 688351158,
+          "aMean": 103263,
+          "complexity": 0.6296
+        }
+      ]
+    },
+    "state-utah": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 9312,
+          "gdp": 1156708704,
+          "aMean": 124217,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 9166,
+          "gdp": 731675950,
+          "aMean": 79825,
+          "complexity": 0.5984
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3971,
+          "gdp": 398680458,
+          "aMean": 100398,
+          "complexity": 0.2838
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2499,
+          "gdp": 259213773,
+          "aMean": 103727,
+          "complexity": 0.152
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1190,
+          "gdp": 98363020,
+          "aMean": 82658,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2091,
+          "gdp": 115981497,
+          "aMean": 55467,
+          "complexity": 0.0166
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1270,
+          "gdp": 150063200,
+          "aMean": 118160,
+          "complexity": 0.0488
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7856,
+          "gdp": 508652432,
+          "aMean": 64747,
+          "complexity": 0.3877
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1831,
+          "gdp": 131134389,
+          "aMean": 71619,
+          "complexity": 0.031
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 8078,
+          "gdp": 828843190,
+          "aMean": 102605,
+          "complexity": 0.6902
+        }
+      ]
+    },
+    "state-vermont": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8336,
+          "gdp": 1155127856,
+          "aMean": 138571,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7147,
+          "gdp": 544093963,
+          "aMean": 76129,
+          "complexity": 0.4282
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 4233,
+          "gdp": 450971121,
+          "aMean": 106537,
+          "complexity": 0.3411
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2215,
+          "gdp": 186742220,
+          "aMean": 84308,
+          "complexity": 0.0938
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1036,
+          "gdp": 86514288,
+          "aMean": 83508,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2104,
+          "gdp": 109346984,
+          "aMean": 51971,
+          "complexity": 0.0214
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1037,
+          "gdp": 117344846,
+          "aMean": 113158,
+          "complexity": 0.0289
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 7855,
+          "gdp": 518210060,
+          "aMean": 65972,
+          "complexity": 0.404
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1733,
+          "gdp": 125777674,
+          "aMean": 72578,
+          "complexity": 0.0367
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7649,
+          "gdp": 794792292,
+          "aMean": 103908,
+          "complexity": 0.6628
+        }
+      ]
+    },
+    "state-virginia": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 7090,
+          "gdp": 968784690,
+          "aMean": 136641,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7245,
+          "gdp": 598212405,
+          "aMean": 82569,
+          "complexity": 0.5759
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3862,
+          "gdp": 445161154,
+          "aMean": 115267,
+          "complexity": 0.4008
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1799,
+          "gdp": 168659848,
+          "aMean": 93752,
+          "complexity": 0.0844
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1048,
+          "gdp": 100109152,
+          "aMean": 95524,
+          "complexity": 0.0059
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1786,
+          "gdp": 116472204,
+          "aMean": 65214,
+          "complexity": 0.0246
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1037,
+          "gdp": 128221939,
+          "aMean": 123647,
+          "complexity": 0.0381
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 6846,
+          "gdp": 532570878,
+          "aMean": 77793,
+          "complexity": 0.5008
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1379,
+          "gdp": 94942771,
+          "aMean": 68849,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6249,
+          "gdp": 594717330,
+          "aMean": 95170,
+          "complexity": 0.5719
+        }
+      ]
+    },
+    "state-washington": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 8708,
+          "gdp": 1218118580,
+          "aMean": 139885,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 7334,
+          "gdp": 688361906,
+          "aMean": 93859,
+          "complexity": 0.5312
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3674,
+          "gdp": 359614794,
+          "aMean": 97881,
+          "complexity": 0.2402
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2214,
+          "gdp": 218581578,
+          "aMean": 98727,
+          "complexity": 0.1154
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1088,
+          "gdp": 88164992,
+          "aMean": 81034,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1838,
+          "gdp": 98231910,
+          "aMean": 53445,
+          "complexity": 0.0089
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1115,
+          "gdp": 131745055,
+          "aMean": 118157,
+          "complexity": 0.0386
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 6910,
+          "gdp": 467198920,
+          "aMean": 67612,
+          "complexity": 0.3354
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1632,
+          "gdp": 122794944,
+          "aMean": 75242,
+          "complexity": 0.0306
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 7527,
+          "gdp": 708697158,
+          "aMean": 94154,
+          "complexity": 0.5492
+        }
+      ]
+    },
+    "state-west-virginia": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10375,
+          "gdp": 1316037625,
+          "aMean": 126847,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 11415,
+          "gdp": 898463235,
+          "aMean": 78709,
+          "complexity": 0.6549
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5409,
+          "gdp": 524240280,
+          "aMean": 96920,
+          "complexity": 0.3456
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2699,
+          "gdp": 237792696,
+          "aMean": 88104,
+          "complexity": 0.1089
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1433,
+          "gdp": 105997577,
+          "aMean": 73969,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2814,
+          "gdp": 142610706,
+          "aMean": 50679,
+          "complexity": 0.0303
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1603,
+          "gdp": 191205840,
+          "aMean": 119280,
+          "complexity": 0.0704
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10847,
+          "gdp": 715554896,
+          "aMean": 65968,
+          "complexity": 0.5037
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2247,
+          "gdp": 152766789,
+          "aMean": 67987,
+          "complexity": 0.0387
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 9685,
+          "gdp": 937740440,
+          "aMean": 96824,
+          "complexity": 0.6874
+        }
+      ]
+    },
+    "state-wisconsin": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 6397,
+          "gdp": 877022303,
+          "aMean": 137099,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 6265,
+          "gdp": 600650610,
+          "aMean": 95874,
+          "complexity": 0.6523
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 3395,
+          "gdp": 398668060,
+          "aMean": 117428,
+          "complexity": 0.3982
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 1699,
+          "gdp": 187747995,
+          "aMean": 110505,
+          "complexity": 0.1329
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 926,
+          "gdp": 82092678,
+          "aMean": 88653,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 1743,
+          "gdp": 104796132,
+          "aMean": 60124,
+          "complexity": 0.0286
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 916,
+          "gdp": 115119216,
+          "aMean": 125676,
+          "complexity": 0.0415
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 6277,
+          "gdp": 487528313,
+          "aMean": 77669,
+          "complexity": 0.51
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 1478,
+          "gdp": 114474056,
+          "aMean": 77452,
+          "complexity": 0.0407
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 6250,
+          "gdp": 665318750,
+          "aMean": 106451,
+          "complexity": 0.7337
+        }
+      ]
+    },
+    "state-wyoming": {
+      "2024": [
+        {
+          "socCode": "11-0000",
+          "totEmp": 10962,
+          "gdp": 1436208354,
+          "aMean": 131017,
+          "complexity": 1.0
+        },
+        {
+          "socCode": "13-0000",
+          "totEmp": 10365,
+          "gdp": 825738090,
+          "aMean": 79666,
+          "complexity": 0.5308
+        },
+        {
+          "socCode": "15-0000",
+          "totEmp": 5123,
+          "gdp": 587541501,
+          "aMean": 114687,
+          "complexity": 0.3478
+        },
+        {
+          "socCode": "17-0000",
+          "totEmp": 2588,
+          "gdp": 245070660,
+          "aMean": 94695,
+          "complexity": 0.0846
+        },
+        {
+          "socCode": "19-0000",
+          "totEmp": 1521,
+          "gdp": 142152660,
+          "aMean": 93460,
+          "complexity": 0.0055
+        },
+        {
+          "socCode": "21-0000",
+          "totEmp": 2724,
+          "gdp": 150332112,
+          "aMean": 55188,
+          "complexity": 0.0118
+        },
+        {
+          "socCode": "23-0000",
+          "totEmp": 1442,
+          "gdp": 169587852,
+          "aMean": 117606,
+          "complexity": 0.0265
+        },
+        {
+          "socCode": "25-0000",
+          "totEmp": 10134,
+          "gdp": 714031506,
+          "aMean": 70459,
+          "complexity": 0.445
+        },
+        {
+          "socCode": "27-0000",
+          "totEmp": 2078,
+          "gdp": 135042986,
+          "aMean": 64987,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "29-0000",
+          "totEmp": 10272,
+          "gdp": 1088184864,
+          "aMean": 105937,
+          "complexity": 0.7325
+        }
+      ]
+    }
+  },
+  "aggregates": {
+    "2024": {
+      "byOccupation": {
+        "11-0000": {
+          "totalEmploy": 691667,
+          "avgWage": 133698.97222222222,
+          "avgComplexity": 1.0
+        },
+        "13-0000": {
+          "totalEmploy": 681091,
+          "avgWage": 84876.93055555556,
+          "avgComplexity": 0.5939152777777778
+        },
+        "15-0000": {
+          "totalEmploy": 336781,
+          "avgWage": 107633.54166666667,
+          "avgComplexity": 0.33758055555555555
+        },
+        "17-0000": {
+          "totalEmploy": 182224,
+          "avgWage": 96507.875,
+          "avgComplexity": 0.11235416666666666
+        },
+        "19-0000": {
+          "totalEmploy": 96569,
+          "avgWage": 85591.80555555556,
+          "avgComplexity": 0.0005833333333333334
+        },
+        "21-0000": {
+          "totalEmploy": 175050,
+          "avgWage": 57875.5,
+          "avgComplexity": 0.022745833333333333
+        },
+        "23-0000": {
+          "totalEmploy": 93619,
+          "avgWage": 119951.06944444444,
+          "avgComplexity": 0.03646666666666667
+        },
+        "25-0000": {
+          "totalEmploy": 655045,
+          "avgWage": 67685.54166666667,
+          "avgComplexity": 0.43056805555555555
+        },
+        "27-0000": {
+          "totalEmploy": 147882,
+          "avgWage": 70369.19444444444,
+          "avgComplexity": 0.02586527777777778
+        },
+        "29-0000": {
+          "totalEmploy": 654116,
+          "avgWage": 98655.34722222222,
+          "avgComplexity": 0.6704013888888889
+        }
+      },
+      "minMaxStats": {
+        "minWage": 42796,
+        "maxWage": 172472,
+        "medianWage": 90102,
+        "minComplexity": 0.0,
+        "maxComplexity": 1.0,
+        "medianComplexity": 0.1975
+      }
+    }
+  }
+}
