@@ -133,6 +133,7 @@ const EnlargedTextLabel = styled(Text)`
   width: max-content;
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DataLegend = styled.div`
   margin-right: 0.2rem;
   display: inline-flex;

@@ -23,12 +23,14 @@ const DisclaimerText = ({ cityId, regionId }: Props) => {
 
   let cityPeerGroupCountsRegion: string | number = "---";
   let regionName: string = "---";
-  if (data && globalLocations.data) {
+  if (globalLocations.data) {
     const region = globalLocations.data.regions.find(
       (d) => d.regionId === regionId + "",
     );
     regionName = region && region.regionName ? region.regionName : "";
-    cityPeerGroupCountsRegion = data.cityPeerGroupCounts.region + 1;
+    if (data && data.cityPeerGroupCounts) {
+      cityPeerGroupCountsRegion = data.cityPeerGroupCounts.region + 1;
+    }
   }
 
   return (

@@ -1,85 +1,34 @@
-import { useQuery, gql } from "@apollo/client";
+import { useStaticData } from "../dataProvider";
 import {
-  NaicsDensityRescale,
   DigitLevel,
-  NaicsRcaCalculation,
-  PeerGroup,
   CompositionType,
   defaultCompositionType,
-  isValidPeerGroup,
-  CityIndustryYear,
 } from "../types/graphQL/graphQLTypes";
 import useCurrentCityId from "./useCurrentCityId";
 import { defaultYear } from "../Utils";
 import useQueryParams from "./useQueryParams";
-import useCurrentBenchmark from "./useCurrentBenchmark";
 
 export enum RegionGroup {
   World = "world",
   SimilarCities = "similarcities",
 }
 
-const NODE_RCA_QUERY = gql`
-  query GetClusterIntesityData(
-    $cityId: Int!
-    $year: Int!
-    $level: Int!
-    $peerGroup: String
-    $partnerCityIds: [Int]
-    $variable: String
-  ) {
-    naicsDensity: naicsDensityRescale(
-      cityId: $cityId
-      peerGroup: $peerGroup
-      partnerCityIds: $partnerCityIds
-      year: $year
-      naicsLevel: $level
-    ) {
-      naicsId
-      densityCompany
-      densityEmploy
-    }
-    naicsRca(
-      cityId: $cityId
-      peerGroup: $peerGroup
-      partnerCityIds: $partnerCityIds
-      year: $year
-      naicsLevel: $level
-      variable: $variable
-    ) {
-      naicsId
-      rca
-      comparableIndustry
-    }
-    naicsData: cityIndustryYearList(
-      cityId: $cityId
-      year: $year
-      level: $level
-    ) {
-      naicsId
-      numCompany
-      numEmploy
-      id
-    }
-  }
-`;
-
 interface NaicsDensity {
-  naicsId: NaicsDensityRescale["naicsId"];
-  densityCompany: NaicsDensityRescale["densityCompany"];
-  densityEmploy: NaicsDensityRescale["densityEmploy"];
+  naicsId: string;
+  densityCompany: number | null;
+  densityEmploy: number | null;
 }
 
 interface NaicsData {
-  naicsId: CityIndustryYear["naicsId"];
-  numCompany: CityIndustryYear["numCompany"];
-  numEmploy: CityIndustryYear["numEmploy"];
+  naicsId: string;
+  numCompany: number | null;
+  numEmploy: number | null;
 }
 
 interface NaicsRca {
-  naicsId: NaicsRcaCalculation["naicsId"];
-  comparableIndustry: NaicsRcaCalculation["comparableIndustry"];
-  rca: NaicsRcaCalculation["rca"];
+  naicsId: string;
+  comparableIndustry: number | null;
+  rca: number | null;
 }
 
 export interface SuccessResponse {
@@ -88,52 +37,50 @@ export interface SuccessResponse {
   naicsData: NaicsData[];
 }
 
-interface Variables {
-  cityId: number | null;
-  year: number;
-  level: DigitLevel;
-  peerGroup: PeerGroup | "";
-  partnerCityIds: [number] | [];
-  variable: "employ" | "company";
-}
-
-const useClusterIntensityQuery = (variables: Variables) =>
-  useQuery<SuccessResponse, Variables>(NODE_RCA_QUERY, { variables });
-
-const useRCAData = (level: DigitLevel) => {
+const useRCAData = (_level: DigitLevel) => {
   const cityId = useCurrentCityId();
+  const { data: blsData, loading: blsLoading } = useStaticData();
 
   const { composition_type } = useQueryParams();
-  const { benchmark } = useCurrentBenchmark();
 
-  const defaultCompositionVariable =
-    defaultCompositionType === CompositionType.Companies ? "company" : "employ";
-  let variable: "employ" | "company" = defaultCompositionVariable;
-  if (composition_type === CompositionType.Companies) {
-    variable = "company";
-  } else if (composition_type === CompositionType.Employees) {
-    variable = "employ";
+  if (cityId === null || blsLoading || !blsData) {
+    return { loading: true, error: undefined, data: undefined };
   }
 
-  const peerGroup = isValidPeerGroup(benchmark) ? (benchmark as PeerGroup) : "";
+  const regionData = blsData.regionData[cityId];
+  if (!regionData) {
+    return { loading: false, error: undefined, data: undefined };
+  }
 
-  const partnerCityIds: [number] | [] =
-    benchmark !== undefined && !isNaN(parseInt(benchmark, 10))
-      ? [parseInt(benchmark, 10)]
-      : [];
+  const yearData = regionData[defaultYear];
+  if (!yearData) {
+    return { loading: false, error: undefined, data: undefined };
+  }
 
-  const { loading, error, data } = useClusterIntensityQuery({
-    cityId: cityId !== null ? parseInt(cityId, 10) : null,
-    year: defaultYear,
-    level,
-    peerGroup,
-    partnerCityIds,
-    variable,
+  const naicsData: NaicsData[] = [];
+  const naicsRca: NaicsRca[] = [];
+  const naicsDensity: NaicsDensity[] = [];
+
+  yearData.forEach((occ) => {
+    naicsData.push({
+      naicsId: occ.socCode,
+      numCompany: occ.gdp,
+      numEmploy: occ.totEmp,
+    });
+    naicsRca.push({
+      naicsId: occ.socCode,
+      rca: 1.0,
+      comparableIndustry: null,
+    });
+    naicsDensity.push({
+      naicsId: occ.socCode,
+      densityCompany: null,
+      densityEmploy: null,
+    });
   });
 
-  return cityId !== null
-    ? { loading, error, data }
-    : { loading: true, error: undefined, data: undefined };
+  const data: SuccessResponse = { naicsDensity, naicsRca, naicsData };
+  return { loading: false, error: undefined, data };
 };
 
 export default useRCAData;

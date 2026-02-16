@@ -1,68 +1,26 @@
-import { useQuery, DocumentNode } from "@apollo/client";
+import { useStaticData } from "../../../dataProvider";
 import {
-  CityIndustryYear,
-  GlobalIndustryYear,
   isValidPeerGroup,
   PeerGroup,
 } from "../../../types/graphQL/graphQLTypes";
-import {
-  ECONOMIC_COMPOSITION_COMPARISON_QUERY,
-  PEER_GROUP_ECONOMIC_COMPOSITION_COMPARISON_QUERY,
-  WORLD_ECONOMIC_COMPOSITION_COMPARISON_QUERY,
-} from "./industryQueries";
-import {
-  CLUSTER_ECONOMIC_COMPOSITION_COMPARISON_QUERY,
-  CLUSTER_PEER_GROUP_ECONOMIC_COMPOSITION_COMPARISON_QUERY,
-  CLUSTER_WORLD_ECONOMIC_COMPOSITION_COMPARISON_QUERY,
-} from "./clusterQueries";
 import { AggregationMode } from "../../../routing/routes";
+import { defaultYear } from "../../../Utils";
 
 export enum RegionGroup {
   World = "world",
 }
 
 interface IndustriesList {
-  id: CityIndustryYear["id"];
-  industryId: CityIndustryYear["naicsId"];
-  numCompany: CityIndustryYear["numCompany"];
-  numEmploy: CityIndustryYear["numEmploy"];
+  id: string;
+  industryId: string;
+  numCompany: number | null;
+  numEmploy: number | null;
 }
 
 export interface SuccessResponse {
   primaryCityIndustries: IndustriesList[];
   secondaryCityIndustries: IndustriesList[];
 }
-
-interface CityVariables {
-  primaryCity: number;
-  secondaryCity: number;
-  year: number;
-}
-
-interface GroupIndustryList {
-  id: GlobalIndustryYear["naicsId"];
-  industryId: GlobalIndustryYear["naicsId"];
-  numCompany: GlobalIndustryYear["avgNumCompany"];
-  numEmploy: GlobalIndustryYear["avgNumEmploy"];
-}
-
-interface GroupSuccessResponse {
-  primaryCityIndustries: IndustriesList[];
-  groupIndustries_1: GroupIndustryList[];
-  groupIndustries_2: GroupIndustryList[];
-  groupIndustries_3?: GroupIndustryList[];
-  groupIndustries_4?: GroupIndustryList[];
-  groupIndustries_5?: GroupIndustryList[];
-  groupIndustries_6?: GroupIndustryList[];
-}
-
-export const useEconomicCompositionComparisonQuery = (
-  variables: CityVariables,
-) =>
-  useQuery<SuccessResponse, CityVariables>(
-    ECONOMIC_COMPOSITION_COMPARISON_QUERY,
-    { variables },
-  );
 
 interface InputVariables {
   primaryCity: number;
@@ -71,125 +29,85 @@ interface InputVariables {
   aggregation: AggregationMode;
 }
 
-interface QueryVariables {
+export const useEconomicCompositionComparisonQuery = (variables: {
   primaryCity: number;
-  secondaryCity?: number;
-  peerGroup?: PeerGroup;
+  secondaryCity: number;
   year: number;
-}
+}) => {
+  return useComparisonQuery({
+    primaryCity: variables.primaryCity,
+    comparison: variables.secondaryCity,
+    year: variables.year,
+    aggregation: AggregationMode.industries,
+  });
+};
 
 export const useComparisonQuery = (input: InputVariables) => {
-  let QUERY: DocumentNode;
-  const variables: QueryVariables = {
-    primaryCity: input.primaryCity,
-    year: input.year,
-  };
-  if (input.aggregation === AggregationMode.cluster) {
-    if (input.comparison === RegionGroup.World) {
-      QUERY = CLUSTER_WORLD_ECONOMIC_COMPOSITION_COMPARISON_QUERY;
-    } else if (isValidPeerGroup(input.comparison)) {
-      variables.peerGroup = input.comparison as PeerGroup;
-      QUERY = CLUSTER_PEER_GROUP_ECONOMIC_COMPOSITION_COMPARISON_QUERY;
-    } else {
-      variables.secondaryCity = input.comparison as number | undefined;
-      QUERY = CLUSTER_ECONOMIC_COMPOSITION_COMPARISON_QUERY;
-    }
-  } else {
-    if (input.comparison === RegionGroup.World) {
-      QUERY = WORLD_ECONOMIC_COMPOSITION_COMPARISON_QUERY;
-    } else if (isValidPeerGroup(input.comparison)) {
-      variables.peerGroup = input.comparison as PeerGroup;
-      QUERY = PEER_GROUP_ECONOMIC_COMPOSITION_COMPARISON_QUERY;
-    } else {
-      variables.secondaryCity = input.comparison as number | undefined;
-      QUERY = ECONOMIC_COMPOSITION_COMPARISON_QUERY;
-    }
+  const { data: blsData, loading: blsLoading } = useStaticData();
+
+  if (blsLoading || !blsData) {
+    return { loading: true, error: undefined, data: undefined };
   }
-  const {
-    loading,
-    error,
-    data: response,
-  } = useQuery<SuccessResponse>(QUERY, { variables });
-  let data: SuccessResponse | undefined;
+
+  const primaryId = input.primaryCity.toString();
+  const primaryRegionData = blsData.regionData[primaryId];
+
+  if (!primaryRegionData) {
+    return { loading: false, error: undefined, data: undefined };
+  }
+
+  const primaryYearData = primaryRegionData[input.year] || primaryRegionData[defaultYear];
+  if (!primaryYearData) {
+    return { loading: false, error: undefined, data: undefined };
+  }
+
+  const primaryCityIndustries: IndustriesList[] = primaryYearData.map((occ) => ({
+    id: occ.socCode,
+    industryId: occ.socCode,
+    numCompany: occ.gdp,
+    numEmploy: occ.totEmp,
+  }));
+
+  let secondaryCityIndustries: IndustriesList[] = [];
+
+  // If comparing to another specific city
   if (
-    input.comparison === RegionGroup.World ||
-    isValidPeerGroup(input.comparison)
+    typeof input.comparison === "number" ||
+    (typeof input.comparison === "string" &&
+      !isValidPeerGroup(input.comparison) &&
+      input.comparison !== RegionGroup.World)
   ) {
-    data =
-      response === undefined
-        ? response
-        : {
-            primaryCityIndustries: response.primaryCityIndustries,
-            secondaryCityIndustries: [],
-          };
-
-    if (data !== undefined && response !== undefined) {
-      const {
-        groupIndustries_1,
-        groupIndustries_2,
-        groupIndustries_3,
-        groupIndustries_4,
-        groupIndustries_5,
-        groupIndustries_6,
-      } = response as any as GroupSuccessResponse;
-      if (groupIndustries_1) {
-        data.secondaryCityIndustries.push(
-          ...groupIndustries_1.map((d) => ({
-            ...d,
-            id: `${d.id}`,
-            industryId: `${d.industryId}`,
-          })),
-        );
-      }
-      if (groupIndustries_2) {
-        data.secondaryCityIndustries.push(
-          ...groupIndustries_2.map((d) => ({
-            ...d,
-            id: `${d.id}`,
-            industryId: `${d.industryId}`,
-          })),
-        );
-      }
-      if (groupIndustries_3) {
-        data.secondaryCityIndustries.push(
-          ...groupIndustries_3.map((d) => ({
-            ...d,
-            id: `${d.id}`,
-            industryId: `${d.industryId}`,
-          })),
-        );
-      }
-      if (groupIndustries_4) {
-        data.secondaryCityIndustries.push(
-          ...groupIndustries_4.map((d) => ({
-            ...d,
-            id: `${d.id}`,
-            industryId: `${d.industryId}`,
-          })),
-        );
-      }
-      if (groupIndustries_5) {
-        data.secondaryCityIndustries.push(
-          ...groupIndustries_5.map((d) => ({
-            ...d,
-            id: `${d.id}`,
-            industryId: `${d.industryId}`,
-          })),
-        );
-      }
-      if (groupIndustries_6) {
-        data.secondaryCityIndustries.push(
-          ...groupIndustries_6.map((d) => ({
-            ...d,
-            id: `${d.id}`,
-            industryId: `${d.industryId}`,
-          })),
-        );
+    const secondaryId = input.comparison.toString();
+    const secondaryRegionData = blsData.regionData[secondaryId];
+    if (secondaryRegionData) {
+      const secondaryYearData =
+        secondaryRegionData[input.year] || secondaryRegionData[defaultYear];
+      if (secondaryYearData) {
+        secondaryCityIndustries = secondaryYearData.map((occ) => ({
+          id: occ.socCode,
+          industryId: occ.socCode,
+          numCompany: occ.gdp,
+          numEmploy: occ.totEmp,
+        }));
       }
     }
-  } else {
-    data = response;
+  }
+  // For peer groups and world: use national average as proxy
+  else {
+    const nationalData = blsData.regionData["national_us"];
+    if (nationalData) {
+      const nationalYearData = nationalData[input.year] || nationalData[defaultYear];
+      if (nationalYearData) {
+        secondaryCityIndustries = nationalYearData.map((occ) => ({
+          id: occ.socCode,
+          industryId: occ.socCode,
+          numCompany: occ.gdp,
+          numEmploy: occ.totEmp,
+        }));
+      }
+    }
   }
 
-  return { loading, error, data };
+  const data: SuccessResponse = { primaryCityIndustries, secondaryCityIndustries };
+  return { loading: false, error: undefined, data };
 };

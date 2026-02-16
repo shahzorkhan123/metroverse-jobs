@@ -130,7 +130,7 @@ const EconomicComposition = (props: Props) => {
       download = (
         <DownloadImageOverlay
           onClose={closeDownload}
-          cityId={parseInt(cityId, 10)}
+          cityId={cityId}
           cityName={targetCity && targetCity.name ? targetCity.name : undefined}
           year={defaultYear}
           digitLevel={
@@ -194,7 +194,7 @@ const EconomicComposition = (props: Props) => {
 
   const treeMapViz = isClusterTreeMap ? (
     <ClusterCompositionTreeMap
-      cityId={parseInt(cityId, 10)}
+      cityId={cityId}
       year={defaultYear}
       clusterLevel={cluster_level ? cluster_level : defaultClusterLevel}
       colorBy={color_by ? color_by : ColorBy.sector}
@@ -206,7 +206,7 @@ const EconomicComposition = (props: Props) => {
     />
   ) : (
     <CompositionTreeMap
-      cityId={parseInt(cityId, 10)}
+      cityId={cityId}
       year={defaultYear}
       digitLevel={digit_level ? parseInt(digit_level, 10) : defaultDigitLevel}
       colorBy={color_by ? color_by : ColorBy.sector}
@@ -222,7 +222,7 @@ const EconomicComposition = (props: Props) => {
     <>
       <ContentGrid>
         <SideText
-          cityId={parseInt(cityId, 10)}
+          cityId={cityId}
           year={defaultYear}
           compositionType={compositionType}
         />

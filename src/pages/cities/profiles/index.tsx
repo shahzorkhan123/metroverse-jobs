@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import EconomicComposition from "./economicComposition";
 import Overview from "./overview";
 import GoodAt from "./goodAt";
-import IndustrySpacePosition from "./industrySpacePosition";
-import GrowthOpportunities from "./growthOpportunities";
-import { Switch, useHistory, matchPath } from "react-router-dom";
+import { Switch, useHistory, matchPath, Route } from "react-router-dom";
 import {
   CityRoutes,
   cityIdParam,
@@ -14,7 +12,6 @@ import { createRoute } from "../../../routing/Utils";
 import InnerPage from "../../../components/templates/InnerPage";
 import useFluent from "../../../hooks/useFluent";
 import useCurrentCityId from "../../../hooks/useCurrentCityId";
-import TrackedRoute from "../../../routing/TrackedRoute";
 import { usePrevious } from "react-use";
 import styled from "styled-components";
 import { backgroundDark, primaryFont } from "../../../styling/styleUtils";
@@ -100,13 +97,7 @@ const City = () => {
               "cities-single-page-titles-question-1",
             ),
             url: createRoute.city(CityRoutes.CityOverview, cityId),
-            removeParams: [
-              "cluster_overlay" as keyof GlobalQueryParams,
-              "node_sizing" as keyof GlobalQueryParams,
-              "city_node_sizing" as keyof GlobalQueryParams,
-              "city_color_by" as keyof GlobalQueryParams,
-              "rca_threshold" as keyof GlobalQueryParams,
-            ],
+            removeParams: [] as (keyof GlobalQueryParams)[],
             tooltipText: showOverviewTooltip ? (
               <>
                 {getString("city-overview-one-time-tooltip")}
@@ -122,50 +113,14 @@ const City = () => {
               "cities-single-page-titles-question-2",
             ),
             url: createRoute.city(CityRoutes.CityEconomicComposition, cityId),
-            removeParams: [
-              "cluster_overlay" as keyof GlobalQueryParams,
-              "node_sizing" as keyof GlobalQueryParams,
-              "city_node_sizing" as keyof GlobalQueryParams,
-              "city_color_by" as keyof GlobalQueryParams,
-              "rca_threshold" as keyof GlobalQueryParams,
-            ],
+            removeParams: [] as (keyof GlobalQueryParams)[],
           },
           {
             label: getStringWithNewLines(
               "cities-single-page-titles-question-3",
             ),
             url: createRoute.city(CityRoutes.CityGoodAt, cityId),
-            removeParams: [
-              "cluster_overlay" as keyof GlobalQueryParams,
-              "node_sizing" as keyof GlobalQueryParams,
-              "cluster_level" as keyof GlobalQueryParams,
-              "city_node_sizing" as keyof GlobalQueryParams,
-              "city_color_by" as keyof GlobalQueryParams,
-              "rca_threshold" as keyof GlobalQueryParams,
-            ],
-          },
-          {
-            label: getStringWithNewLines(
-              "cities-single-page-titles-question-4",
-            ),
-            url: createRoute.city(CityRoutes.CityIndustrySpacePosition, cityId),
-            removeParams: [
-              "digit_level" as keyof GlobalQueryParams,
-              "city_node_sizing" as keyof GlobalQueryParams,
-              "city_color_by" as keyof GlobalQueryParams,
-            ],
-          },
-          {
-            label: getStringWithNewLines(
-              "cities-single-page-titles-question-5",
-            ),
-            url: createRoute.city(CityRoutes.CityGrowthOpportunities, cityId),
-            removeParams: [
-              "cluster_overlay" as keyof GlobalQueryParams,
-              "city_node_sizing" as keyof GlobalQueryParams,
-              "city_color_by" as keyof GlobalQueryParams,
-              "rca_threshold" as keyof GlobalQueryParams,
-            ],
+            removeParams: [] as (keyof GlobalQueryParams)[],
           },
         ]
       : [];
@@ -173,20 +128,12 @@ const City = () => {
   return (
     <InnerPage baseLinkData={baseLinkData}>
       <Switch>
-        <TrackedRoute path={CityRoutes.CityOverview} component={Overview} />
-        <TrackedRoute
+        <Route path={CityRoutes.CityOverview} component={Overview} />
+        <Route
           path={CityRoutes.CityEconomicComposition}
           component={EconomicComposition}
         />
-        <TrackedRoute path={CityRoutes.CityGoodAt} component={GoodAt} />
-        <TrackedRoute
-          path={CityRoutes.CityIndustrySpacePosition}
-          component={IndustrySpacePosition}
-        />
-        <TrackedRoute
-          path={CityRoutes.CityGrowthOpportunities}
-          component={GrowthOpportunities}
-        />
+        <Route path={CityRoutes.CityGoodAt} component={GoodAt} />
       </Switch>
     </InnerPage>
   );

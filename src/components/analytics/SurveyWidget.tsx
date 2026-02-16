@@ -1,8 +1,8 @@
 import React from "react";
-import { Popover } from "@typeform/embed-react";
 
+// Survey widget stub - Typeform removed in Phase 1
 const SurveyWidget = () => {
-  return <Popover id="IXO2eJuk" className={"typeform-survey-button"} />;
+  return null;
 };
 
 export default SurveyWidget;

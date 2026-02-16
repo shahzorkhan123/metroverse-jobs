@@ -1,76 +1,94 @@
-import { useQuery, gql } from "@apollo/client";
-import {
-  ClassificationCountry,
-  ClassificationRegion,
-  ClassificationCity,
-} from "../types/graphQL/graphQLTypes";
-import { Datum as SearchDatum } from "react-panel-search";
-import { extent } from "d3-array";
-import { scaleLinear } from "d3-scale";
+import { useStaticData } from '../dataProvider';
+import { Datum as SearchDatum } from 'react-panel-search';
+import { DataFlagType } from '../types/graphQL/graphQLTypes';
 
-const GLOBAL_LOCATION_QUERY = gql`
-  query GetGlobalLocationData {
-    countries: classificationCountryList {
-      countryId
-      code
-      nameShortEn
-      id
-    }
-    cities: classificationCityList {
-      cityId
-      name
-      countryId
-      id
-      nameList
-      centroidLat
-      centroidLon
-      population: populationLatest
-      gdppc
-      incomeClass
-      region: regionId
-      regionPopRank
-      regionGdppcRank
-      dataFlag
-    }
-    regions: classificationRegionList {
-      regionId
-      regionName
-    }
-  }
-`;
+/**
+ * Adapter hook: replaces Apollo GraphQL query with static BLS data.
+ * Returns regions as "cities" and regionTypes as "countries" to match
+ * the original Metroverse data shape.
+ */
 
-interface SuccessResponse {
-  countries: {
-    countryId: ClassificationCountry["countryId"];
-    code: ClassificationCountry["code"];
-    nameShortEn: ClassificationCountry["nameShortEn"];
-    id: ClassificationCountry["id"];
-  }[];
-  regions: {
-    regionId: ClassificationRegion["regionId"];
-    regionName: ClassificationRegion["regionName"];
-  }[];
-  cities: {
-    cityId: ClassificationCity["cityId"];
-    name: ClassificationCity["name"];
-    nameList: ClassificationCity["nameList"];
-    centroidLat: ClassificationCity["centroidLat"];
-    centroidLon: ClassificationCity["centroidLon"];
-    countryId: ClassificationCity["countryId"];
-    geometry: ClassificationCity["geometry"];
-    population: ClassificationCity["populationLatest"];
-    gdppc: ClassificationCity["gdppc"];
-    incomeClass: ClassificationCity["incomeClass"];
-    id: ClassificationCity["id"];
-    region: ClassificationCity["regionId"];
-    regionPopRank: ClassificationCity["regionPopRank"];
-    regionGdppcRank: ClassificationCity["regionGdppcRank"];
-    dataFlag: ClassificationCity["dataFlag"];
-  }[];
+interface CityDatum {
+  cityId: string;  // regionId
+  name: string;
+  countryId: string;  // regionType slug
+  id: string;  // regionId
+  nameList: string[] | null;
+  centroidLat: number | null;
+  centroidLon: number | null;
+  population: number | null;
+  gdppc: number | null;
+  incomeClass: null;
+  region: null;
+  regionPopRank: null;
+  regionGdppcRank: null;
+  dataFlag: DataFlagType;
 }
 
-const useGlobalLocationData = () =>
-  useQuery<SuccessResponse, never>(GLOBAL_LOCATION_QUERY);
+interface CountryDatum {
+  countryId: string;  // regionType slug
+  code: string;
+  nameShortEn: string;  // regionType display name
+  id: string;
+}
+
+interface RegionDatum {
+  regionId: string;
+  regionName: string;
+}
+
+interface SuccessResponse {
+  countries: CountryDatum[];
+  cities: CityDatum[];
+  regions: RegionDatum[];
+}
+
+const regionTypeLabels: Record<string, string> = {
+  'National': 'National',
+  'State': 'States',
+  'Metro': 'Metropolitan Areas',
+};
+
+const useGlobalLocationData = () => {
+  const { data: blsData, loading, error } = useStaticData();
+
+  if (!blsData) {
+    return { loading, error, data: undefined };
+  }
+
+  // Map regionTypes to "countries"
+  const regionTypes = Array.from(new Set(blsData.regions.map((r) => r.regionType)));
+  const countries: CountryDatum[] = regionTypes.map((rt) => ({
+    countryId: rt,
+    code: rt.toLowerCase(),
+    nameShortEn: regionTypeLabels[rt] || rt,
+    id: rt,
+  }));
+
+  // Map regions to "cities"
+  const cities: CityDatum[] = blsData.regions.map((r) => ({
+    cityId: r.regionId,
+    name: r.name,
+    countryId: r.regionType,
+    id: r.regionId,
+    nameList: null,
+    centroidLat: null,
+    centroidLon: null,
+    population: null,
+    gdppc: null,
+    incomeClass: null,
+    region: null,
+    regionPopRank: null,
+    regionGdppcRank: null,
+    dataFlag: DataFlagType.GREEN,
+  }));
+
+  // No sub-regions in BLS
+  const regions: RegionDatum[] = [];
+
+  const data: SuccessResponse = { countries, cities, regions };
+  return { loading: false, error: undefined, data };
+};
 
 const getCountryStringId = (id: number | string | null) => `country-${id}`;
 
@@ -81,38 +99,18 @@ export const locationDataToHierarchicalTreeData = (
   if (data !== undefined) {
     const { cities, countries } = data;
     response.push(
-      ...countries
-        .filter(({ countryId }) =>
-          cities.find(
-            (c) => c.countryId && c.countryId.toString() === countryId,
-          ),
-        )
-        .map(({ nameShortEn, countryId }) => ({
-          id: getCountryStringId(countryId),
-          title:
-            nameShortEn !== null
-              ? nameShortEn
-              : "Unrecognized Country " + countryId,
-          parent_id: null,
-          level: "0",
-        })),
-      ...cities.map(({ cityId: id, name, countryId, nameList }) => {
-        const parentCountry = countries.find(
-          (c) => countryId && c.countryId.toString() === countryId.toString(),
-        );
-        const countryName =
-          parentCountry && parentCountry.nameShortEn
-            ? ", " + parentCountry.nameShortEn
-            : "";
+      ...countries.map(({ nameShortEn, countryId }) => ({
+        id: getCountryStringId(countryId),
+        title: nameShortEn !== null ? nameShortEn : 'Unknown',
+        parent_id: null,
+        level: '0',
+      })),
+      ...cities.map(({ cityId: id, name, countryId }) => {
         return {
           id,
-          title:
-            name !== null
-              ? name + countryName
-              : "Unrecognized City " + id + countryName,
+          title: name !== null ? name : 'Unknown Region ' + id,
           parent_id: getCountryStringId(countryId),
-          level: "1",
-          keywords: nameList ? nameList : undefined,
+          level: '1',
         };
       }),
     );
@@ -120,30 +118,14 @@ export const locationDataToHierarchicalTreeData = (
   return response;
 };
 
-export const getPopulationScale = (
-  data: SuccessResponse,
-  min: number,
-  max: number,
-) => {
-  const allPops: number[] = [];
-  data.cities.forEach((c) =>
-    c.population ? allPops.push(c.population) : null,
-  );
-  return scaleLinear()
-    .domain(extent(allPops) as [number, number])
-    .range([min, max]);
+export const getPopulationScale = () => {
+  // Stub - no population data for BLS regions
+  return () => 5;
 };
 
-export const getGdpPppScale = (
-  data: SuccessResponse,
-  min: number,
-  max: number,
-) => {
-  const allGdp: number[] = [];
-  data.cities.forEach((c) => (c.gdppc ? allGdp.push(c.gdppc) : null));
-  return scaleLinear()
-    .domain(extent(allGdp) as [number, number])
-    .range([min, max]);
+export const getGdpPppScale = () => {
+  // Stub - no GDP PPP data for BLS regions
+  return () => 5;
 };
 
 export const useGlobalLocationHierarchicalTreeData = () => {

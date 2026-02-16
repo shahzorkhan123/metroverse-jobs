@@ -1,17 +1,11 @@
-import React, { useEffect } from "react";
-import mapboxgl from "mapbox-gl";
+import React from "react";
 
 interface Props {
   map: any;
 }
 
-const MapSettings = ({ map }: Props) => {
-  useEffect(() => {
-    if (map) {
-      map.addControl(new mapboxgl.NavigationControl());
-      map.scrollZoom.disable();
-    }
-  }, [map]);
+// Stubbed: Mapbox removed in static BLS adaptation
+const MapSettings = (_props: Props) => {
   return <></>;
 };
 

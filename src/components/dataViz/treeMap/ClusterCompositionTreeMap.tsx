@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useGlobalClusterMap } from "../../../hooks/useGlobalClusterData";
-import { useQuery, gql } from "@apollo/client";
+import { useStaticData } from "../../../dataProvider";
 import {
-  CityClusterYear,
   DigitLevel,
   CompositionType,
   ClassificationNaicsCluster,
@@ -60,44 +59,78 @@ const TreeMapContainer = styled.div`
   left: 0;
 `;
 
-const CLUSTER_COMPOSITION_QUERY = gql`
-  query GetCityIndustryTreeData($cityId: Int!, $year: Int!) {
-    clusters: cityClusterYearList(cityId: $cityId, year: $year) {
-      id
-      clusterId
-      level
-      numCompany
-      numEmploy
-      rcaNumCompany
-      rcaNumEmploy
-    }
-  }
-`;
+interface ClusterYearData {
+  clusterId: string;
+  level: number | null;
+  numCompany: number | null;
+  numEmploy: number | null;
+  rcaNumCompany: number | null;
+  rcaNumEmploy: number | null;
+}
 
 interface SuccessResponse {
-  clusters: {
-    id: CityClusterYear["id"];
-    clusterId: CityClusterYear["clusterId"];
-    level: CityClusterYear["level"];
-    numCompany: CityClusterYear["numCompany"];
-    numEmploy: CityClusterYear["numEmploy"];
-    rcaNumCompany: CityClusterYear["rcaNumCompany"];
-    rcaNumEmploy: CityClusterYear["rcaNumEmploy"];
-  }[];
+  clusters: ClusterYearData[];
 }
 
 interface Variables {
-  cityId: number;
+  cityId: string;
   year: number;
 }
 
-export const useClusterCompositionQuery = (variables: Variables) =>
-  useQuery<SuccessResponse, Variables>(CLUSTER_COMPOSITION_QUERY, {
-    variables,
+export const useClusterCompositionQuery = (variables: Variables) => {
+  const { data: blsData, loading: blsLoading } = useStaticData();
+
+  if (blsLoading || !blsData) {
+    return { loading: true, error: undefined, data: undefined };
+  }
+
+  const regionData = blsData.regionData[variables.cityId];
+  if (!regionData) {
+    return { loading: false, error: undefined, data: undefined };
+  }
+
+  const yearData = regionData[variables.year] || regionData[defaultYear];
+  if (!yearData) {
+    return { loading: false, error: undefined, data: undefined };
+  }
+
+  // Build socCode → majorGroupId lookup
+  const socToMajorGroup: Record<string, string> = {};
+  blsData.occupations.forEach((o: any) => {
+    socToMajorGroup[o.socCode] = o.majorGroupId;
   });
 
+  // Aggregate by major group
+  const majorGroupAgg: Record<string, { employ: number; gdp: number }> = {};
+  yearData.forEach((occ) => {
+    const mgId = socToMajorGroup[occ.socCode] || "00";
+    if (!majorGroupAgg[mgId]) {
+      majorGroupAgg[mgId] = { employ: 0, gdp: 0 };
+    }
+    majorGroupAgg[mgId].employ += occ.totEmp;
+    majorGroupAgg[mgId].gdp += occ.gdp;
+  });
+
+  const clusters: ClusterYearData[] = Object.entries(majorGroupAgg).map(
+    ([mgId, agg]) => ({
+      clusterId: mgId,
+      level: 1,
+      numCompany: agg.gdp,
+      numEmploy: agg.employ,
+      rcaNumCompany: 1.0,
+      rcaNumEmploy: 1.0,
+    }),
+  );
+
+  return {
+    loading: false,
+    error: undefined,
+    data: { clusters } as SuccessResponse,
+  };
+};
+
 interface Props {
-  cityId: number;
+  cityId: string;
   year: number;
   highlighted: string | undefined;
   colorBy: ColorBy;
@@ -175,7 +208,7 @@ const CompositionTreeMap = (props: Props) => {
     );
     output = <LoadingBlock />;
   } else if (error !== undefined) {
-    indicator.text = getString("global-ui-total") + ": ―";
+    indicator.text = getString("global-ui-total") + ": \u2015";
     output = (
       <LoadingOverlay>
         <SimpleError />
@@ -183,7 +216,7 @@ const CompositionTreeMap = (props: Props) => {
     );
     console.error(error);
   } else if (clusterMap.error !== undefined) {
-    indicator.text = getString("global-ui-total") + ": ―";
+    indicator.text = getString("global-ui-total") + ": \u2015";
     output = (
       <LoadingOverlay>
         <SimpleError />
@@ -194,7 +227,7 @@ const CompositionTreeMap = (props: Props) => {
     aggregateIndustryDataMap.error !== undefined &&
     (colorBy === ColorBy.education || colorBy === ColorBy.wage)
   ) {
-    indicator.text = getString("global-ui-total") + ": ―";
+    indicator.text = getString("global-ui-total") + ": \u2015";
     output = (
       <LoadingOverlay>
         <SimpleError />
@@ -276,7 +309,6 @@ const CompositionTreeMap = (props: Props) => {
         ])
         .range(wageColorRange as any) as any;
     } else {
-      // colorScale = () => undefined;
       colorScale = scaleSymlog()
         .domain(minMax)
         .range(intensityColorRange as any) as unknown as (
@@ -316,7 +348,7 @@ const CompositionTreeMap = (props: Props) => {
     }
 
     if (!treeMapData.length) {
-      indicator.text = getString("global-ui-total") + ": ―";
+      indicator.text = getString("global-ui-total") + ": \u2015";
       output = (
         <LoadingOverlay>
           <SimpleError
@@ -377,14 +409,16 @@ const CompositionTreeMap = (props: Props) => {
           ) {
             const target =
               aggregateIndustryDataMap.data.clusters[cluster.clusterId];
-            const targetValue =
-              colorBy === ColorBy.education
-                ? target.yearsEducation
-                : target.hourlyWage;
-            rows.push([
-              getString("global-formatted-color-by", { type: colorBy }),
-              (colorBy === ColorBy.wage ? "$" : "") + targetValue.toFixed(2),
-            ]);
+            if (target) {
+              const targetValue =
+                colorBy === ColorBy.education
+                  ? target.yearsEducation
+                  : target.hourlyWage;
+              rows.push([
+                getString("global-formatted-color-by", { type: colorBy }),
+                (colorBy === ColorBy.wage ? "$" : "") + targetValue.toFixed(2),
+              ]);
+            }
           }
           node.innerHTML = getStandardTooltip({
             title: cluster.name ? cluster.name : "",
@@ -444,14 +478,16 @@ const CompositionTreeMap = (props: Props) => {
           ) {
             const target =
               aggregateIndustryDataMap.data.clusters[cluster.clusterId];
-            const targetValue =
-              colorBy === ColorBy.education
-                ? target.yearsEducation
-                : target.hourlyWage;
-            rows.push([
-              getString("global-formatted-color-by", { type: colorBy }),
-              (colorBy === ColorBy.wage ? "$" : "") + targetValue.toFixed(2),
-            ]);
+            if (target) {
+              const targetValue =
+                colorBy === ColorBy.education
+                  ? target.yearsEducation
+                  : target.hourlyWage;
+              rows.push([
+                getString("global-formatted-color-by", { type: colorBy }),
+                (colorBy === ColorBy.wage ? "$" : "") + targetValue.toFixed(2),
+              ]);
+            }
           }
           node.innerHTML =
             getStandardTooltip({
@@ -461,7 +497,7 @@ const CompositionTreeMap = (props: Props) => {
               boldColumns: [1, 2],
             }) +
             `
-           <div style="position:absolute;top: 2px;right:2px;">×</div>
+           <div style="position:absolute;top: 2px;right:2px;">\u00d7</div>
           `;
           node.style.position = "absolute";
           node.style.pointerEvents = "all";

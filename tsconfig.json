@@ -25,5 +25,14 @@
     "jsx": "preserve"
   },
   "include": ["src"],
-  "exclude": ["build", "node_modules", "src/serviceWorker.ts"]
+  "exclude": [
+    "build",
+    "node_modules",
+    "src/serviceWorker.ts",
+    "src/components/dataViz/simpleRings",
+    "src/components/dataViz/pswotTable",
+    "src/pages/cities/profiles/industrySpacePosition",
+    "src/pages/cities/profiles/similarCities",
+    "src/pages/cities/similarity"
+  ]
 }

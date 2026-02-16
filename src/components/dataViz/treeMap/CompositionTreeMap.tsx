@@ -1,8 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useGlobalIndustryMap } from "../../../hooks/useGlobalIndustriesData";
-import { useQuery, gql } from "@apollo/client";
 import {
-  CityIndustryYear,
   DigitLevel,
   ClassificationNaicsIndustry,
   CompositionType,
@@ -38,6 +36,7 @@ import { useAggregateIndustryMap } from "../../../hooks/useAggregateIndustriesDa
 import { defaultYear, formatNumber } from "../../../Utils";
 import { scaleLinear } from "d3-scale";
 import QuickError from "../../transitionStateComponents/QuickError";
+import { useStaticData } from "../../../dataProvider";
 
 const Root = styled.div`
   width: 100%;
@@ -58,38 +57,52 @@ const TreeMapContainer = styled.div`
   left: 0;
 `;
 
-const ECONOMIC_COMPOSITION_QUERY = gql`
-  query GetCityIndustryTreeData($cityId: Int!, $year: Int!) {
-    industries: cityIndustryYearList(cityId: $cityId, year: $year) {
-      id
-      naicsId
-      numCompany
-      numEmploy
-    }
-  }
-`;
+interface EconomicCompositionIndustry {
+  id: string;
+  naicsId: string;
+  numCompany: number | null;
+  numEmploy: number | null;
+}
 
 interface SuccessResponse {
-  industries: {
-    id: CityIndustryYear["id"];
-    naicsId: CityIndustryYear["naicsId"];
-    numCompany: CityIndustryYear["numCompany"];
-    numEmploy: CityIndustryYear["numEmploy"];
-  }[];
+  industries: EconomicCompositionIndustry[];
 }
 
-interface Variables {
-  cityId: number;
-  year: number;
-}
+/**
+ * Static data replacement for the ECONOMIC_COMPOSITION_QUERY.
+ * Reads from StaticDataProvider instead of GraphQL.
+ */
+const useEconomicCompositionQuery = (variables: { cityId: string; year: number }) => {
+  const { data: blsData, loading, error } = useStaticData();
 
-export const useEconomicCompositionQuery = (variables: Variables) =>
-  useQuery<SuccessResponse, Variables>(ECONOMIC_COMPOSITION_QUERY, {
-    variables,
-  });
+  if (!blsData) {
+    return { loading, error, data: undefined };
+  }
+
+  const regionData = blsData.regionData[variables.cityId];
+  if (!regionData) {
+    return { loading: false, error: undefined, data: { industries: [] } as SuccessResponse };
+  }
+
+  const yearData = regionData[variables.year.toString()];
+  if (!yearData) {
+    return { loading: false, error: undefined, data: { industries: [] } as SuccessResponse };
+  }
+
+  const industries: EconomicCompositionIndustry[] = yearData.map((d) => ({
+    id: d.socCode,
+    naicsId: d.socCode,
+    numCompany: d.gdp,      // GDP maps to "companies/establishments"
+    numEmploy: d.totEmp,     // Employment maps directly
+  }));
+
+  return { loading: false, error: undefined, data: { industries } as SuccessResponse };
+};
+
+export { useEconomicCompositionQuery };
 
 interface Props {
-  cityId: number;
+  cityId: string;
   year: number;
   highlighted: string | undefined;
   clearHighlighted: () => void;
@@ -201,7 +214,7 @@ const CompositionTreeMap = (props: Props) => {
     let total = 0;
     industries.forEach(({ naicsId, numCompany, numEmploy }) => {
       const industry = industryMap.data[naicsId];
-      if (industry && industry.level === digitLevel) {
+      if (industry && industry.level !== null && industry.level <= digitLevel) {
         const { name, naicsIdTopParent } = industry;
         if (!hiddenSectors.includes(naicsIdTopParent.toString())) {
           const companies = numCompany ? numCompany : 0;
@@ -258,11 +271,13 @@ const CompositionTreeMap = (props: Props) => {
         ) {
           const target =
             aggregateIndustryDataMap.data.industries[treeMapData[i].id];
-          const targetValue =
-            colorBy === ColorBy.education
-              ? target.yearsEducationRank
-              : target.hourlyWageRank;
-          fill = colorScale(targetValue);
+          if (target) {
+            const targetValue =
+              colorBy === ColorBy.education
+                ? target.yearsEducationRank
+                : target.hourlyWageRank;
+            fill = colorScale(targetValue);
+          }
         }
         treeMapData[i].fill = fill;
       }
@@ -328,14 +343,16 @@ const CompositionTreeMap = (props: Props) => {
           ) {
             const target =
               aggregateIndustryDataMap.data.industries[industry.naicsId];
-            const targetValue =
-              colorBy === ColorBy.education
-                ? target.yearsEducation
-                : target.hourlyWage;
-            rows.push([
-              getString("global-formatted-color-by", { type: colorBy }),
-              (colorBy === ColorBy.wage ? "$" : "") + targetValue.toFixed(2),
-            ]);
+            if (target) {
+              const targetValue =
+                colorBy === ColorBy.education
+                  ? target.yearsEducation
+                  : target.hourlyWage;
+              rows.push([
+                getString("global-formatted-color-by", { type: colorBy }),
+                (colorBy === ColorBy.wage ? "$" : "") + targetValue.toFixed(2),
+              ]);
+            }
           }
           node.innerHTML = getStandardTooltip({
             title: industry.name ? industry.name : "",
@@ -394,14 +411,16 @@ const CompositionTreeMap = (props: Props) => {
           ) {
             const target =
               aggregateIndustryDataMap.data.industries[industry.naicsId];
-            const targetValue =
-              colorBy === ColorBy.education
-                ? target.yearsEducation
-                : target.hourlyWage;
-            rows.push([
-              getString("global-formatted-color-by", { type: colorBy }),
-              (colorBy === ColorBy.wage ? "$" : "") + targetValue.toFixed(2),
-            ]);
+            if (target) {
+              const targetValue =
+                colorBy === ColorBy.education
+                  ? target.yearsEducation
+                  : target.hourlyWage;
+              rows.push([
+                getString("global-formatted-color-by", { type: colorBy }),
+                (colorBy === ColorBy.wage ? "$" : "") + targetValue.toFixed(2),
+              ]);
+            }
           }
           node.innerHTML =
             getStandardTooltip({
@@ -453,10 +472,10 @@ const CompositionTreeMap = (props: Props) => {
       );
       indicator.tooltipContent = getString("glossary-total-shown");
       const fallbackTitle =
-        "Treemap displaying the economic composition of the selected city " +
+        "Treemap displaying the economic composition of the selected region " +
         "based on the number of " +
         compositionType +
-        " found within the city. " +
+        " found within the region. " +
         "The top values are as follows: ";
       output = (
         <TreeMapContainer>

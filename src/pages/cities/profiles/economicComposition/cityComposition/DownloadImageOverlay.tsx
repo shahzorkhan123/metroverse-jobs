@@ -27,7 +27,7 @@ import { defaultYear } from "../../../../../Utils";
 import { useAggregateIndustryMap } from "../../../../../hooks/useAggregateIndustriesData";
 
 interface Props {
-  cityId: number;
+  cityId: string;
   cityName: string | undefined;
   year: number;
   onClose: () => void;

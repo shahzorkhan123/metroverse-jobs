@@ -34,16 +34,30 @@ export const primaryColorRange = [
   "#fcd1c1",
 ];
 
+// SOC Major Group color map (keyed by 2-digit SOC code)
 export const sectorColorMap = [
-  { id: "0", color: "#A973BE" },
-  { id: "1", color: "#F1866C" },
-  { id: "2", color: "#FFC135" },
-  { id: "3", color: "#93CFD0" },
-  { id: "4", color: "#488098" },
-  { id: "5", color: "#77C898" },
-  { id: "6", color: "#6A6AAD" },
-  { id: "7", color: "#D35162" },
-  { id: "8", color: "#F28188" },
+  { id: "11", color: "#A973BE" },  // Management
+  { id: "13", color: "#F1866C" },  // Business and Financial Operations
+  { id: "15", color: "#488098" },  // Computer and Mathematical
+  { id: "17", color: "#6A6AAD" },  // Architecture and Engineering
+  { id: "19", color: "#77C898" },  // Life, Physical, Social Science
+  { id: "21", color: "#93CFD0" },  // Community and Social Service
+  { id: "23", color: "#D35162" },  // Legal
+  { id: "25", color: "#FFC135" },  // Educational Instruction
+  { id: "27", color: "#F28188" },  // Arts, Design, Entertainment
+  { id: "29", color: "#5B9BD5" },  // Healthcare Practitioners
+  { id: "31", color: "#70AD47" },  // Healthcare Support
+  { id: "33", color: "#BF8F00" },  // Protective Service
+  { id: "35", color: "#ED7D31" },  // Food Preparation
+  { id: "37", color: "#8DB4E2" },  // Building and Grounds
+  { id: "39", color: "#C5B0D5" },  // Personal Care
+  { id: "41", color: "#FF6B6B" },  // Sales
+  { id: "43", color: "#4ECDC4" },  // Office and Administrative
+  { id: "45", color: "#556B2F" },  // Farming, Fishing, Forestry
+  { id: "47", color: "#DAA520" },  // Construction
+  { id: "49", color: "#708090" },  // Installation, Maintenance
+  { id: "51", color: "#CD853F" },  // Production
+  { id: "53", color: "#9370DB" },  // Transportation
 ];
 
 export const clusterColorMap = [

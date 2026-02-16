@@ -1,37 +1,53 @@
-import { useQuery, gql } from "@apollo/client";
-import { ClassificationNaicsCluster } from "../types/graphQL/graphQLTypes";
-import { Datum as SearchDatum } from "react-panel-search";
+import { useStaticData } from '../dataProvider';
+import { Datum as SearchDatum } from 'react-panel-search';
 
-const GLOBAL_CLUSTER_QUERY = gql`
-  query GetGlobalClusterData {
-    clusters: classificationNaicsClusterList {
-      clusterId
-      parentId
-      clusterIdTopParent
-      level
-      name: shortName
-      tradable
-      id
-    }
-  }
-`;
+/**
+ * Adapter hook: returns SOC major groups as "clusters".
+ *
+ * Key mapping:
+ *   clusterId -> majorGroupId
+ *   clusterIdTopParent -> majorGroupId (self, since flat)
+ *   name -> majorGroupName
+ */
 
 interface Cluster {
-  clusterId: ClassificationNaicsCluster["clusterId"];
-  parentId: ClassificationNaicsCluster["parentId"];
-  clusterIdTopParent: ClassificationNaicsCluster["clusterIdTopParent"];
-  level: ClassificationNaicsCluster["level"];
-  name: ClassificationNaicsCluster["name"];
-  tradable: ClassificationNaicsCluster["tradable"];
-  id: ClassificationNaicsCluster["id"];
+  clusterId: string;
+  parentId: number | null;
+  clusterIdTopParent: number | null;
+  level: number | null;
+  name: string | null;
+  tradable: boolean;
+  id: string;
 }
 
 interface SuccessResponse {
   clusters: Cluster[];
 }
 
-const useGlobalClusterData = () =>
-  useQuery<SuccessResponse, never>(GLOBAL_CLUSTER_QUERY);
+interface ClusterMap {
+  [id: string]: Cluster;
+}
+
+const useGlobalClusterData = () => {
+  const { data: blsData, loading, error } = useStaticData();
+
+  if (!blsData) {
+    return { loading, error, data: undefined };
+  }
+
+  const clusters: Cluster[] = blsData.majorGroups.map((mg) => ({
+    clusterId: mg.groupId,
+    parentId: null,
+    clusterIdTopParent: parseInt(mg.groupId, 10),
+    level: 1,
+    name: mg.name,
+    tradable: true,
+    id: mg.groupId,
+  }));
+
+  const data: SuccessResponse = { clusters };
+  return { loading: false, error: undefined, data };
+};
 
 const clusterDataToHierarchicalTreeData = (
   data: SuccessResponse | undefined,
@@ -39,17 +55,13 @@ const clusterDataToHierarchicalTreeData = (
   const response: SearchDatum[] = [];
   if (data !== undefined) {
     const { clusters } = data;
-    clusters.forEach(({ clusterId, name, level, clusterIdTopParent }) => {
-      if (name !== null && level !== null && level !== 2) {
+    clusters.forEach(({ clusterId, name, level }) => {
+      if (name !== null && level !== null) {
         response.push({
           id: clusterId,
           title: name,
           level,
-          parent_id:
-            clusterIdTopParent === null ||
-            clusterId === clusterIdTopParent.toString()
-              ? null
-              : clusterIdTopParent.toString(),
+          parent_id: null,
         });
       }
     });
@@ -63,41 +75,15 @@ export const useGlobalClusterHierarchicalTreeData = () => {
   return { loading, error, data };
 };
 
-interface ClusterMap {
-  [id: string]: Cluster;
-}
-
 const clusterDataToMap = (
   data: SuccessResponse | undefined,
-  skipLevel2?: boolean,
 ) => {
   const response: ClusterMap = {};
   if (data !== undefined) {
     const { clusters } = data;
-    clusters.forEach(
-      ({
-        id,
-        clusterId,
-        name,
-        level,
-        parentId,
-        clusterIdTopParent,
-        tradable,
-      }) => {
-        if (!skipLevel2 || level !== 2) {
-          response[clusterId] = {
-            id,
-            clusterId,
-            name,
-            level,
-            parentId:
-              skipLevel2 && parentId !== null ? clusterIdTopParent : parentId,
-            tradable,
-            clusterIdTopParent,
-          };
-        }
-      },
-    );
+    clusters.forEach((cluster) => {
+      response[cluster.clusterId] = cluster;
+    });
   }
   return response;
 };
@@ -106,10 +92,9 @@ interface Options {
   skipLevel2?: boolean;
 }
 
-export const useGlobalClusterMap = (options?: Options) => {
-  const skipLevel2 = options && options.skipLevel2 ? true : false;
+export const useGlobalClusterMap = (_options?: Options) => {
   const { loading, error, data: responseData } = useGlobalClusterData();
-  const data = clusterDataToMap(responseData, skipLevel2);
+  const data = clusterDataToMap(responseData);
   return { loading, error, data };
 };
 

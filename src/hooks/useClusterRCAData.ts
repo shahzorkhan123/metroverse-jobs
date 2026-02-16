@@ -1,83 +1,35 @@
-import { useQuery, gql } from "@apollo/client";
+import { useStaticData } from "../dataProvider";
 import {
-  ClusterDensityRescale,
   ClusterLevel,
-  ClusterRcaCalculation,
-  PeerGroup,
   CompositionType,
   defaultCompositionType,
-  isValidPeerGroup,
-  CityClusterYear,
 } from "../types/graphQL/graphQLTypes";
 import useCurrentCityId from "./useCurrentCityId";
 import { defaultYear } from "../Utils";
 import useQueryParams from "./useQueryParams";
-import useCurrentBenchmark from "./useCurrentBenchmark";
 
 export enum RegionGroup {
   World = "world",
   SimilarCities = "similarcities",
 }
 
-const CLUSTER_RCA_QUERY = gql`
-  query GetClusterNodeIntesityData(
-    $cityId: Int!
-    $year: Int!
-    $level: Int!
-    $peerGroup: String
-    $partnerCityIds: [Int]
-    $variable: String
-  ) {
-    clusterDensity: clusterDensityRescale(
-      cityId: $cityId
-      peerGroup: $peerGroup
-      partnerCityIds: $partnerCityIds
-      year: $year
-      clusterLevel: $level
-    ) {
-      clusterId
-      densityCompany
-      densityEmploy
-    }
-    clusterRca(
-      cityId: $cityId
-      peerGroup: $peerGroup
-      partnerCityIds: $partnerCityIds
-      year: $year
-      clusterLevel: $level
-      variable: $variable
-    ) {
-      clusterId
-      rca
-      comparableIndustry
-    }
-    clusterData: cityClusterYearList(cityId: $cityId, year: $year) {
-      clusterId
-      level
-      numCompany
-      numEmploy
-      id
-    }
-  }
-`;
-
 interface ClusterDensity {
-  clusterId: ClusterDensityRescale["clusterId"];
-  densityCompany: ClusterDensityRescale["densityCompany"];
-  densityEmploy: ClusterDensityRescale["densityEmploy"];
+  clusterId: string;
+  densityCompany: number | null;
+  densityEmploy: number | null;
 }
 
 interface ClusterRca {
-  clusterId: ClusterRcaCalculation["clusterId"];
-  rca: ClusterRcaCalculation["rca"];
-  comparableIndustry: ClusterRcaCalculation["comparableIndustry"];
+  clusterId: string;
+  rca: number | null;
+  comparableIndustry: number | null;
 }
 
 interface ClusterData {
-  clusterId: CityClusterYear["clusterId"];
-  level: CityClusterYear["level"];
-  numCompany: CityClusterYear["numCompany"];
-  numEmploy: CityClusterYear["numEmploy"];
+  clusterId: string;
+  level: number | null;
+  numCompany: number | null;
+  numEmploy: number | null;
 }
 
 export interface SuccessResponse {
@@ -86,52 +38,80 @@ export interface SuccessResponse {
   clusterData: ClusterData[];
 }
 
-interface Variables {
-  cityId: number | null;
-  year: number;
-  level: ClusterLevel;
-  peerGroup: PeerGroup | "";
-  partnerCityIds: [number] | [];
-  variable: "employ" | "company";
-}
-
-const useClusterIntensityQuery = (variables: Variables) =>
-  useQuery<SuccessResponse, Variables>(CLUSTER_RCA_QUERY, { variables });
-
-const useClusterRCAData = (level: ClusterLevel) => {
+const useClusterRCAData = (_level: ClusterLevel) => {
   const cityId = useCurrentCityId();
+  const { data: blsData, loading: blsLoading } = useStaticData();
 
   const { composition_type } = useQueryParams();
-  const { benchmark } = useCurrentBenchmark();
 
   const defaultCompositionVariable =
     defaultCompositionType === CompositionType.Companies ? "company" : "employ";
-  let variable: "employ" | "company" = defaultCompositionVariable;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let _variable: "employ" | "company" = defaultCompositionVariable;
   if (composition_type === CompositionType.Companies) {
-    variable = "company";
+    _variable = "company";
   } else if (composition_type === CompositionType.Employees) {
-    variable = "employ";
+    _variable = "employ";
   }
 
-  const peerGroup = isValidPeerGroup(benchmark) ? (benchmark as PeerGroup) : "";
+  if (cityId === null || blsLoading || !blsData) {
+    return { loading: true, error: undefined, data: undefined };
+  }
 
-  const partnerCityIds: [number] | [] =
-    benchmark !== undefined && !isNaN(parseInt(benchmark, 10))
-      ? [parseInt(benchmark, 10)]
-      : [];
+  const regionData = blsData.regionData[cityId];
+  if (!regionData) {
+    return { loading: false, error: undefined, data: undefined };
+  }
 
-  const { loading, error, data } = useClusterIntensityQuery({
-    cityId: cityId !== null ? parseInt(cityId, 10) : null,
-    year: defaultYear,
-    level,
-    peerGroup,
-    partnerCityIds,
-    variable,
+  const yearData = regionData[defaultYear];
+  if (!yearData) {
+    return { loading: false, error: undefined, data: undefined };
+  }
+
+  // Build socCode → majorGroupId lookup
+  const socToMajorGroup: Record<string, string> = {};
+  blsData.occupations.forEach((o) => {
+    socToMajorGroup[o.socCode] = o.majorGroupId;
   });
 
-  return cityId !== null
-    ? { loading, error, data }
-    : { loading: true, error: undefined, data: undefined };
+  // Build cluster data from occupations grouped by major group
+  const clusterData: ClusterData[] = [];
+  const clusterRca: ClusterRca[] = [];
+  const clusterDensity: ClusterDensity[] = [];
+
+  // Aggregate by major group
+  const majorGroupAgg: Record<string, { employ: number; gdp: number }> = {};
+  yearData.forEach((occ) => {
+    const mgId = socToMajorGroup[occ.socCode] || "00";
+    if (!majorGroupAgg[mgId]) {
+      majorGroupAgg[mgId] = { employ: 0, gdp: 0 };
+    }
+    majorGroupAgg[mgId].employ += occ.totEmp;
+    majorGroupAgg[mgId].gdp += occ.gdp;
+  });
+
+  Object.entries(majorGroupAgg).forEach(([mgId, agg]) => {
+    clusterData.push({
+      clusterId: mgId,
+      level: 1,
+      numCompany: agg.gdp,
+      numEmploy: agg.employ,
+    });
+    // RCA placeholder: 1.0 for all (no cross-region comparison available)
+    clusterRca.push({
+      clusterId: mgId,
+      rca: 1.0,
+      comparableIndustry: null,
+    });
+    clusterDensity.push({
+      clusterId: mgId,
+      densityCompany: null,
+      densityEmploy: null,
+    });
+  });
+
+  const data: SuccessResponse = { clusterDensity, clusterRca, clusterData };
+  return { loading: false, error: undefined, data };
 };
 
 export default useClusterRCAData;

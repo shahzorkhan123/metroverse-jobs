@@ -414,6 +414,7 @@ const SideNavigation = ({
       const offset = pageScrollTop - containerPosition;
       const newLinkDatum: LinkDatum[] = [];
       refArray.forEach((ref, i) => {
+        if (i >= baseLinkData.length) return;
         const node = ref.current;
         if (node) {
           const { top, left } = node.getBoundingClientRect();
@@ -523,8 +524,8 @@ const SideNavigation = ({
           <circle ref={circle_0} cx="20.1" cy="20.4" r={radius} />
           <circle ref={circle_1} cx="53.4" cy="90.1" r={radius} />
           <circle ref={circle_2} cx="65.7" cy="184.6" r={radius} />
-          <circle ref={circle_3} cx="55.8" cy="269.3" r={radius} />
-          <circle ref={circle_4} cx="25.3" cy="347" r={radius} />
+          {baseLinkData.length > 3 && <circle ref={circle_3} cx="55.8" cy="269.3" r={radius} />}
+          {baseLinkData.length > 4 && <circle ref={circle_4} cx="25.3" cy="347" r={radius} />}
         </svg>
       </Root>
     ) : (

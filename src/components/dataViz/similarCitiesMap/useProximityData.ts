@@ -1,49 +1,42 @@
-import {
-  CityPartner,
-  CityPartnerEucDistScale,
-} from "../../../types/graphQL/graphQLTypes";
-import { useQuery, gql } from "@apollo/client";
 import useCurrentCityId from "../../../hooks/useCurrentCityId";
-
-const GET_SIMILAR_CITIES_PROXIMITY_QUERY = gql`
-  query GetSimilarCities($cityId: Int) {
-    cities: cityPartnerList(cityId: $cityId) {
-      cityId
-      partnerId
-      eucdist
-      id
-    }
-    cityPartnerEucdistScale {
-      minGlobalEucdist
-      p20GlobalEucdist
-      p40GlobalEucdist
-      p60GlobalEucdist
-      p80GlobalEucdist
-      maxGlobalEucdist
-    }
-  }
-`;
 
 export interface SuccessResponse {
   cities: {
-    cityId: CityPartner["cityId"];
-    partnerId: CityPartner["partnerId"];
-    eucdist: CityPartner["eucdist"];
-    id: CityPartner["id"];
+    cityId: string;
+    partnerId: string;
+    eucdist: number | null;
+    id: string;
   }[];
-  cityPartnerEucdistScale: CityPartnerEucDistScale;
+  cityPartnerEucdistScale: {
+    minGlobalEucdist: number;
+    p20GlobalEucdist: number;
+    p40GlobalEucdist: number;
+    p60GlobalEucdist: number;
+    p80GlobalEucdist: number;
+    maxGlobalEucdist: number;
+  };
 }
 
+// Stubbed: no proximity/similarity data in BLS static dataset
 const useProximityData = () => {
-  const cityId = useCurrentCityId();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _cityId = useCurrentCityId();
 
-  const response = useQuery<SuccessResponse, { cityId: number | null }>(
-    GET_SIMILAR_CITIES_PROXIMITY_QUERY,
-    {
-      variables: { cityId: cityId ? parseInt(cityId, 10) : null },
-    },
-  );
-  return response;
+  return {
+    loading: false,
+    error: undefined,
+    data: {
+      cities: [],
+      cityPartnerEucdistScale: {
+        minGlobalEucdist: 0,
+        p20GlobalEucdist: 0,
+        p40GlobalEucdist: 0,
+        p60GlobalEucdist: 0,
+        p80GlobalEucdist: 0,
+        maxGlobalEucdist: 0,
+      },
+    } as SuccessResponse,
+  };
 };
 
 export default useProximityData;

@@ -1,14 +1,10 @@
-import { useQuery, gql } from "@apollo/client";
+import { useStaticData } from "../../../../dataProvider";
 import {
-  CityIndustryYear,
-  CityClusterYear,
   DigitLevel,
-  PeerGroup,
   CompositionType,
   defaultCompositionType,
-  NaicsRcaCalculation,
-  ClusterRcaCalculation,
   isValidPeerGroup,
+  PeerGroup,
 } from "../../../../types/graphQL/graphQLTypes";
 import useCurrentCityId from "../../../../hooks/useCurrentCityId";
 import { defaultYear } from "../../../../Utils";
@@ -20,87 +16,26 @@ export enum RegionGroup {
   SimilarCities = "similarcities",
 }
 
-const CLUSTER_INTENSITY_QUERY = gql`
-  query GetClusterIntesityData(
-    $cityId: Int!
-    $year: Int!
-    $level: Int!
-    $peerGroup: String
-    $partnerCityIds: [Int]
-    $variable: String
-  ) {
-    clusterData: cityClusterYearList(cityId: $cityId, year: $year) {
-      clusterId
-      level
-      numEmploy
-      id
-    }
-    naicsData: cityIndustryYearList(
-      cityId: $cityId
-      year: $year
-      level: $level
-    ) {
-      naicsId
-      numCompany
-      numEmploy
-      id
-    }
-    naicsRca(
-      cityId: $cityId
-      peerGroup: $peerGroup
-      partnerCityIds: $partnerCityIds
-      year: $year
-      naicsLevel: $level
-      variable: $variable
-    ) {
-      naicsId
-      rca
-    }
-    c1Rca: clusterRca(
-      cityId: $cityId
-      peerGroup: $peerGroup
-      partnerCityIds: $partnerCityIds
-      year: $year
-      clusterLevel: 1
-      variable: $variable
-    ) {
-      clusterId
-      rca
-    }
-    c3Rca: clusterRca(
-      cityId: $cityId
-      peerGroup: $peerGroup
-      partnerCityIds: $partnerCityIds
-      year: $year
-      clusterLevel: 3
-      variable: $variable
-    ) {
-      clusterId
-      rca
-    }
-  }
-`;
-
 interface ClusterData {
-  clusterId: CityClusterYear["clusterId"];
-  level: CityClusterYear["level"];
-  numEmploy: CityClusterYear["numEmploy"];
+  clusterId: string;
+  level: number | null;
+  numEmploy: number | null;
 }
 
 interface NaicsData {
-  naicsId: CityIndustryYear["naicsId"];
-  numCompany: CityIndustryYear["numCompany"];
-  numEmploy: CityIndustryYear["numEmploy"];
+  naicsId: string;
+  numCompany: number | null;
+  numEmploy: number | null;
 }
 
 interface NaicsRca {
-  naicsId: NaicsRcaCalculation["naicsId"];
-  rca: NaicsRcaCalculation["rca"];
+  naicsId: string;
+  rca: number | null;
 }
 
 interface ClusterRca {
-  clusterId: ClusterRcaCalculation["clusterId"];
-  rca: ClusterRcaCalculation["rca"];
+  clusterId: string;
+  rca: number | null;
 }
 
 export interface SuccessResponse {
@@ -120,8 +55,72 @@ interface Variables {
   variable: "employ" | "company";
 }
 
-export const useClusterIntensityQuery = (variables: Variables) =>
-  useQuery<SuccessResponse, Variables>(CLUSTER_INTENSITY_QUERY, { variables });
+export const useClusterIntensityQuery = (variables: Variables) => {
+  const { data: blsData, loading: blsLoading } = useStaticData();
+
+  if (variables.cityId === null || blsLoading || !blsData) {
+    return { loading: true, error: undefined, data: undefined };
+  }
+
+  const cityId = variables.cityId.toString();
+  const regionData = blsData.regionData[cityId];
+  if (!regionData) {
+    return { loading: false, error: undefined, data: undefined };
+  }
+
+  const yearData = regionData[variables.year] || regionData[defaultYear];
+  if (!yearData) {
+    return { loading: false, error: undefined, data: undefined };
+  }
+
+  // Build socCode → majorGroupId lookup
+  const socToMajorGroup: Record<string, string> = {};
+  blsData.occupations.forEach((o) => {
+    socToMajorGroup[o.socCode] = o.majorGroupId;
+  });
+
+  const naicsData: NaicsData[] = [];
+  const naicsRca: NaicsRca[] = [];
+
+  yearData.forEach((occ) => {
+    naicsData.push({
+      naicsId: occ.socCode,
+      numCompany: occ.gdp,
+      numEmploy: occ.totEmp,
+    });
+    naicsRca.push({
+      naicsId: occ.socCode,
+      rca: 1.0,
+    });
+  });
+
+  // Aggregate by major group for cluster data
+  const majorGroupAgg: Record<string, { employ: number }> = {};
+  yearData.forEach((occ) => {
+    const mgId = socToMajorGroup[occ.socCode] || "00";
+    if (!majorGroupAgg[mgId]) {
+      majorGroupAgg[mgId] = { employ: 0 };
+    }
+    majorGroupAgg[mgId].employ += occ.totEmp;
+  });
+
+  const clusterData: ClusterData[] = [];
+  const c1Rca: ClusterRca[] = [];
+  const c3Rca: ClusterRca[] = [];
+
+  Object.entries(majorGroupAgg).forEach(([mgId, agg]) => {
+    clusterData.push({
+      clusterId: mgId,
+      level: 1,
+      numEmploy: agg.employ,
+    });
+    c1Rca.push({ clusterId: mgId, rca: 1.0 });
+    c3Rca.push({ clusterId: mgId, rca: 1.0 });
+  });
+
+  const data: SuccessResponse = { clusterData, naicsData, naicsRca, c1Rca, c3Rca };
+  return { loading: false, error: undefined, data };
+};
 
 const useRCAData = (level: DigitLevel) => {
   const cityId = useCurrentCityId();

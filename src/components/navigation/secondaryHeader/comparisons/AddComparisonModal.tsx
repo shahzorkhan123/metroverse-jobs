@@ -6,63 +6,29 @@ import {
   primaryFont,
   SearchContainerDark,
   backgroundDark,
-  radioButtonCss,
-  primaryColor,
 } from "../../../../styling/styleUtils";
 import useFluent from "../../../../hooks/useFluent";
 import PanelSearch, { Datum } from "react-panel-search";
 import useCurrentCityId from "../../../../hooks/useCurrentCityId";
 import useGlobalLocationData from "../../../../hooks/useGlobalLocationData";
-import { useHistory, Route, Switch } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import queryString from "query-string";
 import useQueryParams from "../../../../hooks/useQueryParams";
 import { RegionGroup } from "../../../dataViz/comparisonBarChart/cityIndustryComparisonQuery";
 import matchingKeywordFormatter from "../../../../styling/utils/panelSearchKeywordFormatter";
 import { TooltipTheme } from "../../../general/Tooltip";
-import {
-  PeerGroup,
-  isValidPeerGroup,
-  CityPeerGroupCounts,
-} from "../../../../types/graphQL/graphQLTypes";
-import { useQuery, gql } from "@apollo/client";
-import { CityRoutes } from "../../../../routing/routes";
 import BenchmarkSVG from "../../../../assets/icons/benchmark_comparator.svg";
 
-const PEER_GROUP_CITY_COUNT = gql`
-  query GetPeerGroupCityCounts($cityId: Int!) {
-    cityPeerGroupCounts(cityId: $cityId) {
-      cityId
-      globalPop
-      globalIncome
-      globalEucdist
-      regionalPop
-      regionalIncome
-      regionalEucdist
-      region
-    }
-  }
-`;
-
-export const usePeerGroupCityCount = (cityId: string | null) =>
-  useQuery<SuccessResponse, { cityId: number }>(PEER_GROUP_CITY_COUNT, {
-    variables: {
-      cityId: cityId !== null ? parseInt(cityId, 10) : 0,
-    },
-  });
-
-enum PeerGroupCountFields {
-  globalPop = "globalPop",
-  globalIncome = "globalIncome",
-  globalEucdist = "globalEucdist",
-  regionalPop = "regionalPop",
-  regionalIncome = "regionalIncome",
-  regionalEucdist = "regionalEucdist",
-  region = "region",
-}
-
-interface SuccessResponse {
-  cityPeerGroupCounts: CityPeerGroupCounts;
-}
+// Stub: peer group counts not available in static data
+export const usePeerGroupCityCount = (_cityId: string | null): {
+  loading: boolean;
+  error: any;
+  data: { cityPeerGroupCounts: any } | undefined;
+} => ({
+  loading: false,
+  error: undefined,
+  data: undefined,
+});
 
 const mobileWidth = 750; // in px
 
@@ -112,12 +78,12 @@ const Icon = styled.img`
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: 1.5fr auto 1fr;
+  grid-template-columns: 1fr;
   grid-gap: 2rem;
 
   @media (max-width: ${mobileWidth}px) {
     grid-template-columns: auto;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto;
   }
 
   .react-panel-search-search-bar-input {
@@ -130,82 +96,6 @@ const Grid = styled.div`
 
   .react-panel-search-search-results {
     background-color: ${backgroundDark};
-  }
-`;
-
-const GlobalVRegionalGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 0.75rem;
-`;
-
-const GroupContainer = styled.ul`
-  border-top: solid 1px #fff;
-  padding: 0;
-  margin: 0;
-`;
-
-const ContainerTitle = styled.h3`
-  color: #fff;
-  font-weight: 400;
-  margin: 0 0 0.4rem;
-  font-family: ${primaryFont};
-
-  @media (max-width: 990px), (max-height: 800px) {
-    font-size: 1.1rem;
-  }
-`;
-
-const Or = styled.div`
-  text-transform: uppercase;
-  font-size: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-family: ${primaryFont};
-
-  &:before,
-  &:after {
-    content: "";
-    height: auto;
-    flex-grow: 1;
-    width: 0;
-    border-right: solid 2px #fff;
-  }
-
-  &:before {
-    margin-bottom: 0.5rem;
-  }
-
-  &:after {
-    margin-top: 0.5rem;
-  }
-
-  @media (max-width: 990px), (max-height: 800px) {
-    font-size: 1.1rem;
-  }
-
-  @media (max-width: ${mobileWidth}px) {
-    flex-direction: row;
-
-    &:before,
-    &:after {
-      content: "";
-      height: 0;
-      width: 3rem;
-      border-top: solid 2px #fff;
-    }
-
-    &:before {
-      margin-bottom: 0;
-      margin-right: 0.5rem;
-    }
-
-    &:after {
-      margin-left: 0.5rem;
-      margin-top: 0;
-    }
   }
 `;
 
@@ -256,40 +146,17 @@ const ContinueButton = styled.button`
   }
 `;
 
-const GroupItem = styled.li`
-  margin-bottom: 0.5rem;
-  display: block;
-  list-style: none;
-  font-size: 1rem;
+const ContainerTitle = styled.h3`
+  color: #fff;
+  font-weight: 400;
+  margin: 0 0 0.4rem;
   font-family: ${primaryFont};
 
   @media (max-width: 990px), (max-height: 800px) {
-    font-size: 0.8rem;
+    font-size: 1.1rem;
   }
 `;
 
-const GroupRadio = styled.div`
-  ${radioButtonCss}
-  cursor: pointer;
-  padding: 0.5rem 0.25rem;
-
-  small {
-    color: #b9c4ce;
-  }
-
-  &:hover {
-    background-color: #fff;
-
-    small,
-    em {
-      color: inherit;
-    }
-  }
-
-  &:before {
-    margin-right: 16px;
-  }
-`;
 const AboutText = styled.p`
   color: #fff;
   padding: 0 1.5rem;
@@ -301,12 +168,7 @@ const AboutText = styled.p`
   }
 `;
 
-const Recommended = styled.em`
-  font-size: smaller;
-  color: ${primaryColor};
-`;
-
-export const defaultBenchmark = PeerGroup.GlobalPopulation;
+export const defaultBenchmark = RegionGroup.World;
 
 export enum ComparisonType {
   Relative = "relative", // RCA
@@ -327,13 +189,12 @@ const AddComparisonModal = (props: Props) => {
   const { data: globalData } = useGlobalLocationData();
   const history = useHistory();
   const { benchmark, ...otherParams } = useQueryParams();
-  const { data: counts } = usePeerGroupCityCount(cityId);
-  let intialSelected: Datum | null | RegionGroup | PeerGroup = defaultBenchmark;
-  if (isValidPeerGroup(benchmark) || benchmark === RegionGroup.World) {
-    intialSelected = benchmark as PeerGroup;
+  let intialSelected: Datum | null | RegionGroup = RegionGroup.World;
+  if (benchmark === RegionGroup.World) {
+    intialSelected = benchmark as RegionGroup;
   }
   const [selected, setSelected] = useState<
-    Datum | null | RegionGroup | PeerGroup
+    Datum | null | RegionGroup
   >(intialSelected);
 
   const currentCity = globalData
@@ -378,7 +239,7 @@ const AddComparisonModal = (props: Props) => {
   const prevValue = benchmark;
   const closeModalWithoutConfirming =
     prevValue === undefined
-      ? () => closeModal(defaultBenchmark)
+      ? () => closeModal(RegionGroup.World as string)
       : () => closeModal(prevValue);
 
   const title =
@@ -393,39 +254,10 @@ const AddComparisonModal = (props: Props) => {
 
   const about =
     comparisonType === ComparisonType.Relative ? (
-      <Switch>
-        <Route
-          path={CityRoutes.CityGrowthOpportunities}
-          render={() => (
-            <AboutText
-              dangerouslySetInnerHTML={{
-                __html: getString("global-ui-benchmark-about-alt-1"),
-              }}
-            />
-          )}
-        />
-        <Route
-          render={() => (
-            <AboutText
-              dangerouslySetInnerHTML={{
-                __html: getString("global-ui-benchmark-about"),
-              }}
-            />
-          )}
-        />
-      </Switch>
+      <AboutText>
+        Select a region to compare against.
+      </AboutText>
     ) : null;
-
-  const getCount = (f: PeerGroupCountFields) => {
-    if (counts && counts.cityPeerGroupCounts) {
-      return counts.cityPeerGroupCounts[f] ? (
-        <small>({counts.cityPeerGroupCounts[f]} cities)</small>
-      ) : (
-        <small>(0 cities)</small>
-      );
-    }
-    return null;
-  };
 
   return (
     <BasicModal
@@ -452,142 +284,6 @@ const AddComparisonModal = (props: Props) => {
         {about}
         <SearchContainerDark>
           <Grid>
-            <div>
-              <GlobalVRegionalGrid>
-                <div>
-                  <ContainerTitle>
-                    {getString("global-text-global-peers")}
-                  </ContainerTitle>
-                  <GroupContainer>
-                    <GroupItem>
-                      <GroupRadio
-                        onClick={() => setSelected(PeerGroup.GlobalPopulation)}
-                        $checked={selected === PeerGroup.GlobalPopulation}
-                      >
-                        <div>
-                          {getString("global-text-similar-population")}
-                          <br />
-                          {getCount(PeerGroupCountFields.globalPop)}
-                          <br />
-                          <Recommended>
-                            *{getString("global-ui-recommended")}
-                          </Recommended>
-                        </div>
-                      </GroupRadio>
-                    </GroupItem>
-                    <GroupItem>
-                      <GroupRadio
-                        onClick={() => setSelected(PeerGroup.GlobalIncome)}
-                        $checked={selected === PeerGroup.GlobalIncome}
-                      >
-                        <div>
-                          {getString("global-text-similar-income")}
-                          <br />
-                          {getCount(PeerGroupCountFields.globalIncome)}
-                        </div>
-                      </GroupRadio>
-                    </GroupItem>
-                    <GroupItem>
-                      <GroupRadio
-                        onClick={() =>
-                          setSelected(PeerGroup.GlobalEuclideanDistance)
-                        }
-                        $checked={
-                          selected === PeerGroup.GlobalEuclideanDistance
-                        }
-                      >
-                        <div>
-                          {getString("global-text-similar-proximity")}
-                          <br />
-                          {getCount(PeerGroupCountFields.globalEucdist)}
-                        </div>
-                      </GroupRadio>
-                    </GroupItem>
-                    <GroupItem>
-                      <GroupRadio
-                        onClick={() => setSelected(RegionGroup.World)}
-                        $checked={selected === RegionGroup.World}
-                      >
-                        <div>
-                          {getString("global-text-all-regional-peers")} (global)
-                          <br />
-                          <small>
-                            (
-                            {globalData?.cities.length
-                              ? globalData.cities.length
-                              : "---"}{" "}
-                            cities)
-                          </small>
-                        </div>
-                      </GroupRadio>
-                    </GroupItem>
-                  </GroupContainer>
-                </div>
-                <div>
-                  <ContainerTitle>
-                    {getString("global-text-regional-peers")}
-                  </ContainerTitle>
-                  <GroupContainer>
-                    <GroupItem>
-                      <GroupRadio
-                        onClick={() =>
-                          setSelected(PeerGroup.RegionalPopulation)
-                        }
-                        $checked={selected === PeerGroup.RegionalPopulation}
-                      >
-                        <div>
-                          {getString("global-text-similar-population")}
-                          <br />
-                          {getCount(PeerGroupCountFields.regionalPop)}
-                        </div>
-                      </GroupRadio>
-                    </GroupItem>
-                    <GroupItem>
-                      <GroupRadio
-                        onClick={() => setSelected(PeerGroup.RegionalIncome)}
-                        $checked={selected === PeerGroup.RegionalIncome}
-                      >
-                        <div>
-                          {getString("global-text-similar-income")}
-                          <br />
-                          {getCount(PeerGroupCountFields.regionalIncome)}
-                        </div>
-                      </GroupRadio>
-                    </GroupItem>
-                    <GroupItem>
-                      <GroupRadio
-                        onClick={() =>
-                          setSelected(PeerGroup.RegionalEuclideanDistance)
-                        }
-                        $checked={
-                          selected === PeerGroup.RegionalEuclideanDistance
-                        }
-                      >
-                        <div>
-                          {getString("global-text-similar-proximity")}
-                          <br />
-                          {getCount(PeerGroupCountFields.regionalEucdist)}
-                        </div>
-                      </GroupRadio>
-                    </GroupItem>
-                    <GroupItem>
-                      <GroupRadio
-                        onClick={() => setSelected(PeerGroup.Region)}
-                        $checked={selected === PeerGroup.Region}
-                      >
-                        <div>
-                          {getString("global-text-all-regional-peers")}{" "}
-                          (regional)
-                          <br />
-                          {getCount(PeerGroupCountFields.region)}
-                        </div>
-                      </GroupRadio>
-                    </GroupItem>
-                  </GroupContainer>
-                </div>
-              </GlobalVRegionalGrid>
-            </div>
-            <Or>{getString("global-ui-or")}</Or>
             <div>
               <ContainerTitle>{selectCityTitle}</ContainerTitle>
               <PanelSearch

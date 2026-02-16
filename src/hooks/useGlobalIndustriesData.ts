@@ -1,39 +1,58 @@
-import { useQuery, gql } from "@apollo/client";
-import { ClassificationNaicsIndustry } from "../types/graphQL/graphQLTypes";
-import { Datum as SearchDatum } from "react-panel-search";
+import { useStaticData } from '../dataProvider';
+import { Datum as SearchDatum } from 'react-panel-search';
 
-const GLOBAL_INDUSTRIES_QUERY = gql`
-  query GetGlobalIndustryData {
-    industries: classificationNaicsIndustryList {
-      naicsId
-      code
-      name
-      level
-      parentId
-      naicsIdTopParent
-      tradable
-      id
-    }
-  }
-`;
+/**
+ * Adapter hook: returns SOC occupations in the same shape as the
+ * original NAICS industries data.
+ *
+ * Key mapping:
+ *   naicsId -> socCode
+ *   naicsIdTopParent -> majorGroupId (as number)
+ *   code -> socCode
+ *   parentId -> null (flat structure for now)
+ *   tradable -> true (all occupations)
+ */
 
 interface IndustryDatum {
-  id: ClassificationNaicsIndustry["id"];
-  naicsId: ClassificationNaicsIndustry["naicsId"];
-  code: ClassificationNaicsIndustry["code"];
-  name: ClassificationNaicsIndustry["name"];
-  level: ClassificationNaicsIndustry["level"];
-  parentId: ClassificationNaicsIndustry["parentId"];
-  naicsIdTopParent: ClassificationNaicsIndustry["naicsIdTopParent"];
-  tradable: ClassificationNaicsIndustry["tradable"];
+  id: string;
+  naicsId: string;   // actually socCode
+  code: string;      // socCode
+  name: string | null;
+  level: number | null;
+  parentId: number | null;
+  naicsIdTopParent: number;  // majorGroupId as number
+  tradable: boolean;
 }
 
 interface SuccessResponse {
   industries: IndustryDatum[];
 }
 
-const useGlobalIndustriesData = () =>
-  useQuery<SuccessResponse, never>(GLOBAL_INDUSTRIES_QUERY);
+interface IndustryMap {
+  [id: string]: IndustryDatum;
+}
+
+const useGlobalIndustriesData = () => {
+  const { data: blsData, loading, error } = useStaticData();
+
+  if (!blsData) {
+    return { loading, error, data: undefined };
+  }
+
+  const industries: IndustryDatum[] = blsData.occupations.map((occ) => ({
+    id: occ.socCode,
+    naicsId: occ.socCode,
+    code: occ.socCode,
+    name: occ.name,
+    level: occ.level,
+    parentId: null,
+    naicsIdTopParent: parseInt(occ.majorGroupId, 10),
+    tradable: true,
+  }));
+
+  const data: SuccessResponse = { industries };
+  return { loading: false, error: undefined, data };
+};
 
 const industryDataToHierarchicalTreeData = (
   data: SuccessResponse | undefined,
@@ -61,37 +80,13 @@ export const useGlobalIndustryHierarchicalTreeData = () => {
   return { loading, error, data };
 };
 
-interface IndustryMap {
-  [id: string]: IndustryDatum;
-}
-
 const industryDataToMap = (data: SuccessResponse | undefined) => {
   const response: IndustryMap = {};
   if (data !== undefined) {
     const { industries } = data;
-    industries.forEach(
-      ({
-        id,
-        naicsId,
-        name,
-        level,
-        parentId,
-        naicsIdTopParent,
-        code,
-        tradable,
-      }) => {
-        response[naicsId] = {
-          id,
-          naicsId,
-          code,
-          name,
-          level,
-          parentId,
-          naicsIdTopParent,
-          tradable,
-        };
-      },
-    );
+    industries.forEach((industry) => {
+      response[industry.naicsId] = industry;
+    });
   }
   return response;
 };

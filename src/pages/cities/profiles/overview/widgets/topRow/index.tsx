@@ -15,7 +15,7 @@ import {
   numberWithCommas,
 } from "../../../../../../Utils";
 import useFluent, { ordinalNumber } from "../../../../../../hooks/useFluent";
-import { DataFlagType } from "../../../../../../types/graphQL/graphQLTypes";
+
 import styled from "styled-components";
 import Tooltip from "../../../../../../components/general/Tooltip";
 import SimpleTextLoading from "../../../../../../components/transitionStateComponents/SimpleTextLoading";
@@ -147,10 +147,10 @@ const TopRow = () => {
     population = <>{formatNumberLong(city.population ? city.population : 0)}</>;
     gdppc = <>${numberWithCommas(city.gdppc ? Math.round(city.gdppc) : 0)}</>;
     regionPopRank = ordinalNumber([
-      city.regionPopRank ? city.regionPopRank : 0,
+      city.regionPopRank ?? 0,
     ]).toUpperCase();
     regionGdppcRank = ordinalNumber([
-      city.regionGdppcRank ? city.regionGdppcRank : 0,
+      city.regionGdppcRank ?? 0,
     ]).toUpperCase();
   } else {
     population = <>---</>;
