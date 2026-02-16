@@ -1,7 +1,7 @@
-meta-data-title-default = Metroverse | Harvard Growth Lab
-meta-data-title-default-suffix = Metroverse at the Harvard Growth Lab
+meta-data-title-default = Metroverse-Jobs | BLS Occupation Data
+meta-data-title-default-suffix = Metroverse-Jobs
 
-navigation-pick-a-city = Pick a city
+navigation-pick-a-city = Pick a region
 navigation-city-profiles = City Profiles
 navigation-city-similarity = Similar Cities
 navigation-industry-profiles = Industry Profiles
@@ -10,7 +10,7 @@ navigation-about = About
 navigation-contact = Contact
 navigation-faq = FAQ
 
-global-app-name = Metroverse
+global-app-name = Metroverse-Jobs
 
 global-ui-loading-cities = Loading cities
 global-ui-select-a-city-name = A city
@@ -18,7 +18,7 @@ global-ui-select-a-group = Select an existing group
 global-ui-select-peer-group = A Peer Group
 global-ui-select-benchmark-group = Select benchmark peers
 global-ui-select-benchmark-city = City-to-City Benchmarks
-global-ui-type-a-city-name = Type a city name
+global-ui-type-a-city-name = Type a region name
 global-ui-type-an-industry = Type an industry name
 global-ui-selected-industry = Selected industry
 global-ui-includes-keywords = Includes { $keywords }
@@ -269,12 +269,12 @@ data-disclaimer-data-page-link-text = FAQ page
 data-disclaimer-contact = You can help improve our data by sending suggestions or reporting errors <a href="mailto:growthlabtools@hks.harvard.edu">here</a>.
 
 landing-page-text-or = or
-landing-page-text-use-the-map = use the map
-landing-page-text-review-the-city = Explore City Profile
-landing-page-text-review-similar-cities = Explore Similar Cities
-landing-page-text-what-is-city-link = Learn about city boundaries and datasets
-landing-page-text-what-is-city-para-1 = <strong>How do we define city boundaries?</strong> To define city boundaries, Metroverse uses spatial entities called “urban centres”. Urban Centres are defined by specific thresholds on resident population and built-up surface share in a 1x1 km uniform global grid. While this methodology has the benefit of defining cities consistently, across geographical locations and over time, it may result in boundaries that are slightly different than administrative city boundaries.
-landing-page-text-what-is-city-para-2 = Source: <em><a href="https://ghsl.jrc.ec.europa.eu/ghs_stat_ucdb2015mt_r2019a.php" target="_blank">GHS Urban Centre Database</a> from the European Commission’s Joint Research Centre.<em>
+landing-page-text-use-the-map = use the search
+landing-page-text-review-the-city = Explore Region Profile
+landing-page-text-review-similar-cities = Explore Similar Regions
+landing-page-text-what-is-city-link = Learn about regions and datasets
+landing-page-text-what-is-city-para-1 = <strong>What regions are available?</strong> Metroverse-Jobs provides occupation data at three geographic levels: <strong>National</strong> (United States), <strong>State</strong> (all 50 states), and <strong>Metropolitan Area</strong> (top 21 metro areas by employment). Data comes from the Bureau of Labor Statistics Occupational Employment and Wage Statistics (OES) survey, with complexity scores derived from O*NET task data.
+landing-page-text-what-is-city-para-2 = Sources: <em><a href="https://www.bls.gov/oes/" target="_blank">BLS Occupational Employment and Wage Statistics</a></em> and <em><a href="https://www.onetonline.org/" target="_blank">O*NET OnLine</a></em>.
 
 landing-overlay-subtitle = The Growth Lab’s Urban Economy Navigator
 landing-overlay-questions =
@@ -504,375 +504,218 @@ growth-opportunities-para-1 = Building on all these measures, we can rank indust
   [world] the world
 }. Additionally, it can help identify industries that are surprisingly large (or small) in { $name }.
 
-contact-us-title = Get in Touch
-contact-us-para-1 = <strong>Metroverse is a prototype tool with exciting updates and improvements planned.</strong> We welcome your feedback on our data visualizations, our scientific research, and high-resolution datasets for hundreds of cities worldwide.
-contact-us-para-2 = To get in touch, <a href="mailto:growthlabtools@hks.harvard.edu">email</a> us here or find us on <a href="https://twitter.com/HarvardGrwthLab" target="_blank">Twitter</a> and <a href="https://www.facebook.com/HarvardCID/" target="_blank">Facebook</a>.
+contact-us-title = Contact & Feedback
+contact-us-para-1 = <strong>Metroverse-Jobs is an independent project</strong> built on the <a href="https://metroverse.cid.harvard.edu/" target="_blank">Metroverse</a> frontend by Harvard Growth Lab. We welcome bug reports, feature requests, and feedback via <a href="https://github.com/shahzorkhan123/metroverse-jobs/issues" target="_blank">GitHub Issues</a>.
+contact-us-para-2 = This project is not affiliated with or endorsed by Harvard University or the Growth Lab. The original Metroverse was created by the <a href="https://growthlab.hks.harvard.edu/" target="_blank">Growth Lab</a> at Harvard's Center for International Development. This adaptation uses US Bureau of Labor Statistics data and is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a>.
 
 
-about-what-is-title = What is Metroverse?
+about-what-is-title = What is Metroverse-Jobs?
 about-what-is-html =
   <p>
-      Metroverse is an urban economy navigator built at the <a target="_blank" href="https://growthlab.cid.harvard.edu/">Growth Lab</a> at Harvard University.  It is based on over a decade of research on how economies grow and diversify and offers a detailed look into the specialization patterns of cities. 
+    <strong>Metroverse-Jobs</strong> is an adaptation of the <a target="_blank" href="https://metroverse.cid.harvard.edu/">Metroverse</a> urban economy navigator, originally built by the <a target="_blank" href="https://growthlab.cid.harvard.edu/">Growth Lab</a> at Harvard University. This version has been adapted to visualize US occupation data from the Bureau of Labor Statistics.
   </p>
   <p>
-    As a dynamic resource, the tool is continually evolving with new data and features to help answer questions such as: 
+    Instead of using establishment-level data from Dun &amp; Bradstreet (as the original Metroverse does), Metroverse-Jobs uses:
   </p>
   <ul>
-    <li><em>What is the economic composition of my city?</em></li>
-    <li><em>How does my city compare to cities around the globe?</em></li>
-    <li><em>Which cities look most like mine?</em></li>
-    <li><em>What are the technological capabilities that underpin my city&rsquo;s current economy?</em></li>
-    <li><em>Which growth and diversification paths does that suggest for the future?</em></li>
+    <li><strong>BLS Occupational Employment and Wage Statistics (OES)</strong> for employment and wage data across 22 SOC major occupation groups</li>
+    <li><strong>O*NET</strong> task data for occupation complexity scoring</li>
   </ul>
-  <p>As city leaders, job seekers, investors and researchers grapple with 21st century urbanization challenges, the answer to these questions are fundamental to understanding the potential of a city.</p>
   <p>
-    Metroverse delivers new insights on these questions by placing a city&rsquo;s technological capabilities and knowhow at the heart of its growth prospects, where the range and nature of existing capabilities strongly influences how future diversification unfolds. Metroverse makes visible what a city is good at today to help understand what it can become tomorrow.
+    The tool provides interactive treemap visualizations showing occupation composition at three geographic levels: National (United States), State (all 50 states), and Metropolitan Area (21 top metro areas).
   </p>
   <p>
-    <strong>Metroverse is a prototype tool with exciting updates and improvements planned.</strong> We welcome your feedback on our data visualizations, our scientific research, and high-resolution datasets for over 1000 cities worldwide.  Get in touch with us <a target="_blank" href="mailto:growthlabtools@hks.harvard.edu">here</a>.
+    This project is independently managed and is not affiliated with or endorsed by Harvard University. It is licensed under <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>, the same license as the original Metroverse.
   </p>
 
 
-about-team-title = The Team
+about-team-title = Attribution & Credits
 about-team-html =
   <p>
-    Metroverse is the result of an interdisciplinary collaboration between the Growth Lab&rsquo;s Digital Development &amp; Design Team, researchers and staff.  
+    <strong>Metroverse-Jobs</strong> is built on the open-source <a target="_blank" href="https://github.com/cid-harvard/cities-atlas-front-end">Metroverse frontend</a> created by the Growth Lab at Harvard University's Center for International Development.
   </p>
+  <h3>Original Metroverse Team</h3>
   <p>
-    The Metroverse team includes:
+    The original Metroverse was designed and built by an interdisciplinary team at the Growth Lab, including researchers, designers, and developers. We gratefully acknowledge their work in creating the visualization framework that this project builds upon.
   </p>
-  <h3>Digital  Development &amp; Design</h3>
-  <h4>
-    <a target="_blank" href="https://growthlab.cid.harvard.edu/people/annie-white">Annie White</a>, Director, Digital Tools
-  </h4>
-  <p>
-    Annie oversees the software development and design aspects of Metroverse.  She established and led the 1-year prototype development plan beginning with a collaborative discovery phase through to launch.  Annie also facilitates internal and external stakeholder engagement related to Metroverse.
-  </p>
-  <h4>
-    <a target="_blank" href="https://growthlab.cid.harvard.edu/people/brendan-leonard">Brendan Leonard</a>, Senior Back-End &amp; Data Developer
-  </h4>
-  <p>
-    Brendan manages the API and database systems of Metroverse. He works alongside the research team to oversee the technical architecture for processing data into reliable structures and performing efficient calculations. Brendan also conducts research for experimental platform features and administers the cloud-based server infrastructure of Metroverse.
-  </p>
-  <h4>
-    <a target="_blank" href="https://growthlab.cid.harvard.edu/people/ellie-jackson">Ellie Jackson</a>, Junior Back-End &amp; Data Developer
-  </h4>
-  <p>
-    Ellie builds, maintains and optimizes the back-end architecture and infrastructure of Metroverse. She also collaborates with researchers on the acquisition, ingestion and analysis of Metroverse data.
-  </p>
-  <h4><a target="_blank" href="http://www.niltuzcu.net/">Nil Tuzcu</a>, Senior Designer </h4>
-  <p>
-    Nil is responsible for the overall design and user experience of the Metroverse. She leads the information design strategies, visual narrative flows, user experience studies, prototyping and user tests.
-  </p>
-  <h4>
-    <span class="team-member-name">Robert Christie</span>, Front-End Developer
-  </h4>
-  <p>
-    Robert is responsible for the front-end development of Metroverse. He architects and implements interactive interfaces and visualizations with an emphasis on cartography.
-  </p>
-  <h3>Academic Research</h3>
-  <h4>
-    <a target="_blank" href="https://growthlab.hks.harvard.edu/people/frank-neffke">Frank Neffke</a>, Research Director
-  </h4>
-  <p>
-    Frank is responsible for the original conception of Metroverse.  Since its conception he has supervised the research agenda and the design of the tool&rsquo;s analytical and policy framework.
-  </p>
-  <h4>
-    <a target="_blank" href="https://growthlab.cid.harvard.edu/people/yang-li">Yang Li</a>, Postdoctoral Fellow
-  </h4>
-  <p>
-    Yang leads the cleaning, aggregation, harmonization and analysis of Metroverse data. He constructs and tests Metroverse metrics and variables, particularly the structure and visual layouts of industry space and city similarity.
-  </p>
-   <h4>
-    <a target="_blank" href="https://growthlab.hks.harvard.edu/people/shreyas-matha">Shreyas Gadgin Matha</a>, Senior Computational Scientist
-  </h4>
-  <p>
-    Shreyas led the refactoring of Metroverse’s data processing pipeline into a reproducible and efficient system that cleans and processes the data, runs tests on it, and conducts descriptive analyses, readying it for ingestion into the Metroverse.
-  </p>
-  <h3>Applied Research</h3>
-  <h4>
-    <a target="_blank" href="https://growthlab.cid.harvard.edu/people/douglas-barrios">Douglas Barrios</a>, Director, Policy Research
-  </h4>
-  <p>
-    Douglas has led applied research initiatives focused on enabling long-term growth and economic diversification for half-a-dozen subnational entities. This work has informed the user-facing narrative and the applicability of the policy framework found in Metroverse. Douglas also participates in stakeholder outreach initiatives related to Metroverse.
-  </p>
-  <h4>
-    <a target="_blank" href="https://scholar.harvard.edu/josemorales-arilla/home">Jos&eacute; Ram&oacute;n Morales-Arilla</a>, Doctoral Fellow
-  </h4>
-  <p>
-    Jos&eacute; co-authored the user-facing narrative of Metroverse, providing perspectives from his previous work on subnational economic complexity visualization tools. He also helped to develop Metroverse&#39;s policy framework and to advance Metroverse&#39;s feature testing and validation.
-  </p>
-  <h3>Alumni</h3>
-  <h4>
-    <a target="_blank" href="https://fluidencodings.com/">Steven Geofrey</a>, Front-End Developer
-  </h4>
-  <h4>
-    <a target="_blank" href="https://growthlab.hks.harvard.edu/people/kyle-soeltz">Kyle Soeltz</a>, Front-End Developer
-  </h4>
-
-
-
-about-pilot-user-group-title = The Pilot User Group
-about-pilot-user-group-html =
-  <p>
-    To build the Metroverse prototype, the Growth Lab worked in coordination with <a target="_blank" href="https://citypossible.com/">Mastercard City Possible</a>, the <a target="_blank" href="https://www.cityleadership.harvard.edu/">Bloomberg Harvard City Leadership Initiative</a> and the <a target="_blank" href="https://www.iadb.org/en">Inter-American Development Bank</a> to convene a 15-person Pilot User Group composed of city leaders across the world. By engaging with this group throughout the development process, we were able to gather valuable insights that influenced how we designed the tool, helping to ensure that it is useful for a diverse set of urban planners, policymakers and data analysts.    
-  </p>
-  <p>
-    The Growth Lab is grateful to the members of 2020-2021 Pilot User Group: 
-  </p>
+  <h3>Open Source Components</h3>
   <ul>
-    <li>
-      <strong>Diego Andres Arcia (Washington, D.C.)</strong>: Housing and Urban Development Sector Specialist, IDB 
-    </li>
-    <li>
-      <strong>Michelle Barnett (Tulsa)</strong>: Deputy Chief of Economic Development, City of Tulsa 
-    </li>
-    <li>
-      <strong>Paraskevi Bessa-Rodrigues (Novo Hamburgo)</strong>: Municipal Secretary of Economic Development
-    </li>
-    <li>
-      <strong>Court Ellingson (Calgary)</strong>: Vice President Research and Strategy
-    </li>
-    <li>
-      <strong>Eric Anthony Johnson (Dallas): </strong> Chief of Economic Development, Housing &amp; Neighborhood Services
-    </li>
-    <li>
-      <strong>Jeff Seymour (Oklahoma City)</strong>: Executive Vice-President, Economic Development
-    </li>
-    <li>
-      <strong>Barbara Leslie (Oakland): </strong>President &amp; CEO of Oakland Metro Chamber of Commerce
-    </li>
-    <li>
-      <strong>M&ocirc;nica M&aacute;ximo (Curitiba)</strong>: Coordinator for the Department of Research, Monitoring and Evaluation of Urban Policies at the IPPUC
-    </li>
-    <li>
-      <strong>Alberto Paranhos (Curitiba): </strong>Advisor to the President of the Institute of Research and Urban Planning
-    </li>
-    <li>
-      <strong>Juliet Passmore (Dublin)</strong>: Economist, Economic Development Office
-    </li>
-    <li>
-      <strong>Eva Pereira (Los Angeles)</strong>: Deputy Chief Data Officer
-    </li>
-    <li>
-      <strong>Raquel Taminato (Campo Grande)</strong>: Chief of GIS at the Urban and Environmental Planning Agency
-    </li>
-    <li>
-      <strong>Andrea Thornbury (Belfast)</strong>: Data Specialist
-    </li>
-    <li>
-      <strong>Jos&eacute; Julio Rodrigues Vieira (Belo Horizonte)</strong>: Sub-secretary of Urban Planning
-    </li>
-    <li>
-      <strong>Mark Zientek (Albuquerque)</strong>:  Workforce Development Liaison 
-    </li>
+    <li><a target="_blank" href="https://github.com/cid-harvard/react-canvas-treemap">react-canvas-treemap</a> &mdash; Canvas-based treemap visualization (MIT License)</li>
+    <li><a target="_blank" href="https://github.com/cid-harvard/react-panel-search">react-panel-search</a> &mdash; Hierarchical search widget (MIT License)</li>
+  </ul>
+  <h3>License</h3>
+  <p>
+    This project is licensed under <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>, the same license as the original Metroverse. This means you are free to share and adapt the material for non-commercial purposes, as long as you give appropriate credit and distribute under the same license.
+  </p>
+
+
+
+about-pilot-user-group-title = Data Sources
+about-pilot-user-group-html =
+  <h3>BLS Occupational Employment and Wage Statistics (OES)</h3>
+  <p>
+    The <a target="_blank" href="https://www.bls.gov/oes/">OES program</a> produces employment and wage estimates annually for over 800 occupations at the national, state, and metropolitan area levels. This survey covers all full-time and part-time wage and salary workers in nonfarm industries.
+  </p>
+  <p>
+    Metroverse-Jobs uses OES data for: total employment (TOT_EMP), annual mean wage (A_MEAN), and derived GDP estimates (employment &times; wage) for each occupation and region.
+  </p>
+  <h3>O*NET (Occupational Information Network)</h3>
+  <p>
+    <a target="_blank" href="https://www.onetonline.org/">O*NET OnLine</a> is the nation's primary source of occupational information, developed under the sponsorship of the US Department of Labor. It provides detailed descriptions of occupations including required tasks, knowledge, skills, and abilities.
+  </p>
+  <p>
+    Metroverse-Jobs uses O*NET task complexity data to calculate complexity scores for each occupation, providing an additional dimension for understanding the economic composition of regions.
+  </p>
+  <h3>Geographic Coverage</h3>
+  <ul>
+    <li><strong>National:</strong> United States aggregate</li>
+    <li><strong>States:</strong> All 50 US states</li>
+    <li><strong>Metropolitan Areas:</strong> 21 top metro areas by employment</li>
   </ul>
 
 
-about-research-title = The Research
+about-research-title = Methodology
 about-research-html =
   <p>
-    The methodologies behind Metroverse were developed over the course of the past decade and build on the methodologies in the Growth Lab&rsquo;s <a target="_blank" href="https://atlas.cid.harvard.edu/">Atlas of Economic Complexity</a>. 
+    Metroverse-Jobs adapts the visualization methodologies developed by the Growth Lab for the original <a target="_blank" href="https://metroverse.cid.harvard.edu/">Metroverse</a>, which builds on the <a target="_blank" href="https://atlas.cid.harvard.edu/">Atlas of Economic Complexity</a>.
   </p>
+  <h3>Data Pipeline</h3>
   <p>
-    In future versions of Metroverse, we are planning to give a detailed description of these methodologies. For now, if you are interested in some of the research that inspired Metroverse, you can have a look at the following publications:
+    Raw BLS OES data is processed through a pipeline that imports CSV files into a SQLite database, calculates derived metrics, and exports the results as static JSON files for the web application. The pipeline supports multiple years and geographic levels.
+  </p>
+  <h3>Occupation Classification</h3>
+  <p>
+    Occupations are classified using the Standard Occupational Classification (SOC) system. The treemap visualization groups occupations into 22 major groups (2-digit SOC codes) which serve as the top-level sectors, with more detailed breakdowns available at higher digit levels.
+  </p>
+  <h3>Complexity Scores</h3>
+  <p>
+    Complexity scores are derived from O*NET task data and provide a measure of the cognitive and analytical demands of each occupation. These scores are min-max normalized per region to enable comparison across geographic areas.
+  </p>
+  <h3>Related Research</h3>
+  <p>
+    The original Metroverse visualization approach is based on research by the Growth Lab, including work on industry spaces and economic complexity. For the foundational research, see:
   </p>
   <cite>
     Hidalgo, C.A., Klinger, B., Barab&aacute;si, A.L. and Hausmann, R., 2007. The product space conditions the development of nations. <em>Science, 317</em>(5837), pp.482-487.
   </cite>
-  <p>
-    This paper introduces the notion of a Product Space - a concept that is analogous to Metroverse&rsquo;s Industry Space -  and how it can be used to predict how national economies diversify.
-  </p>
   <cite>
     Neffke, F., Henning, M. and Boschma, R., 2011. How do regions diversify over time? Industry relatedness and the development of new growth paths in regions. <em>Economic geography, 87</em>(3), pp.237-265.
   </cite>
-  <p>
-    This paper introduces the Industry Space. Apart from some minor details in implementation, it shows how we can construct industry spaces from information on how firms combine different economic activities in one and the same establishment.
-  </p>
-  <cite>
-    Neffke, F., Hartog, M., Boschma, R. and Henning, M., 2018. Agents of structural change: The role of firms and entrepreneurs in regional diversification. <em>Economic Geography, 94</em>(1), pp.23-48.
-  </cite>
-  <p>
-    This paper shows how industry spaces can help understand transformative change in local economies.
-  </p>
-  <cite>
-    Diodato, D., Neffke, F. and O&rsquo;Clery, N., 2018. Why do industries co-agglomerate? How Marshallian externalities differ by industry and have evolved over time. <em>Journal of Urban Economics, 106</em>, pp.1-26.
-  </cite>
-  <p>
-    This paper explores the notion of an industry space in greater detail.
-  </p>
-  <cite>
-    Neffke, F. and Henning, M., 2013. Skill relatedness and firm diversification. <em>Strategic Management Journal, 34</em>(3), pp.297-316.
-  </cite>
-  <p>
-    This paper discusses the notion of industrial relatedness and the different ways in which it can be measured.
-  </p>
-  <p>
-    For more information on Metroverse&rsquo;s underlying research, please contact <a target="_blank" href="mailto:frank_neffke@hks.harvard.edu">Frank Neffke</a>. 
-  </p>
 
-about-growth-lab-title = The Growth Lab
+about-growth-lab-title = Original Metroverse
 about-growth-lab-html =
   <p>
-    Led by <a target="_blank" href="https://www.hks.harvard.edu/faculty/ricardo-hausmann">Ricardo Hausmann</a>, the <a target="_blank" href="https://growthlab.cid.harvard.edu/">Growth Lab</a> at Harvard&#39;s Center for International Development works to understand the dynamics of growth and to translate those insights into more effective policy making around the world. 
+    The original <a target="_blank" href="https://metroverse.cid.harvard.edu/">Metroverse</a> was created by the <a target="_blank" href="https://growthlab.cid.harvard.edu/">Growth Lab</a> at Harvard's Center for International Development. Led by Ricardo Hausmann, the Growth Lab works to understand the dynamics of growth and to translate those insights into more effective policy making around the world.
   </p>
   <p>
-    For more information on the Growth Lab, find us on <a target="_blank" href="http://www.facebook.com/HarvardCID">Facebook</a> and <a target="_blank" href="https://twitter.com/HarvardGrwthLab">Twitter</a> or subscribe to our quarterly <a target="_blank" href="https://hksexeced.tfaforms.net/f/subscribe?s%3Da1n6g000000nJnxAAE">newsletter</a>. For media inquiries, please contact <a target="_blank" href="mailto:chuck_mckenney@hks.harvard.edu">Chuck McKenney</a>.
+    Metroverse provides an urban economy navigator covering over 1,000 cities worldwide, using establishment-level data from Dun &amp; Bradstreet. It offers interactive visualizations of economic composition, industry spaces, growth opportunities, and city similarity.
+  </p>
+  <p>
+    Visit the original Metroverse at <a target="_blank" href="https://metroverse.cid.harvard.edu/">metroverse.cid.harvard.edu</a>, and explore the source code on <a target="_blank" href="https://github.com/cid-harvard/cities-atlas-front-end">GitHub</a>.
   </p>
 
 faq-title = FAQ
-faq-list-Q1-q = What is Metroverse?
+faq-list-Q1-q = What is Metroverse-Jobs?
 faq-list-Q1-a =
   <p>
-    Metroverse is the <a target="_blank" href="https://growthlab.cid.harvard.edu/">Growth Lab’s</a> urban economy navigator. It is based on over a decade of research on how economies grow and diversify and offers a detailed look into the specialization patterns of cities. To decide whether an economic activity is particularly large in a city, you invariably need to ask “large compared to whom?”. The answer to this question will differ from one user to the other. Therefore, Metroverse is set up to be comparison-centric. Already, Metroverse offers up to 7 different comparator groups, as well as the option to choose any single city as a comparator. Because we believe that you as a user should be able to define what is the right comparison for your city, we plan to keep increasing this flexibility in defining comparator groups.
+    Metroverse-Jobs is an adaptation of the <a target="_blank" href="https://metroverse.cid.harvard.edu/">Metroverse</a> urban economy navigator, originally built by the Growth Lab at Harvard University. This version has been adapted to visualize US occupation data from the Bureau of Labor Statistics, using the Standard Occupational Classification (SOC) system instead of the original NAICS industry classification.
   </p>
   <p>
-    Although Metroverse can generate millions of customizable visualizations, it is not just a visualization tool. Metroverse helps analyze the economies of cities through the lens of <strong>Economic Complexity Analysis</strong>. Economic Complexity Analysis asks what we can learn about a city’s knowledge base by looking at the industries in which it is active. 
-  </p>
-  <p>
-    The basic idea is that the know-how that a city can access is revealed in the mix of activities it supports. A better understanding of this knowledge base is not just useful to describe the city, but also to get an idea of how the city may develop in the future. This notion goes back to the works of Jane Jacobs (1969)<sup>1</sup>, who so aptly observed that cities do not grow by doing more of the same better, but by expanding into new activities. 
-  </p>
-  <p>
-    However, Jacobs also pointed out that new activities typically do not emerge out of nowhere, but are deeply linked to the city’s past. Therefore, to understand what the future may hold for a city, it is important to understand the diversification potential that is embedded in its current industrial structure. Although the visualizations that Metroverse produces do not require any knowledge of Economic Complexity Analysis, they were developed to make this analysis accessible to anyone who wants to apply it. We hope that by playing around with the industry space and SWOT analysis, users will quickly become familiar with the logics behind Economic Complexity Analysis. 
-  </p>
-  <p>
-    <sup>1</sup><small>Jacobs, J., 1969. The economy of cities. Vintage Books: A Division of Random House.</small>
+    The tool provides interactive treemap visualizations showing how employment is distributed across occupation groups for different US regions, along with wage and complexity data.
   </p>
 
-faq-list-Q2-q = Why does my city look strange on the map?
+faq-list-Q2-q = How is this different from the original Metroverse?
 faq-list-Q2-a =
   <p>
-    What are the boundaries of a city? This depends on whom you ask. Statistical offices often rely on city definitions that reflect the borders between areas that are run by different local administrations, such as municipalities or counties. However, economic interactions typically don’t mind crossing administrative boundaries. Therefore, Metroverse uses boundaries that reflect economic, not administrative realities. 
+    The original Metroverse covers over 1,000 cities worldwide using establishment-level data from Dun &amp; Bradstreet, classified by NAICS industry codes. Metroverse-Jobs focuses specifically on US occupation data:
   </p>
+  <ul>
+    <li><strong>Data source:</strong> BLS OES + O*NET (vs. Dun &amp; Bradstreet)</li>
+    <li><strong>Classification:</strong> SOC occupation codes (vs. NAICS industry codes)</li>
+    <li><strong>Geography:</strong> US National, States, and Metro Areas (vs. global cities)</li>
+    <li><strong>Architecture:</strong> Static JSON files (vs. GraphQL API)</li>
+  </ul>
   <p>
-    To make sure that what we call a city is comparable across countries in the world, we chose city boundaries that were originally determined by the <a target="_blank" href="https://ghsl.jrc.ec.europa.eu/ghs_stat_ucdb2015mt_r2019a.php">Joint Research Center of the European Union</a>. These boundaries are based on satellite images and an estimated population grid. They follow the inhabited and built environment of a city. That is, they aim to put borders where the buildings and population of a city stop. More information on this dataset can be found here:
-  </p>
-  <cite>
-    Florczyk, Aneta J., et al. "GHS Urban Centre Database 2015, multitemporal and multidimensional attributes, R2019A." Luxembourg: European Commission, Joint Research Centre (JRC) (2019).
-  </cite>
-  <p>
-    In later versions of Metroverse, we aim to give you the flexibility to choose different types of city definitions, such as so-called functional areas or administrative regions.
+    The visualization framework, treemap components, and UI are adapted from the original Metroverse open-source codebase.
   </p>
 
-faq-list-Q3-q = How do I use this tool to inform policy in my city?
+faq-list-Q3-q = Where does the data come from?
 faq-list-Q3-a =
   <p>
-    Metroverse helps you quickly understand what a city does and how it compares to other cities. Because you can choose your own benchmark, we provide a lot of flexibility so that you can decide yourself what comparison makes most sense to you. However, we also offer a recommendation: cities with more or less the same size. This means that we believe that it makes sense to compare metropoles like New York City, Tokyo, Buenos Aires, Shanghai or Bengaluru to other large cities and not to small towns and vice versa.  
+    Metroverse-Jobs uses two primary data sources:
   </p>
-  <p>
-    Metroverse provides a window on a city’s economy in terms of the industries or sectors that are defined in the North American Industry Classification System (NAICS). However, you can also look at a  city’s economy through the lens of Metroverse’s knowledge clusters<sup>1</sup>. Knowledge clusters help understand the knowledge base of a city, as well as its diversification potential. Although knowledge clusters feature throughout Metroverse, they are most prominent in the Industry Space and the SWOT visualizations. The Industry Space groups industries that are closely related, such that these industries tend to be close to one another in this space. As a consequence, you can quickly see in which knowledge fields a city has a strong specialization, but also  where it has virtually no competencies. 
-  </p>
-  <p>
-    Policymakers should also look to a city’s “adjacent possible” industries<sup>2</sup>. These are the industries that are not yet strongly developed in the city but that are surrounded by industries that are. The adjacent possible reveals the part of the Industry Space into which your city should be able to diversify and grow. 
-  </p>
-  <p>
-    <em>But if those industries were so easy to develop in the city, why hasn’t this happened yet?</em> From the perspective of this question, the adjacent possible represents anomalies: these should be economic activities that your city should have been good at, but isn’t. Knowing which those industries are may help you get an idea of what is missing in your city. Is the adjacent possible full of industries that require an airport? Or is it connected to a specific type of skill set? In these cases, growth may require investments in physical or knowledge infrastructure. Therefore, another way to use the adjacent possible is to ask targeted questions about constraints to your city’s development. If you want to learn more about identifying binding constraints to growth, you may find the policy analysis framework of <a target="_blank" href="https://growthlab.cid.harvard.edu/publications/policy-area/growth-diagnostics">Growth Diagnostics</a> an interesting starting point.
-  </p>
-  <p>
-    The SWOT analysis offers an alternative view of a city’s industry mix. It plots industries along two axes: relative presence and relative technological fit. Industries that lie along the 45-degree line of this plot are about as large as you would expect them to be, given the ecosystem of related industries that the city hosts. The off-diagonal quadrants show which industries deviate from these expectations. 
-  </p>
-  <p>
-    In the upper-left quadrant, industries are smaller than we would have thought given the ecosystem of related industries in the city. This quadrant describes the adjacent possible: we would expect these industries either to grow or to be held back by something in the city that may be worth examining further. The lower-right quadrant, instead, shows industries that are larger than we would have expected, given their ecosystem of related industries in the city. These industries could be poised to disappear (which is why we label them “threats”). However, they could also point to hidden strengths of the city or to industries that are still building a local ecosystem around them. 
-  </p>
-  <p>
-    From this discussion, it is clear that Metroverse does not give a straightforward answer to the question of which industries should be attracted to the city.  Rather, it helps to answer this question, by showing what a city is good at and what we would have expected the city to be good at, given its productive capabilities.
-  </p>
-  <p>
-    <sup>1</sup><small>Users may already be familiar with the notion of clusters as developed by Harvard Business School professor Michael E. Porter. Although similar, Metroverse’s knowledge clusters are created in a different way and reflect a different philosophy of economic growth, namely the philosophy behind Economic Complexity Analysis.</small>
-    <br />
-    <sup>2</sup><small>The term “adjacent possible” was originally used by Stuart Kauffman to describe the evolution of biological systems. However, it also turns out to be a useful way to look at the evolution of man-made systems, such as technology (see, for instance, Loreto et al. 2014) or, as we do here, a local economy.
-    <br />Reference: F., Loreto, V., Servedio, V.D.P. and Strogatz,S.H., 2014. The dynamics of correlated novelties. Scientific reports, 4(1), pp.1-8.</small>
-  </p>
+  <ul>
+    <li><strong><a target="_blank" href="https://www.bls.gov/oes/">BLS Occupational Employment and Wage Statistics (OES)</a></strong>: Provides annual employment and wage estimates for over 800 occupations at national, state, and metropolitan levels.</li>
+    <li><strong><a target="_blank" href="https://www.onetonline.org/">O*NET OnLine</a></strong>: Provides detailed occupation information including task descriptions used to calculate complexity scores.</li>
+  </ul>
 
-faq-list-Q4-q = Where can I learn more about the methodologies behind Metroverse?
+faq-list-Q4-q = What regions are covered?
 faq-list-Q4-a =
   <p>
-    The methodologies behind Metroverse were developed over the course of the past decade and build on the methodologies in the Growth Lab’s <a target="_blank" href="https://atlas.cid.harvard.edu/">Atlas of Economic Complexity</a>. In future versions of Metroverse, we are planning to give a detailed description of these methodologies. For now, if you are interested in some of the research that inspired Metroverse, you can have a look at the following publications:
+    Metroverse-Jobs currently covers three geographic levels:
   </p>
-  <cite>
-    Hidalgo, C.A., Klinger, B., Barab&aacute;si, A.L. and Hausmann, R., 2007. The product space conditions the development of nations. <em>Science, 317</em>(5837), pp.482-487.
-  </cite>
+  <ul>
+    <li><strong>National:</strong> United States aggregate data</li>
+    <li><strong>States:</strong> All 50 US states</li>
+    <li><strong>Metropolitan Areas:</strong> 21 of the largest US metro areas by employment, including New York, Los Angeles, Chicago, Houston, Dallas, and others</li>
+  </ul>
   <p>
-    This paper introduces the notion of a Product Space - a concept that is analogous to Metroverse’s Industry Space -  and how it can be used to predict how national economies diversify.
-  </p>
-  <cite>
-    Neffke, F., Henning, M. and Boschma, R., 2011. How do regions diversify over time? Industry relatedness and the development of new growth paths in regions. <em>Economic geography, 87</em>(3), pp.237-265.
-  </cite>
-  <p>
-    This paper introduces the Industry Space. Apart from some minor details in implementation, it shows how we can construct industry spaces from information on how firms combine different economic activities in one and the same establishment.
-  </p>
-  <cite>
-    Neffke, F., Hartog, M., Boschma, R. and Henning, M., 2018. Agents of structural change: The role of firms and entrepreneurs in regional diversification. <em>Economic Geography, 94</em>(1), pp.23-48.
-  </cite>
-  <p>
-    This paper shows how industry spaces can help understand transformative change in local economies.
-  </p>
-  <cite>
-    Diodato, D., Neffke, F. and O&rsquo;Clery, N., 2018. Why do industries co-agglomerate? How Marshallian externalities differ by industry and have evolved over time. <em>Journal of Urban Economics, 106</em>, pp.1-26.
-  </cite>
-  <p>
-    This paper explores the notion of an industry space in greater detail.
-  </p>
-  <cite>
-    Neffke, F. and Henning, M., 2013. Skill relatedness and firm diversification. <em>Strategic Management Journal, 34</em>(3), pp.297-316.
-  </cite>
-  <p>
-    This paper discusses the notion of industrial relatedness and the different ways in which it can be measured.
+    Additional metro areas may be added in future updates as data becomes available.
   </p>
 
-faq-list-Q5-q = Where do you get your data?
+faq-list-Q5-q = What do the SOC codes mean?
 faq-list-Q5-a =
   <p>
-    Metroverse data are derived from Dun and Bradstreet’s World Base. These data record information for over a hundred million establishments around the globe. Our team cleaned and aggregated these data into the database that powers Metroverse.
+    SOC stands for <strong>Standard Occupational Classification</strong>, the system used by the Bureau of Labor Statistics to categorize workers into occupational groups. SOC codes follow a hierarchical structure:
   </p>
+  <ul>
+    <li><strong>2-digit (Major Group):</strong> e.g., 11-0000 = Management Occupations</li>
+    <li><strong>3-digit (Minor Group):</strong> e.g., 11-1000 = Top Executives</li>
+    <li><strong>5-digit (Broad Occupation):</strong> e.g., 11-1010 = Chief Executives</li>
+    <li><strong>6-digit (Detailed Occupation):</strong> e.g., 11-1011 = Chief Executives</li>
+  </ul>
   <p>
-    Industry data found in Metroverse are classified according to the North American Industry Classification System (NAICS), 2017.
+    In the Viz Options panel, you can change the digit level to view data at different levels of detail.
   </p>
 
-faq-list-Q6-q = How often is Metroverse updated?
-faq-list-Q6-a = 
+faq-list-Q6-q = How is complexity calculated?
+faq-list-Q6-a =
   <p>
-    We are planning to extend the database behind Metroverse such that it allows tracking a city’s development path over time. We expect that we will be updating Metroverse at least once a year.
+    Complexity scores are derived from O*NET task data for each occupation. The scores reflect the cognitive and analytical demands of the work involved. Scores are min-max normalized per region so that they can be compared across different geographic areas.
+  </p>
+  <p>
+    In the treemap visualization, you can color occupations by their complexity score to see which occupation groups tend to be more complex.
   </p>
 
 faq-list-Q7-q = Can I reuse or reprint data and visualizations?
 faq-list-Q7-a =
   <p>
-    Metroverse is a free, public resource intended to advance the understanding of urban economic growth. We encourage collaboration on and sharing of Metroverse concepts, visualizations and data.
+    Yes. Metroverse-Jobs is licensed under <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>, the same license as the original Metroverse. You are free to share and adapt the material for non-commercial purposes, as long as you give appropriate credit and distribute under the same license.
   </p>
   <p>
-    When referring to concepts, visualizations and data from Metroverse, please cite the following reference(s):
+    When citing, please reference both the original Metroverse and this adaptation:
   </p>
   <cite>
-    Neffke, F; Li, Y; White, A; Leonard, B; Tuzcu, N; Soeltz-Szoets, W.K.; Barrios, D.; Morales Arilla, JR, Hausmann, R.  Metroverse, 2021: <a href="https://metroverse.cid.harvard.edu/">https://metroverse.cid.harvard.edu/</a>
+    Original: Neffke, F; Li, Y; White, A; et al. Metroverse, 2021: <a href="https://metroverse.cid.harvard.edu/">https://metroverse.cid.harvard.edu/</a>
   </cite>
 
-faq-list-Q8-q = Why doesn't Metroverse data match data sources in my city?
+faq-list-Q8-q = How often is data updated?
 faq-list-Q8-a =
   <p>
-    The data in Metroverse are our current best estimates of the industrial profiles of urban economies around the globe. However, these data may contain imperfections, because we only cover economic activities in establishments that are registered in Dun and Bradstreet’s World Base. Activities that are part of the informal sector and therefore often not registered are unlikely to be covered. Moreover, the data are more complete in some countries than in others and they may be updated at different frequencies. Our team has cleaned the dataset using a variety of algorithms and then checked its representivity against official datasources. Based on these checks, we provide data disclaimers that disclose how confident we are about the quality of our estimates in each city.
+    The BLS releases updated OES data annually, typically in the spring for the previous year's data. Metroverse-Jobs will be updated as new data becomes available.
   </p>
   <p>
-    Apart from data related issues, Metroverse’s estimates of the sizes of industries in a city may also differ because of the way we define these cities and industries in Metroverse. Definitions may not match the definitions of your local statistical office. For instance, industries are classified according to the North American Industry Classification System, which is typically used in North America, but not elsewhere. However, it is precisely these common definitions that make sure that we can compare cities anywhere in the world. Similarly, the city boundaries used in Metroverse aim to make cities comparable across different countries (see FAQ question 2 for more information on city boundaries). Because of this, if data in Metroverse and other data about your city do not match, this does not mean that either is incorrect. They may just use slightly different definitions of what belongs to the city and what an industry is.
+    The current data covers the year 2024. Historical data from earlier years may be added in future updates.
   </p>
 
-faq-list-Q9-q = Why is my city missing in Metroverse?
+faq-list-Q9-q = I found an error. How do I report it?
 faq-list-Q9-a =
   <p>
-    Unfortunately, not all cities are covered equally well in the underlying database of Metroverse. Metroverse’s current selection of cities reflects a trade-off between showing data for as many cities as possible and ensuring that the data that we show are likely to be reasonably reliable.
-  </p>
-  <p>
-    <strong>Cities presently included in Metroverse have a population greater than 100,000 people, over 10,000 economic establishments and sufficient data disclosure and quality.</strong>
-  </p>
-  <p>
-    We will keep working on expanding the range of cities, but may also be forced to remove some.
-  </p>
-  <p>
-    You can help us with this by telling us when you believe Metroverse’s data contain mistakes or when you can help us find datasets for a city that is not currently in Metroverse so that we can evaluate the quality of our data for that city.
+    Please report bugs, data issues, or feature requests via <a target="_blank" href="https://github.com/shahzorkhan123/metroverse-jobs/issues">GitHub Issues</a>. We appreciate your help in improving the tool.
   </p>
 
-faq-list-Q10-q = I found an error.  How do I report it?
+faq-list-Q10-q = Who maintains this project?
 faq-list-Q10-a =
   <p>
-    Metroverse is a prototype tool with exciting updates and improvements planned. We welcome your feedback on our data visualizations, our scientific research, and high-resolution datasets.  Get in touch with us <a href="mailto:growthlabtools@hks.harvard.edu">here</a>.
+    Metroverse-Jobs is independently maintained and is not affiliated with or endorsed by Harvard University or the Growth Lab. It is built on the open-source <a target="_blank" href="https://github.com/cid-harvard/cities-atlas-front-end">Metroverse frontend</a> with proper attribution under the CC BY-NC-SA 4.0 license.
   </p>

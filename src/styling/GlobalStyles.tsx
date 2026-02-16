@@ -177,7 +177,7 @@ const GlobalStyles = createGlobalStyle`
       align-items: center;
 
       &:before {
-        content: "Help us improve Metroverse";
+        content: "Help us improve Metroverse-Jobs";
         font-size: 0.75rem;
         margin-right: 0.5rem;
       }
