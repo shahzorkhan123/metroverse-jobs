@@ -14,7 +14,8 @@
     "us-2024": {
       "3": "bls-data-us-2024-3.json",
       "4": "bls-data-us-2024-4.json",
-      "5": "bls-data-us-2024-5.json"
+      "3-metro": "bls-data-us-2024-3-metro.json",
+      "4-metro": "bls-data-us-2024-4-metro.json"
     }
   },
   "countries": [
@@ -26,5 +27,5 @@
   "years": [
     2024
   ],
-  "lastUpdated": "2026-02-16"
+  "lastUpdated": "2026-02-22"
 }
