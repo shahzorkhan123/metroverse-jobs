@@ -1,7 +1,48 @@
 # Active Context
 
 ## Current Focus
-All 10 plan changes complete. Pipeline + frontend verified with real BLS data. Documentation update in progress.
+India PLFS data exploration complete. MoSPI MCP server configured. Data structure validated for multi-country support.
+
+## What Was Done (2026-02-22, Session 4)
+
+### India PLFS Data Research
+1. **MoSPI MCP Server Integration**:
+   - Configured official MoSPI Statistics MCP server (https://mcp.mospi.gov.in)
+   - Tested PLFS API: 8 indicators available (LFPR, WPR, UR, wages, worker distribution)
+   - API provides 1-digit NCO only, no occupation×wage cross-tabulations
+   - Conclusion: MCP server insufficient for detailed occupation data
+
+2. **PLFS Data Structure Analysis**:
+   - **NCO 2015 Hierarchy**: 10 divisions (1-digit), ~30 sub-divisions (2-digit), ~116 groups (3-digit), ~436 unit groups (4-digit)
+   - **Published tables**: Table 50 has 1-digit NCO × State wages (validated by MOSPI)
+   - **Sample size**: ~100K households, ~418K persons, ~4,000 workers per state average
+   - **Survey weights**: `mult` field (10-digit) required for population estimation
+
+3. **Data Availability Assessment**:
+   - State level: 1-digit NCO reliable (400 workers/occupation/state), 2-digit feasible (133 workers/occupation/state)
+   - National level: 1-digit, 2-digit, 3-digit all reliable
+   - 3-digit × State: Too sparse (~35 workers/occupation/state), requires suppression
+   - NSS EUS (discontinued 2011), ASI (industry not occupation), DGET (too narrow) - all rejected
+
+4. **Proposed India Structure**:
+   ```
+   State level:    1-digit NCO (10 divisions) × 37 States/UTs = 370 cells [default]
+                   2-digit NCO (~30 sub-divisions) × 37 States/UTs = ~1,110 cells [with suppression]
+   National level: 1-digit (10) + 2-digit (~30) + 3-digit (~116) NCO = 156 occupation categories
+   ```
+   Mirrors BLS OEWS structure (major groups at state, detailed at national)
+
+5. **MCP Servers Configured** (6 total):
+   - GitHub (global)
+   - MoSPI Statistics (https://mcp.mospi.gov.in)
+   - Fetch (web scraping)
+   - Sequential Thinking (planning)
+   - Memory (persistent context)
+
+6. **Other Datasets Evaluated**:
+   - ILOSTAT: 1-digit ISCO-08 only, no wages for India
+   - ASI: NIC (industry) not NCO (occupation) - rejected
+   - DGET: Vocational training sector only - rejected
 
 ## What Was Done (2026-02-22, Session 3)
 

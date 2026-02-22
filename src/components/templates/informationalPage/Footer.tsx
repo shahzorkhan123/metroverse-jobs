@@ -316,6 +316,15 @@ const StandardFooter = () => {
           >
             BLS OES
           </a>
+          {" (US) and "}
+          <a
+            href="https://www.mospi.gov.in/plfs"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            PLFS
+          </a>
+          {" (India, planned)"}
         </div>
       </LicenseAndReadme>
     </Root>

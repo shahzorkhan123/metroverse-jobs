@@ -103,6 +103,45 @@ BLS doesn't publish level 2 (minor group) for states/metros.
 2. Synthesize level 2 from level 3 children
 Uses all codes (including national) for parent resolution.
 
+## NCO Hierarchy (India - 4 Levels)
+
+```
+Level 1: Division      (10 major groups)     e.g., "Professionals"
+Level 2: Sub-division  (~30 categories)      e.g., "Science & Engineering Professionals"
+Level 3: Group         (~116 categories)     e.g., "Software Developers"
+Level 4: Unit group    (~436 categories)     e.g., "Applications Programmers"
+```
+
+### India Data Structure (PLFS 2023-24)
+
+**State Level** (37 States/UTs):
+- **1-digit NCO** × State — Default view (10 divisions, ~400 workers/occupation/state)
+- **2-digit NCO** × State — Drill-down with suppression (~30 sub-divisions, ~133 workers/occupation/state)
+
+**National Level**:
+- **1-digit NCO** (10 divisions)
+- **2-digit NCO** (~30 sub-divisions)
+- **3-digit NCO** (~116 groups) — Detailed national only
+
+**Data Source Options**:
+1. **PLFS Table 50** (pre-aggregated Excel) — 1-digit NCO × State wages
+2. **PLFS Microdata** (TXT + layout) — 3-digit NCO, requires survey weight processing
+3. **MoSPI MCP API** — 1-digit NCO only, no occupation×wage cross-tabs (insufficient)
+
+**Sample Size & Suppression**:
+- Survey: ~100K households, ~418K persons, ~200K workers
+- State average: ~4,000 workers per state
+- Suppression rule: Hide cells with N < 30 unweighted observations
+- 3-digit × State not feasible (~35 workers/occupation/state)
+
+**Survey Weights**:
+- `mult` field (10-digit multiplier) required for population extrapolation
+- Formula: `Weighted Avg Wage = Σ(wage_i × mult_i) / Σ(mult_i)`
+
+**NCO vs NIC**:
+- **NCO** (National Classification of Occupations) — what worker does ← Use for PLFS
+- **NIC** (National Industrial Classification) — what company produces
+
 ## Data Loading
 
 ```

@@ -46,8 +46,18 @@ Region switching updates treemap data. California shown with 58.1k workers acros
 
 ## Data Sources
 
+### United States
 - [BLS Occupational Employment and Wage Statistics (OES)](https://www.bls.gov/oes/)
 - [O*NET Online](https://www.onetonline.org/) (for complexity scores)
+- Coverage: National, 50 States, 400+ Metropolitan/Nonmetropolitan areas
+- Occupation codes: SOC 2018 (4 levels: major group → detailed occupation)
+
+### India (Planned)
+- [PLFS (Periodic Labour Force Survey)](https://www.mospi.gov.in/plfs) by MoSPI
+- [MoSPI MCP Server](https://mcp.mospi.gov.in) (official statistics API)
+- Coverage: National + 37 States/UTs (urban/rural, no metro-level)
+- Occupation codes: NCO 2015 (4 levels: division → unit group)
+- Structure: 1-digit + 2-digit NCO × State, 3-digit NCO × National
 
 ## Getting Started
 

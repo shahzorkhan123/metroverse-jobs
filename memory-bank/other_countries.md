@@ -1,6 +1,137 @@
-India:
+# India PLFS Data - Implementation Plan (Updated 2026-02-22)
 
-  
+## Executive Summary
+
+**Data Source**: Periodic Labour Force Survey (PLFS) 2023-24 by Ministry of Statistics & Programme Implementation (MoSPI)
+**Occupation Classification**: NCO 2015 (National Classification of Occupations)
+**Sample Size**: ~100,000 households, ~418,000 persons, ~200,000 workers
+**Geographic Coverage**: National + 37 States/UTs (no metro-level data)
+
+## Proposed Data Structure
+
+### State Level (37 regions)
+- **1-digit NCO** (10 divisions) × States — 370 data points [DEFAULT VIEW]
+  - Sample: ~400 workers per occupation per state
+  - Reliability: ✅ Excellent (matches MOSPI Table 50)
+- **2-digit NCO** (~30 sub-divisions) × States — ~1,110 data points [DRILL-DOWN]
+  - Sample: ~133 workers per occupation per state
+  - Reliability: ✅ Good (with suppression rules for cells < 30)
+
+### National Level
+- **1-digit NCO** (10 divisions) — 10 categories
+- **2-digit NCO** (~30 sub-divisions) — 30 categories
+- **3-digit NCO** (~116 groups) — 116 categories
+- Reliability: ✅ Excellent at all levels
+
+### NOT Available
+- ❌ 3-digit NCO × State (sample too small: ~35 workers/occupation/state)
+- ❌ Metro/city-level data (urban/rural only, no MSA equivalents)
+- ❌ 4-digit NCO (unit groups) in published data
+
+## NCO 2015 Hierarchy
+
+```
+Level 1 (Division):      10 major groups    e.g., "Professionals"
+Level 2 (Sub-division):  ~30 categories     e.g., "Science & Engineering Professionals"
+Level 3 (Group):         ~116 categories    e.g., "Software Developers"
+Level 4 (Unit group):    ~436 categories    e.g., "Applications Programmers"
+```
+
+**10 NCO Divisions** (1-digit):
+1. Legislators, Senior Officials and Managers
+2. Professionals
+3. Technicians and Associate Professionals
+4. Clerks
+5. Service Workers and Shop & Market Sales Workers
+6. Skilled Agricultural and Fishery Workers
+7. Craft and Related Trades Workers
+8. Plant and Machine Operators and Assemblers
+9. Elementary Occupations
+10. Workers Not Classified by Occupations
+
+## Data Sources Comparison
+
+| Source | Occupation×Wage | Geographic | NCO Level | Status |
+|--------|----------------|------------|-----------|--------|
+| **PLFS Table 50** | ✅ YES | National + State | 1-digit (10) | **BEST - Use this** |
+| **PLFS Microdata** | ✅ YES | National + State + District | 3-digit (116) | Requires registration + parsing |
+| MoSPI MCP API | ❌ NO | National + State | 1-digit (10) | No occupation×wage cross-tabs |
+| ILOSTAT | ❌ Employment only | National | 1-digit ISCO-08 | No wages |
+| NSS EUS | ✅ YES (historical) | National + State | 3-digit NCO-2004 | Discontinued 2011 |
+| ASI | ❌ Industry (NIC) | State | N/A | Wrong classification |
+| DGET | ❌ Too narrow | Limited | Limited | Vocational only |
+
+## Sample Size Analysis
+
+| NCO Level | # Categories | Workers/Category/State | Reliability | Use Case |
+|-----------|-------------|----------------------|-------------|----------|
+| 1-digit | 10 | ~400 | ✅ Excellent | **State comparison** |
+| 2-digit | ~30 | ~133 | ✅ Good | **State drill-down** |
+| 3-digit | ~116 | ~35 | ⚠️ Marginal | **National only** |
+
+**Calculation**:
+- Average state sample: 100K households ÷ 37 states = 2,700 households/state
+- Workers per state: 2,700 × 3 persons × 50% labor force = ~4,000 workers
+- 1-digit: 4,000 ÷ 10 = 400 workers/occupation ✅
+- 2-digit: 4,000 ÷ 30 = 133 workers/occupation ✅
+- 3-digit: 4,000 ÷ 116 = 35 workers/occupation ⚠️
+
+## PLFS Microdata Processing
+
+**Survey weights required**: `mult` field (10-digit multiplier) for population extrapolation
+
+**Key variables** (person-level):
+- `ocu_pas` — 3-digit NCO occupation code (principal activity)
+- `ocu_cws` — 3-digit NCO occupation code (current weekly status)
+- `ern_reg` — 8-digit earnings for regular wage/salaried (monthly, Rs.)
+- `st` — 2-digit state code
+- `mult` — 10-digit survey multiplier/weight
+
+**Formula**:
+```python
+Weighted Average Wage = Σ(wage_i × mult_i) / Σ(mult_i)
+```
+
+## Comparison to BLS OEWS
+
+| Level | India PLFS | US BLS OEWS | Equivalent |
+|-------|-----------|-------------|------------|
+| **State × Major** | 1-digit NCO × 37 states | 2-digit SOC × 50 states | ✅ Similar |
+| **State × Minor** | 2-digit NCO × 37 states | 3-digit SOC × 50 states | ✅ Similar granularity |
+| **National × Detailed** | 3-digit NCO national | 6-digit SOC national | ✅ Comparable |
+
+## Implementation Notes
+
+1. **Suppression rules** for 2-digit × State:
+   - Hide cells with unweighted N < 30
+   - Mark cells with N < 50 as "low reliability"
+   - Large states (UP, Maharashtra): More reliable
+   - Small UTs (Lakshadweep, Sikkim): May have missing cells
+
+2. **NCO vs NIC**:
+   - **NCO** = National Classification of Occupations (what worker does) ← Use this
+   - **NIC** = National Industrial Classification (what company produces)
+   - ASI uses NIC, PLFS uses NCO
+
+3. **NCO to SOC mapping**:
+   - NCO 2015 → ISCO-08 → SOC 2018 (via crosswalk)
+   - Enables international comparison
+   - Some granularity loss at detailed levels
+
+## MoSPI MCP Server
+
+**URL**: https://mcp.mospi.gov.in
+**Status**: Configured and tested
+**Limitations**:
+- Provides only 1-digit NCO data
+- No occupation×wage cross-tabulations (wage data is aggregated)
+- Worker distribution (indicator 4) has NCO breakdown, but wages (indicator 6) do not
+- Useful for validation, not sufficient for main data source
+
+---
+
+## Historical Context (Pre-2026 Research)
+
 For India, the **equivalent data sources to U.S. BLSS/OCC-level occupational and wage statistics** are primarily curated and published by the **Ministry of Labour and Employment** and related government agencies. Specifically:
 1. **Occupational Classification (OCC-Level Data)**    
    - The **National Classification of Occupations (NCO 2015)**, maintained by the Ministry of Labour and Employment, serves as India’s counterpart to the U.S. Standard Occupational Classification (SOC)/OCC system.    
