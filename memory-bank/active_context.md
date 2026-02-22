@@ -1,48 +1,63 @@
 # Active Context
 
 ## Current Focus
-SOC 4-level hierarchy, smart treemap, drill-down, enhanced tooltips — all complete.
+All 10 plan changes complete. Pipeline + frontend verified with real BLS data. Documentation update in progress.
+
+## What Was Done (2026-02-22, Session 3)
+
+### Pipeline: Synthesis of Missing SOC Levels
+1. **`export_json.py`**: Added `_synthesize_missing_levels()` — bottom-up aggregation
+   - BLS doesn't publish level 2 (minor group) for states/metros
+   - Synthesis: level 3 from level 4 children, then level 2 from level 3
+   - Uses `all_codes` (from all records including national) for parent resolution
+   - Called inside `_build_static_data()` before level filtering
+
+2. **Context-aware `_soc_parent()`** (Python + TypeScript):
+   - Only 3 SOC codes use renumbered XX-XX00 pattern: `15-1200`, `31-1100`, `51-5100`
+   - For level 3 (XX-XXX0): tries XX-XX00 first, falls back to XX-X000
+   - Accepts `known_codes` set parameter; without context, defaults to XX-X000 (safe)
+   - Fixed critical double-counting bug: aggressive fix created 15 phantom codes, adding 19.35M employees
+
+3. **Level 3 file split** (matching level 4 pattern):
+   - `bls-data-us-2024-3.json` — nat+state (3.7MB)
+   - `bls-data-us-2024-3-metro.json` — metro only (17MB)
+   - Frontend `loadLevel()` generalized to fetch `{level}-metro` for any level
+
+### Frontend: Smart Treemap with Residuals
+4. **Residual value computation** in `CompositionTreeMap.tsx`:
+   - When parent has children that don't fully cover its employment, parent stays visible with residual = parent_total - children_sum
+   - `adjustedValueMap` for consistent tooltip display
+   - Uses `.forEach()` on Maps (not `for...of`) to avoid TS downlevelIteration issue
+
+### Verification Results (US National)
+- Level 1: 154,187,380 employees
+- Level 2: 154,186,320 (diff: -1,060, ~0%)
+- Level 3: 154,545,940 (+0.23%)
+- Level 4: 147,659,390 (95.8% coverage — BLS suppression)
+- Zero overlapping codes between levels
+- 48 tests pass
+
+### Pipeline Output (Final)
+- `bls-data.json` — meta catalog (lists 3-metro and 4-metro)
+- `bls-data-us-2024.json` — 8.0 MB (levels 1+2 with synthesis, 116 occ)
+- `bls-data-us-2024-3.json` — 3.7 MB (broad, nat+state)
+- `bls-data-us-2024-3-metro.json` — 17 MB (broad, metro)
+- `bls-data-us-2024-4.json` — 6.0 MB (detailed, nat+state, 819 occ)
+- `bls-data-us-2024-4-metro.json` — 23 MB (detailed, metro, 809 occ)
 
 ## What Was Done (2026-02-16, Session 2)
-
-### Pipeline: 4-Level SOC Remap
-1. **`export_json.py`**: `_soc_level()` remapped from 5 levels to 4:
-   - Level 1: XX-0000 (major), Level 2: XX-X000 or XX-XX00 (minor), Level 3: XX-XXX0 (broad), Level 4: XX-XXXX (detailed)
-   - Added `_soc_parent()` for hierarchy traversal
-   - Added `parentCode` field to occupations array
-   - Added `region_types` filter to `export_level_file()`
-   - Level 4 split: nat+state file + metro-only file (`4-metro`)
-2. **`config.py`**: `json_country_year_level_path()` accepts `int | str` for "4-metro"
-3. **`validate.py`**: Added `validate_completeness()` — compares parent employment vs child sums
-4. **`run_pipeline.py`**: Added `--validate` flag
-5. **48 tests pass** (was 44)
-
-### Frontend Changes
-6. **`graphQLTypes.ts`**: `DigitLevel` enum → 4 values (One=1, Two=2, Three=3, Four=4)
-7. **`settings/index.tsx`**: 4 digit level buttons with descriptive labels
-8. **All DigitLevel.Six → DigitLevel.Four** across 9 files
-9. **All DigitLevel.Sector → DigitLevel.One** across 2 files
-10. **`CompositionTreeMap.tsx`**: Smart hierarchical filter (no double-counting), drill-down on click, enhanced tooltip (employees, share%, avg wage, total income), `aMean` in data
-11. **`ClusterCompositionTreeMap.tsx`**: Enhanced tooltip (employees, share%, total income)
-12. **`cityComposition/index.tsx`**: `onDrillDown` handler (isolate sector + increase digit level)
-13. **`CitySearch.tsx`**: Region dropdown reordered — States before Metropolitan Areas
-14. **`dataProvider/index.tsx`**: `fetchAndMerge()` for level keys, handles `4-metro` split
-15. **`dataProvider/types.ts`**: Added `parentCode` to `BLSOccupation`
-16. **`useGlobalIndustriesData.ts`**: Maps `parentCode` to `parentId` and `parentCode`
-
-### Pipeline Output (4-Level)
-- `bls-data.json` (meta catalog with "4-metro" in levelFiles)
-- `bls-data-us-2024.json` — 1.8 MB (levels 1+2, 116 occupations)
-- `bls-data-us-2024-3.json` — 719 KB (broad, 453 occupations)
-- `bls-data-us-2024-4.json` — 6.0 MB (detailed, nat+state, 819 occupations)
-- `bls-data-us-2024-4-metro.json` — 23 MB (detailed, metro only, 809 occupations)
-- Old `bls-data-us-2024-5.json` deleted
-
-### Validation Results
-- 4 expected discrepancies (BLS data suppression): SOC 27-2000, 27-2010, 27-2030, 29-1210
+- SOC 4-level remap (was 5 levels)
+- Smart treemap filter (no double-counting, hierarchical leaf selection)
+- Treemap drill-down (click sector → isolate + increase digit level)
+- Enhanced tooltips (employees, share%, avg wage, total income)
+- DigitLevel enum 4 values, settings panel, region dropdown reorder
+- Level 4 split (nat+state vs metro)
+- Data validation (parentCode, completeness check)
+- 48 tests passing
 
 ## Pending
-- Build frontend (`npm start`) and verify treemaps render correctly
 - Footer still shows Harvard Growth Lab branding
 - Some text still says "city" instead of "region"
-- 23MB metro file may benefit from gzip in production
+- Large file sizes (8MB main, 17+23MB metro) — gzip recommended in production
+- GDP/income validation (values shift across levels due to aMean rounding in synthesis)
+- GitHub Actions CI/CD and GitHub Pages deployment
