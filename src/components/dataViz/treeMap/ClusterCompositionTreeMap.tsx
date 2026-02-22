@@ -163,7 +163,7 @@ const CompositionTreeMap = (props: Props) => {
   >(undefined);
   const { loading, error, data } = useClusterCompositionQuery({ cityId, year });
   const aggregateIndustryDataMap = useAggregateIndustryMap({
-    level: DigitLevel.Six,
+    level: DigitLevel.Four,
     year: defaultYear,
     clusterLevel: parseInt(clusterLevel, 10),
   });
@@ -390,19 +390,14 @@ const CompositionTreeMap = (props: Props) => {
           );
           const rows = [
             [getString("global-ui-year") + ":", year.toString()],
+            ["Employees:", numberWithCommas(formatNumber(Math.round(numEmploy)))],
             [
               getString("tooltip-share-generic", { value: compositionType }) +
                 ":",
               shareString,
             ],
+            ["Total Income:", "$" + numberWithCommas(formatNumber(Math.round(numCompany)))],
           ];
-          if (compositionType === CompositionType.Employees) {
-            rows.push([
-              getString("tooltip-number-generic", { value: compositionType }) +
-                ":",
-              numberWithCommas(formatNumber(Math.round(value))),
-            ]);
-          }
           if (
             (colorBy === ColorBy.education || colorBy === ColorBy.wage) &&
             aggregateIndustryDataMap.data
@@ -459,19 +454,14 @@ const CompositionTreeMap = (props: Props) => {
           );
           const rows = [
             [getString("global-ui-year") + ":", year.toString()],
+            ["Employees:", numberWithCommas(formatNumber(Math.round(numEmploy)))],
             [
               getString("tooltip-share-generic", { value: compositionType }) +
                 ":",
               shareString,
             ],
+            ["Total Income:", "$" + numberWithCommas(formatNumber(Math.round(numCompany)))],
           ];
-          if (compositionType === CompositionType.Employees) {
-            rows.push([
-              getString("tooltip-number-generic", { value: compositionType }) +
-                ":",
-              numberWithCommas(formatNumber(Math.round(value))),
-            ]);
-          }
           if (
             (colorBy === ColorBy.education || colorBy === ColorBy.wage) &&
             aggregateIndustryDataMap.data

@@ -3,9 +3,9 @@
 Country-tagged output structure:
   - public/data/bls-data.json              (meta catalog)
   - public/data/bls-data-us-2024.json      (levels 1+2, main data)
-  - public/data/bls-data-us-2024-3.json    (level 3 extension)
-  - public/data/bls-data-us-2024-4.json    (level 4 extension)
-  - public/data/bls-data-us-2024-5.json    (level 5 extension)
+  - public/data/bls-data-us-2024-3.json    (level 3 extension — broad)
+  - public/data/bls-data-us-2024-4.json    (level 4 extension — detailed, nat+state)
+  - public/data/bls-data-us-2024-4-metro.json (level 4 extension — detailed, metro)
 """
 
 import json
@@ -20,24 +20,131 @@ SOC_MAJOR_GROUP_COLORS = config.SOC_MAJOR_GROUP_COLORS
 
 
 def _soc_level(soc_code: str) -> int:
-    """Determine the SOC digit level for a code.
+    """BLS SOC hierarchy: 4 real levels.
 
-    XX-0000 = level 1 (major group)
-    XX-X000 = level 2 (minor group)
-    XX-XX00 = level 3 (broad occupation)
-    XX-XXX0 = level 4 (detailed)
-    XX-XXXX = level 5 (most detailed)
+    XX-0000 = 1 (major group)
+    XX-X000 = 2 (minor group)
+    XX-XX00 = 2 (minor group — SOC 2018 renumbered codes)
+    XX-XXX0 = 3 (broad occupation)
+    XX-XXXX = 4 (detailed occupation)
     """
     if soc_code.endswith("-0000"):
         return 1
-    elif soc_code.endswith("000"):
+    elif soc_code.endswith("00"):  # catches both XX-X000 and XX-XX00
         return 2
-    elif soc_code.endswith("00"):
-        return 3
     elif soc_code.endswith("0"):
-        return 4
+        return 3
     else:
-        return 5
+        return 4
+
+
+def _soc_parent(soc_code: str, known_codes: set[str] | None = None) -> str | None:
+    """Get parent SOC code for hierarchy traversal.
+
+    For level 3 (XX-XXX0), the parent minor group can be either
+    XX-X000 (standard) or XX-XX00 (SOC 2018 renumbered).  When
+    *known_codes* is provided we check which pattern actually exists;
+    otherwise we default to the standard XX-X000 pattern.
+    """
+    level = _soc_level(soc_code)
+    prefix = soc_code[:3]  # "XX-"
+    if level == 4:
+        return prefix + soc_code[3:6] + "0"   # XX-XXXX → XX-XXX0
+    if level == 3:
+        renumbered = prefix + soc_code[3:5] + "00"   # XX-XX00
+        standard   = prefix + soc_code[3] + "000"    # XX-X000
+        if renumbered == standard:
+            return standard
+        if known_codes is not None:
+            return renumbered if renumbered in known_codes else standard
+        return standard  # safe default
+    if level == 2:
+        return prefix + "0000"                  # XX-X000 → XX-0000
+    return None  # level 1 has no parent
+
+
+def _synthesize_missing_levels(records: list[dict]) -> list[dict]:
+    """Synthesize missing intermediate SOC levels by aggregating children.
+
+    BLS doesn't publish level 2 (minor group) or some level 3 (broad) data
+    for states and metros.  This creates synthetic records by summing
+    immediate children, processed bottom-up (level 3 from level 4, then
+    level 2 from level 3).
+
+    Occupation names are looked up from other regions (national usually has
+    every code).
+    """
+    from collections import defaultdict
+
+    # Build global SOC name + major-group-name lookup
+    soc_names: dict[str, str] = {}
+    soc_mg_names: dict[str, str] = {}
+    for r in records:
+        code = r["SOC_Code"]
+        if code not in soc_names:
+            soc_names[code] = r["OCC_TITLE"]
+        mg = code[:2]
+        if mg not in soc_mg_names:
+            soc_mg_names[mg] = r.get("SOC_Major_Group_Name", "")
+
+    # Build global set of all SOC codes (national data has the complete hierarchy)
+    all_codes = {r["SOC_Code"] for r in records}
+
+    # Group records by (region_type, region, year)
+    by_region_year: dict[tuple, dict[str, dict]] = defaultdict(dict)
+    for r in records:
+        key = (r["Region_Type"], r["Region"], r["year"])
+        by_region_year[key][r["SOC_Code"]] = r
+
+    all_synthetic: list[dict] = []
+
+    for (rt, region, year), code_map in by_region_year.items():
+        # Bottom-up: synthesize level 3 first (from level 4), then level 2
+        for target_level in [3, 2]:
+            child_level = target_level + 1
+            missing_parents: dict[str, list[dict]] = defaultdict(list)
+
+            for code, rec in list(code_map.items()):
+                if _soc_level(code) == child_level:
+                    parent = _soc_parent(code, all_codes)
+                    if (parent
+                            and _soc_level(parent) == target_level
+                            and parent not in code_map):
+                        missing_parents[parent].append(rec)
+
+            for parent_code, children in missing_parents.items():
+                total_emp = sum(c["TOT_EMP"] for c in children)
+                total_gdp = sum(c["GDP"] for c in children)
+                a_mean = round(total_gdp / total_emp) if total_emp > 0 else 0
+                major_group = parent_code[:2]
+
+                if total_emp > 0:
+                    complexity = sum(
+                        c.get("complexity_score", 0.5) * c["TOT_EMP"]
+                        for c in children
+                    ) / total_emp
+                else:
+                    complexity = 0.5
+
+                synth = {
+                    "year": year,
+                    "Region_Type": rt,
+                    "Region": region,
+                    "SOC_Code": parent_code,
+                    "OCC_TITLE": soc_names.get(parent_code, f"SOC {parent_code}"),
+                    "SOC_Major_Group": major_group,
+                    "SOC_Major_Group_Name": soc_mg_names.get(major_group, ""),
+                    "TOT_EMP": total_emp,
+                    "A_MEAN": a_mean,
+                    "GDP": total_gdp,
+                    "complexity_score": round(complexity, 4),
+                }
+
+                # Add to code_map so level 2 synthesis can use synthesized level 3
+                code_map[parent_code] = synth
+                all_synthetic.append(synth)
+
+    return all_synthetic
 
 
 def _make_region_id(region_type: str, region_name: str) -> str:
@@ -93,6 +200,12 @@ def _build_static_data(records: list[dict],
     If max_level is set, only include occupations at levels <= max_level.
     If exact_level is set, only include occupations at exactly that level.
     """
+    # Synthesize missing intermediate SOC levels before filtering.
+    # This fills gaps where BLS doesn't publish level 2/3 for states/metros.
+    synthetic = _synthesize_missing_levels(records)
+    if synthetic:
+        records = records + synthetic
+
     if exact_level is not None:
         filtered = [r for r in records
                     if _soc_level(r["SOC_Code"]) == exact_level]
@@ -139,6 +252,7 @@ def _build_static_data(records: list[dict],
         })
 
     # Build occupations array
+    all_soc_codes = set(occupations_set.keys())
     occupations = []
     for soc_code in sorted(occupations_set.keys()):
         occ = occupations_set[soc_code]
@@ -146,6 +260,7 @@ def _build_static_data(records: list[dict],
             "socCode": soc_code,
             "name": occ["name"],
             "level": _soc_level(soc_code),
+            "parentCode": _soc_parent(soc_code, all_soc_codes),
             "majorGroupId": occ["majorGroupId"],
             "majorGroupName": occ["majorGroupName"],
         })
@@ -291,9 +406,11 @@ def export_level_file(conn: sqlite3.Connection,
                       country_code: str,
                       year: int,
                       level: int,
-                      output_path: Path | None = None) -> int:
+                      output_path: Path | None = None,
+                      region_types: list[str] | None = None) -> int:
     """Generate a level extension JSON file (single level only).
 
+    If region_types is set, only include those region types (e.g. ["National", "State"]).
     Returns record count for this level.
     """
     short = config.country_short(country_code)
@@ -302,6 +419,8 @@ def export_level_file(conn: sqlite3.Connection,
 
     records = _query_records(conn, [country_code])
     records = [r for r in records if r["year"] == year]
+    if region_types:
+        records = [r for r in records if r["Region_Type"] in region_types]
     data = _build_static_data(records, exact_level=level)
     data["metadata"]["country"] = short
     data["metadata"]["level"] = level
@@ -326,7 +445,8 @@ def export_meta(country_configs: list[dict],
 
     country_configs: list of dicts with keys:
         country_code (str), country_short (str), country_name (str),
-        year (int), levels_available (list[int])
+        year (int), levels_available (list[int]),
+        level_files_extra (dict[str,str], optional) — extra level file keys
     """
     if output_path is None:
         output_path = config.json_meta_path()
@@ -358,6 +478,10 @@ def export_meta(country_configs: list[dict],
         for lvl in levels:
             if lvl > 2:
                 level_files[key][str(lvl)] = f"bls-data-{short}-{year}-{lvl}.json"
+
+        # Merge extra level files (e.g. "4-metro")
+        for lkey, lfile in cfg.get("level_files_extra", {}).items():
+            level_files[key][lkey] = lfile
 
     meta = {
         "datasets": datasets,
@@ -391,13 +515,32 @@ def export_all(conn: sqlite3.Connection,
     records = [r for r in records if r["year"] == year]
     all_levels = sorted(set(_soc_level(r["SOC_Code"]) for r in records))
 
-    # Export level extension files (3, 4, 5)
+    # Export level extension files
     level_counts: dict[int, int] = {}
+    level_files_extra: dict[str, str] = {}
     for level in all_levels:
         if level > 2:
-            count = export_level_file(conn, country_code, year, level)
-            if count > 0:
-                level_counts[level] = count
+            if level >= 3:
+                # Split level 3 and 4: nat+state vs metro
+                count_ns = export_level_file(
+                    conn, country_code, year, level,
+                    region_types=["National", "State"],
+                )
+                metro_path = config.json_country_year_level_path(short, year, f"{level}-metro")
+                count_metro = export_level_file(
+                    conn, country_code, year, level,
+                    output_path=metro_path,
+                    region_types=["Metro"],
+                )
+                total_count = count_ns + count_metro
+                if total_count > 0:
+                    level_counts[level] = total_count
+                if count_metro > 0:
+                    level_files_extra[f"{level}-metro"] = f"bls-data-{short}-{year}-{level}-metro.json"
+            else:
+                count = export_level_file(conn, country_code, year, level)
+                if count > 0:
+                    level_counts[level] = count
 
     # Export meta catalog
     levels_available = [lvl for lvl in all_levels if lvl > 2 and lvl in level_counts]
@@ -407,6 +550,7 @@ def export_all(conn: sqlite3.Connection,
         "country_name": country_name,
         "year": year,
         "levels_available": levels_available,
+        "level_files_extra": level_files_extra,
     }])
 
     return {

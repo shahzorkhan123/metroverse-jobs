@@ -3,9 +3,11 @@
 import json
 import re
 import sqlite3
+from collections import defaultdict
 from pathlib import Path
 
 from . import config
+from .export_json import _soc_level, _soc_parent
 
 SOC_PATTERN = re.compile(r"^\d{2}-\d{4}$")
 ISCO_PATTERN = re.compile(r"^OC\d$")
@@ -175,3 +177,46 @@ def validate_json(json_path: Path | None = None) -> list[str]:
         errors.append("regionData is empty")
 
     return errors
+
+
+def validate_completeness(conn: sqlite3.Connection,
+                          country_code: str = "USA",
+                          year: int = 2024) -> list[str]:
+    """Compare parent employment with sum of children for each region.
+
+    Returns list of warning strings for discrepancies > 10%.
+    """
+    from .export_json import _query_records
+
+    records = _query_records(conn, [country_code])
+    records = [r for r in records if r["year"] == year]
+
+    # Group by region
+    by_region: dict[str, list[dict]] = defaultdict(list)
+    for r in records:
+        by_region[r["Region"]].append(r)
+
+    warnings = []
+    for region, region_records in by_region.items():
+        by_code = {r["SOC_Code"]: r for r in region_records}
+        # For each parent code that exists in this region
+        for code, rec in by_code.items():
+            level = _soc_level(code)
+            if level >= 4:
+                continue  # detailed codes have no children
+            # Find children of this code
+            children_emp = sum(
+                r["TOT_EMP"]
+                for c, r in by_code.items()
+                if c != code and _soc_parent(c) == code
+            )
+            if children_emp > 0:
+                parent_emp = rec["TOT_EMP"]
+                if parent_emp > 0:
+                    ratio = children_emp / parent_emp
+                    if abs(ratio - 1.0) > 0.1:
+                        warnings.append(
+                            f"{region} {code}: children sum={children_emp:,} "
+                            f"vs parent={parent_emp:,} (ratio={ratio:.2f})"
+                        )
+    return warnings

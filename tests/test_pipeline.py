@@ -223,7 +223,7 @@ class TestExportJson:
 
         try:
             count = export_json.export_json(seeded_db, ["USA"], out_path)
-            assert count == 21  # 7 occupations * 3 regions
+            assert count == 21  # 7 occupations * 3 regions (legacy API returns raw count)
 
             data = json.loads(out_path.read_text(encoding="utf-8"))
             assert "metadata" in data
@@ -235,7 +235,7 @@ class TestExportJson:
 
             assert data["metadata"]["years"] == [2024]
             assert len(data["regions"]) == 3
-            assert len(data["occupations"]) == 7
+            assert len(data["occupations"]) == 16  # 7 original + 9 synthesized
         finally:
             out_path.unlink(missing_ok=True)
 
@@ -249,10 +249,12 @@ class TestExportJson:
             export_json.export_json(seeded_db, ["USA"], out_path)
             data = json.loads(out_path.read_text(encoding="utf-8"))
 
-            # Check that occupations have correct levels
+            # Check that occupations have correct levels (4-level SOC hierarchy)
             for occ in data["occupations"]:
                 assert "level" in occ
-                assert occ["level"] in [1, 2, 3, 4, 5]
+                assert occ["level"] in [1, 2, 3, 4]
+                # parentCode should be present
+                assert "parentCode" in occ
         finally:
             out_path.unlink(missing_ok=True)
 
@@ -304,29 +306,37 @@ class TestExportJsonLevels:
 
     def test_soc_level_calculation(self):
         from scripts.pipeline.export_json import _soc_level
-        assert _soc_level("11-0000") == 1
-        assert _soc_level("11-1000") == 2
-        assert _soc_level("11-1100") == 3
-        assert _soc_level("11-1110") == 4
-        assert _soc_level("11-1011") == 5
+        assert _soc_level("11-0000") == 1  # major
+        assert _soc_level("11-1000") == 2  # minor
+        assert _soc_level("11-1100") == 2  # minor (SOC 2018 renumbered)
+        assert _soc_level("11-1110") == 3  # broad
+        assert _soc_level("11-1011") == 4  # detailed
+
+    def test_soc_parent_calculation(self):
+        from scripts.pipeline.export_json import _soc_parent
+        assert _soc_parent("11-0000") is None      # major has no parent
+        assert _soc_parent("11-1000") == "11-0000"  # minor → major
+        assert _soc_parent("11-1100") == "11-0000"  # minor (renumbered) → major
+        assert _soc_parent("11-1110") == "11-1000"  # broad → minor (default XX-X000 without context)
+        assert _soc_parent("15-1252") == "15-1250"  # detailed → broad
 
     def test_level_filter_reduces_records(self, seeded_db):
         """Level-1 should have fewer occupations than full data."""
         from scripts.pipeline.export_json import _build_static_data, _query_records
         records = _query_records(seeded_db, ["USA"])
 
-        # Full data: 7 occupations
+        # Full data: 7 original + 9 synthesized = 16 occupations
         full_data = _build_static_data(records)
-        assert len(full_data["occupations"]) == 7
+        assert len(full_data["occupations"]) == 16
 
-        # Level 1 only: 1 occupation (11-0000)
+        # Level 1 only: 1 occupation (11-0000) — synthesis doesn't create level 1
         level1_data = _build_static_data(records, max_level=1)
         assert len(level1_data["occupations"]) == 1
         assert level1_data["occupations"][0]["socCode"] == "11-0000"
 
-        # Level 2: 2 occupations (11-0000 + 11-1000)
+        # Level 2: 11-0000 + 11-1000 + 4 synthesized level-2 codes = 6
         level2_data = _build_static_data(records, max_level=2)
-        assert len(level2_data["occupations"]) == 2
+        assert len(level2_data["occupations"]) == 6
 
 
 class TestExportCountryTagged:
@@ -351,30 +361,32 @@ class TestExportCountryTagged:
 
     def test_export_level_file(self, seeded_db):
         with tempfile.TemporaryDirectory() as tmpdir:
-            out_path = Path(tmpdir) / "bls-data-us-2024-5.json"
+            out_path = Path(tmpdir) / "bls-data-us-2024-4.json"
             count = export_json.export_level_file(
-                seeded_db, "USA", 2024, 5, out_path
+                seeded_db, "USA", 2024, 4, out_path
             )
-            # We have level-5 occupations in test data
+            # We have level-4 occupations in test data (detailed: 15-1252, 29-1141, etc.)
             assert count > 0
 
             data = json.loads(out_path.read_text(encoding="utf-8"))
-            assert data["metadata"]["level"] == 5
+            assert data["metadata"]["level"] == 4
 
-            # Should only contain exact level 5 occupations
+            # Should only contain exact level 4 occupations
             for occ in data["occupations"]:
-                assert occ["level"] == 5
+                assert occ["level"] == 4
 
-    def test_export_level_file_empty_level(self, seeded_db):
-        """Level 3 should have 0 records (no XX-XX00 codes in test data)."""
+    def test_export_level_file_synthesized_level3(self, seeded_db):
+        """Level 3 (broad) should have synthesized records from level 4 children."""
         with tempfile.TemporaryDirectory() as tmpdir:
             out_path = Path(tmpdir) / "bls-data-us-2024-3.json"
             count = export_json.export_level_file(
                 seeded_db, "USA", 2024, 3, out_path
             )
-            assert count == 0
-            # File should not be created for empty levels
-            assert not out_path.exists()
+            # 5 synthesized level-3 codes × 3 regions = 15
+            assert count == 15
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            for occ in data["occupations"]:
+                assert occ["level"] == 3
 
     def test_export_meta(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -384,7 +396,10 @@ class TestExportCountryTagged:
                 "country_short": "us",
                 "country_name": "United States",
                 "year": 2024,
-                "levels_available": [3, 4, 5],
+                "levels_available": [3, 4],
+                "level_files_extra": {
+                    "4-metro": "bls-data-us-2024-4-metro.json",
+                },
             }], out_path)
 
             data = json.loads(out_path.read_text(encoding="utf-8"))
@@ -399,7 +414,7 @@ class TestExportCountryTagged:
             lf = data["levelFiles"]["us-2024"]
             assert lf["3"] == "bls-data-us-2024-3.json"
             assert lf["4"] == "bls-data-us-2024-4.json"
-            assert lf["5"] == "bls-data-us-2024-5.json"
+            assert lf["4-metro"] == "bls-data-us-2024-4-metro.json"
 
     def test_export_all(self, seeded_db):
         """Integration test: export_all produces all expected files."""
@@ -426,9 +441,15 @@ class TestExportCountryTagged:
                 for occ in main_data["occupations"]:
                     assert occ["level"] <= 2
 
-                # Check levels in data
+                # Check levels in data (4-level SOC)
                 assert 1 in stats["levels_available"]
-                assert 5 in stats["levels_available"]
+                assert 4 in stats["levels_available"]
+
+                # Check meta catalog references level 4 split
+                meta_data = json.loads(meta_path.read_text())
+                lf = meta_data["levelFiles"]["us-2024"]
+                assert "4" in lf
+                assert "4-metro" in lf
             finally:
                 cfg.PUBLIC_DATA_DIR = orig_pub
 
@@ -436,15 +457,15 @@ class TestExportCountryTagged:
 class TestExactLevelFilter:
     """Test the exact_level filter in _build_static_data."""
 
-    def test_exact_level_5(self, seeded_db):
+    def test_exact_level_4(self, seeded_db):
         from scripts.pipeline.export_json import _build_static_data, _query_records
         records = _query_records(seeded_db, ["USA"])
-        data = _build_static_data(records, exact_level=5)
+        data = _build_static_data(records, exact_level=4)
 
-        # All test occupations at level 5: 11-1011, 15-1252, 29-1141, 35-2014, 53-3032
+        # All detailed test occupations: 11-1011, 15-1252, 29-1141, 35-2014, 53-3032
         assert len(data["occupations"]) == 5
         for occ in data["occupations"]:
-            assert occ["level"] == 5
+            assert occ["level"] == 4
 
     def test_exact_level_1(self, seeded_db):
         from scripts.pipeline.export_json import _build_static_data, _query_records
@@ -518,3 +539,41 @@ class TestValidateJson:
             export_json.export_country_year(seeded_db, "USA", 2024, out_path)
             errors = validate.validate_json(out_path)
             assert errors == [], f"Validation errors: {errors}"
+
+
+class TestValidateCompleteness:
+    """Test data completeness validation."""
+
+    def test_completeness_returns_list(self, seeded_db):
+        warnings = validate.validate_completeness(seeded_db, "USA", 2024)
+        assert isinstance(warnings, list)
+
+    def test_completeness_detects_discrepancy(self, tmp_db):
+        """Parent employment much larger than children sum → warning."""
+        cid = db.ensure_country(tmp_db, "USA", "United States", "SOC", "USD")
+        rid = db.ensure_region(tmp_db, cid, "United States", "National")
+        # Parent: 10M employees
+        db.insert_occupation(tmp_db, 2024, rid, "11-0000", "Mgmt", "Mgmt", 10_000_000, 100_000)
+        # Children only sum to 1M (10% of parent → should flag)
+        db.insert_occupation(tmp_db, 2024, rid, "11-1000", "Exec", "Mgmt", 500_000, 100_000)
+        db.insert_occupation(tmp_db, 2024, rid, "11-2000", "Adv", "Mgmt", 500_000, 100_000)
+        tmp_db.commit()
+        db.compute_complexity_scores(tmp_db)
+
+        warnings = validate.validate_completeness(tmp_db, "USA", 2024)
+        assert len(warnings) > 0
+        assert "11-0000" in warnings[0]
+
+    def test_export_level_with_region_types_filter(self, seeded_db):
+        """Level file with region_types filter should only include those regions."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_path = Path(tmpdir) / "bls-data-us-2024-4.json"
+            count = export_json.export_level_file(
+                seeded_db, "USA", 2024, 4, out_path,
+                region_types=["National", "State"],
+            )
+            assert count > 0
+            data = json.loads(out_path.read_text(encoding="utf-8"))
+            # Should not include metro regions
+            for region in data["regions"]:
+                assert region["regionType"] in ("National", "State")

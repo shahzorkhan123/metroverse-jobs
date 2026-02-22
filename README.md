@@ -55,6 +55,8 @@ Region switching updates treemap data. California shown with 58.1k workers acros
 npm install    # Install dependencies (Node 16 recommended)
 npm start      # Dev server at localhost:3000
 npm run build  # Production build
+
+Bash(cd /d/Projects/metroverse-jobs && npx serve -s build -l 3006 2>&1)
 ```
 
 No `.env` file is required - this project uses static data files instead of API calls.

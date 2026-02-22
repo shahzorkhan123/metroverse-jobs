@@ -8,7 +8,7 @@ const defaultDigitLevel = DigitLevel.Two;
 /**
  * Hook that watches the digit_level query param and triggers
  * lazy-loading of level extension data when the user selects
- * level 3, 4, or 5 in the Settings panel.
+ * a higher level in the Settings panel.
  *
  * Import and call this hook in any page that uses digit_level filtering.
  * It's a no-op if the level data is already loaded.

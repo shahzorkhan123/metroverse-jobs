@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { useGlobalIndustryMap } from "../../../hooks/useGlobalIndustriesData";
 import {
   DigitLevel,
@@ -57,11 +57,35 @@ const TreeMapContainer = styled.div`
   left: 0;
 `;
 
+/** Get parent SOC code for hierarchy traversal.
+ *  For level 3 (XX-XXX0), the minor-group parent can be XX-X000 (standard)
+ *  or XX-XX00 (SOC 2018 renumbered).  When knownCodes is provided we pick
+ *  whichever pattern actually exists; otherwise default to XX-X000.
+ */
+function socParent(code: string, knownCodes?: Set<string>): string | null {
+  const prefix = code.substring(0, 3); // "XX-"
+  const digits = code.substring(3);    // "YYYY"
+  if (code.endsWith("-0000")) return null;  // level 1
+  if (code.endsWith("00")) return prefix + "0000";  // level 2 → level 1
+  if (code.endsWith("0")) {
+    // level 3 → level 2: resolve ambiguous minor-group parent
+    const renumbered = prefix + digits.substring(0, 2) + "00";
+    const standard   = prefix + digits[0] + "000";
+    if (renumbered === standard) return standard;
+    if (knownCodes) {
+      return knownCodes.has(renumbered) ? renumbered : standard;
+    }
+    return standard;
+  }
+  return prefix + digits.substring(0, 3) + "0";  // level 4 → level 3
+}
+
 interface EconomicCompositionIndustry {
   id: string;
   naicsId: string;
   numCompany: number | null;
   numEmploy: number | null;
+  aMean: number | null;
 }
 
 interface SuccessResponse {
@@ -94,6 +118,7 @@ const useEconomicCompositionQuery = (variables: { cityId: string; year: number }
     naicsId: d.socCode,
     numCompany: d.gdp,      // GDP maps to "companies/establishments"
     numEmploy: d.totEmp,     // Employment maps directly
+    aMean: d.aMean,          // Average annual wage
   }));
 
   return { loading: false, error: undefined, data: { industries } as SuccessResponse };
@@ -111,6 +136,7 @@ interface Props {
   compositionType: CompositionType;
   hiddenSectors: ClassificationNaicsIndustry["id"][];
   setIndicatorContent: (indicator: Indicator) => void;
+  onDrillDown?: (sectorId: string, currentLevel: number) => void;
 }
 
 const CompositionTreeMap = (props: Props) => {
@@ -141,6 +167,14 @@ const CompositionTreeMap = (props: Props) => {
     level: digitLevel,
     year: defaultYear,
   });
+
+  const onCellClick = useCallback((id: string) => {
+    if (!props.onDrillDown) return;
+    const industry = industryMap.data[id];
+    if (!industry) return;
+    const sectorId = industry.naicsIdTopParent.toString();
+    props.onDrillDown(sectorId, digitLevel);
+  }, [industryMap, digitLevel, props]);
 
   useEffect(() => {
     const node = rootRef.current;
@@ -210,30 +244,97 @@ const CompositionTreeMap = (props: Props) => {
     console.error(aggregateIndustryDataMap.error);
   } else if (dataToUse !== undefined) {
     const { industries } = dataToUse;
+
+    // Smart hierarchical filter: show finest available level per SOC branch,
+    // falling back to parents when children are missing (BLS data suppression).
+    // Walk up the hierarchy to find the nearest available ancestor (handles
+    // gaps like missing level 2 data in state files).
+    const availableCodes = new Set(industries.map((i) => i.naicsId));
+    const childrenOf = new Map<string, string[]>();
+    for (const { naicsId } of industries) {
+      const ind = industryMap.data[naicsId];
+      if (ind && ind.level !== null && ind.level <= digitLevel) {
+        let ancestor = socParent(naicsId, availableCodes);
+        while (ancestor && !availableCodes.has(ancestor)) {
+          ancestor = socParent(ancestor, availableCodes);
+        }
+        if (ancestor) {
+          if (!childrenOf.has(ancestor)) childrenOf.set(ancestor, []);
+          childrenOf.get(ancestor)!.push(naicsId);
+        }
+      }
+    }
+
+    // Pre-compute residual values for parents with partial child coverage.
+    // BLS doesn't publish all intermediate SOC levels for states/metros,
+    // so a parent may have only some branches covered by children.
+    // Show the parent as a residual (parent_total - children_sum) to
+    // avoid both double-counting and losing uncovered branches.
+    const residualValues = new Map<string, { employ: number; company: number }>();
+    childrenOf.forEach((children, parentCode) => {
+      const parentInd = industries.find((i) => i.naicsId === parentCode);
+      if (!parentInd) return;
+      const parentEmploy = parentInd.numEmploy || 0;
+      const parentCompany = parentInd.numCompany || 0;
+      let childEmploySum = 0;
+      let childCompanySum = 0;
+      children.forEach((childCode) => {
+        const childInd = industries.find((i) => i.naicsId === childCode);
+        if (childInd) {
+          childEmploySum += childInd.numEmploy || 0;
+          childCompanySum += childInd.numCompany || 0;
+        }
+      });
+      residualValues.set(parentCode, {
+        employ: Math.max(0, parentEmploy - childEmploySum),
+        company: Math.max(0, parentCompany - childCompanySum),
+      });
+    });
+
     const treeMapData: Inputs["data"] = [];
+    // Track adjusted values for tooltip consistency (residual for parents, full for leaves)
+    const adjustedValueMap = new Map<string, { employ: number; company: number }>();
     let total = 0;
     industries.forEach(({ naicsId, numCompany, numEmploy }) => {
       const industry = industryMap.data[naicsId];
       if (industry && industry.level !== null && industry.level <= digitLevel) {
         const { name, naicsIdTopParent } = industry;
-        if (!hiddenSectors.includes(naicsIdTopParent.toString())) {
-          const companies = numCompany ? numCompany : 0;
-          const employees = numEmploy ? numEmploy : 0;
-          total =
-            compositionType === CompositionType.Companies
-              ? total + companies
-              : total + employees;
-          const value =
-            compositionType === CompositionType.Companies
-              ? companies
-              : employees;
-          treeMapData.push({
-            id: naicsId,
-            value,
-            title: name ? name : "",
-            topLevelParentId: naicsIdTopParent.toString(),
-          });
+        if (hiddenSectors.includes(naicsIdTopParent.toString())) return;
+
+        const children = childrenOf.get(naicsId) || [];
+        const hasVisibleChildren = children.some((c) => {
+          const ci = industryMap.data[c];
+          return ci && ci.level !== null && ci.level <= digitLevel && availableCodes.has(c);
+        });
+
+        let companies = numCompany ? numCompany : 0;
+        let employees = numEmploy ? numEmploy : 0;
+
+        if (hasVisibleChildren) {
+          // Parent with children: use residual (uncovered portion)
+          const residual = residualValues.get(naicsId);
+          if (!residual || (residual.employ <= 0 && residual.company <= 0)) {
+            return; // Fully covered by children, skip
+          }
+          companies = residual.company;
+          employees = residual.employ;
         }
+
+        adjustedValueMap.set(naicsId, { employ: employees, company: companies });
+        total =
+          compositionType === CompositionType.Companies
+            ? total + companies
+            : total + employees;
+        const value =
+          compositionType === CompositionType.Companies
+            ? companies
+            : employees;
+        treeMapData.push({
+          id: naicsId,
+          value,
+          title: name ? name : "",
+          topLevelParentId: naicsIdTopParent.toString(),
+        });
       }
     });
     let colorScale: (val: number) => string | undefined;
@@ -309,34 +410,33 @@ const CompositionTreeMap = (props: Props) => {
           const color = sectorColorMap.find(
             (c) => c.id === industry.naicsIdTopParent.toString(),
           );
-          const numCompany = industryWithData.numCompany
-            ? industryWithData.numCompany
-            : 0;
-          const numEmploy = industryWithData.numEmploy
-            ? industryWithData.numEmploy
-            : 0;
+          // Use adjusted values (residual for parents) for consistent display
+          const adjusted = adjustedValueMap.get(id);
+          const numCompany = adjusted
+            ? adjusted.company
+            : industryWithData.numCompany || 0;
+          const numEmploy = adjusted
+            ? adjusted.employ
+            : industryWithData.numEmploy || 0;
+          const aMean = industryWithData.aMean ? industryWithData.aMean : 0;
           const value =
             compositionType === CompositionType.Employees
               ? numEmploy
               : numCompany;
           const share = (value / total) * 100;
           const shareString = share < 0.01 ? "<0.01%" : share.toFixed(2) + "%";
-          const rows = [
+          const rows: string[][] = [
             [getString("global-ui-naics-code") + ":", industry.code],
             [getString("global-ui-year") + ":", year.toString()],
+            ["Employees:", numberWithCommas(formatNumber(Math.round(numEmploy)))],
             [
               getString("tooltip-share-generic", { value: compositionType }) +
                 ":",
               shareString,
             ],
+            ["Avg Annual Wage:", "$" + numberWithCommas(formatNumber(Math.round(aMean)))],
+            ["Total Income:", "$" + numberWithCommas(formatNumber(Math.round(numCompany)))],
           ];
-          if (compositionType === CompositionType.Employees) {
-            rows.push([
-              getString("tooltip-number-generic", { value: compositionType }) +
-                ":",
-              numberWithCommas(formatNumber(Math.round(value))),
-            ]);
-          }
           if (
             (colorBy === ColorBy.education || colorBy === ColorBy.wage) &&
             aggregateIndustryDataMap.data
@@ -377,34 +477,33 @@ const CompositionTreeMap = (props: Props) => {
           const color = sectorColorMap.find(
             (c) => c.id === industry.naicsIdTopParent.toString(),
           );
-          const numCompany = industryWithData.numCompany
-            ? industryWithData.numCompany
-            : 0;
-          const numEmploy = industryWithData.numEmploy
-            ? industryWithData.numEmploy
-            : 0;
+          // Use adjusted values (residual for parents) for consistent display
+          const hAdj = adjustedValueMap.get(highlighted);
+          const numCompany = hAdj
+            ? hAdj.company
+            : industryWithData.numCompany || 0;
+          const numEmploy = hAdj
+            ? hAdj.employ
+            : industryWithData.numEmploy || 0;
+          const aMean = industryWithData.aMean ? industryWithData.aMean : 0;
           const value =
             compositionType === CompositionType.Employees
               ? numEmploy
               : numCompany;
           const share = (value / total) * 100;
           const shareString = share < 0.01 ? "<0.01%" : share.toFixed(2) + "%";
-          const rows = [
+          const rows: string[][] = [
             [getString("global-ui-naics-code") + ":", industry.code],
             [getString("global-ui-year") + ":", year.toString()],
+            ["Employees:", numberWithCommas(formatNumber(Math.round(numEmploy)))],
             [
               getString("tooltip-share-generic", { value: compositionType }) +
                 ":",
               shareString,
             ],
+            ["Avg Annual Wage:", "$" + numberWithCommas(formatNumber(Math.round(aMean)))],
+            ["Total Income:", "$" + numberWithCommas(formatNumber(Math.round(numCompany)))],
           ];
-          if (compositionType === CompositionType.Employees) {
-            rows.push([
-              getString("tooltip-number-generic", { value: compositionType }) +
-                ":",
-              numberWithCommas(formatNumber(Math.round(value))),
-            ]);
-          }
           if (
             (colorBy === ColorBy.education || colorBy === ColorBy.wage) &&
             aggregateIndustryDataMap.data
@@ -491,7 +590,7 @@ const CompositionTreeMap = (props: Props) => {
                 numCellsTier={0}
                 chartContainerWidth={dimensions.width}
                 chartContainerHeight={dimensions.height}
-                onCellClick={noop}
+                onCellClick={onCellClick}
                 onMouseOverCell={onHover}
                 onMouseLeaveChart={noop}
                 fallbackTitle={fallbackTitle}

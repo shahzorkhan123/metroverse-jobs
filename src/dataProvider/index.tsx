@@ -20,6 +20,8 @@ interface DataState {
   levelLoading: boolean;
   /** The meta catalog (available datasets, countries, years) */
   meta: BLSMetaCatalog | null;
+  /** Highest digit level available in the data (e.g. 4 for BLS SOC, 6 for NAICS) */
+  maxDigitLevel: number;
 }
 
 const BASE_URL = process.env.PUBLIC_URL + '/data';
@@ -32,6 +34,7 @@ const StaticDataContext = createContext<DataState>({
   loadLevel: () => {},
   levelLoading: false,
   meta: null,
+  maxDigitLevel: 6,
 });
 
 export const useStaticData = () => useContext(StaticDataContext);
@@ -153,31 +156,30 @@ export const StaticDataProvider: React.FC = ({ children }) => {
     return () => { cancelled = true; };
   }, []);
 
-  const loadLevel = useCallback(
-    (level: number) => {
-      // Skip if already loaded or currently fetching
+  // Track which level keys (e.g. "3", "4", "4-metro") have been loaded
+  const loadedKeysRef = useRef<Set<string>>(new Set());
+
+  const fetchAndMerge = useCallback(
+    (levelKey: string) => {
       if (
-        loadedLevels.includes(level) ||
-        levelFetchingRef.current.has(level) ||
+        loadedKeysRef.current.has(levelKey) ||
+        levelFetchingRef.current.has(levelKey as any) ||
         !meta ||
         !data
       ) {
         return;
       }
 
-      // Find the level file in meta catalog
-      // Try first dataset's country-year key
       const dataset = meta.datasets[0];
       if (!dataset) return;
       const key = `${dataset.country}-${dataset.year}`;
       const levelFiles = meta.levelFiles[key];
-      if (!levelFiles || !levelFiles[String(level)]) {
-        console.warn(`No level ${level} file found for ${key}`);
-        return;
+      if (!levelFiles || !levelFiles[levelKey]) {
+        return; // silently skip — not all splits exist
       }
 
-      const filename = levelFiles[String(level)];
-      levelFetchingRef.current.add(level);
+      const filename = levelFiles[levelKey];
+      levelFetchingRef.current.add(levelKey as any);
       setLevelLoading(true);
 
       fetch(`${BASE_URL}/${filename}`)
@@ -187,22 +189,55 @@ export const StaticDataProvider: React.FC = ({ children }) => {
         })
         .then((extData: BLSData) => {
           setData((prev) => (prev ? mergeExtension(prev, extData) : prev));
-          setLoadedLevels((prev) => [...prev, level].sort());
-          levelFetchingRef.current.delete(level);
+          loadedKeysRef.current.add(levelKey);
+          levelFetchingRef.current.delete(levelKey as any);
           setLevelLoading(levelFetchingRef.current.size > 0);
         })
         .catch((err) => {
-          console.error(`Failed to load level ${level}:`, err);
-          levelFetchingRef.current.delete(level);
+          console.error(`Failed to load ${levelKey}:`, err);
+          levelFetchingRef.current.delete(levelKey as any);
           setLevelLoading(levelFetchingRef.current.size > 0);
         });
     },
-    [loadedLevels, meta, data],
+    [meta, data],
   );
+
+  const loadLevel = useCallback(
+    (level: number) => {
+      if (loadedLevels.includes(level)) return;
+
+      // Load the main level file
+      fetchAndMerge(String(level));
+
+      // Also load the metro split if it exists (levels 3 and 4 are split)
+      fetchAndMerge(`${level}-metro`);
+
+      // Mark level as loaded (the actual merge happens async)
+      setLoadedLevels((prev) => {
+        if (prev.includes(level)) return prev;
+        return [...prev, level].sort();
+      });
+    },
+    [loadedLevels, fetchAndMerge],
+  );
+
+  // Compute highest available digit level from meta catalog
+  let maxDigitLevel = 6; // default fallback (original NAICS)
+  if (meta && meta.datasets.length > 0) {
+    const dataset = meta.datasets[0];
+    const key = `${dataset.country}-${dataset.year}`;
+    const levelFiles = meta.levelFiles[key] || {};
+    // Max of: base dataset levels + any numeric level file keys
+    const allLevels = [
+      ...dataset.levels,
+      ...Object.keys(levelFiles).filter(k => /^\d+$/.test(k)).map(Number),
+    ];
+    maxDigitLevel = allLevels.length > 0 ? Math.max(...allLevels) : 6;
+  }
 
   return (
     <StaticDataContext.Provider
-      value={{ data, loading, error, loadedLevels, loadLevel, levelLoading, meta }}
+      value={{ data, loading, error, loadedLevels, loadLevel, levelLoading, meta, maxDigitLevel }}
     >
       {children}
     </StaticDataContext.Provider>

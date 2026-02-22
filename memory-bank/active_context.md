@@ -1,60 +1,48 @@
 # Active Context
 
 ## Current Focus
-COUNTRY-TAGGED PIPELINE + SPLIT DATA + FRONTEND LOADING complete.
+SOC 4-level hierarchy, smart treemap, drill-down, enhanced tooltips — all complete.
 
-## What Was Done (2026-02-16)
+## What Was Done (2026-02-16, Session 2)
 
-### Pipeline Changes
-1. **`.gitignore`**: Removed pipeline artifact ignores (bls.db, export/, raw/). Only `data/raw/*.xlsx` is ignored.
-2. **`config.py`**: Added `country_short()` helper, `json_country_year_path()`, `json_country_year_level_path()`, `json_meta_path()`.
-3. **`export_json.py`**: Rewritten for country-tagged output:
-   - `export_country_year()` → `bls-data-us-2024.json` (levels 1+2)
-   - `export_level_file()` → `bls-data-us-2024-{3,4,5}.json` (single level extension)
-   - `export_meta()` → `bls-data.json` (catalog of available datasets)
-   - `export_all()` → convenience function that produces all files
-   - Legacy `export_json()` and `export_json_levels()` preserved for backward compat
-4. **`run_pipeline.py`**: Added `--country` flag (default: "us"), wired to `export_all()`
-5. **`fetch_bls.py`**: Fixed multiple issues:
-   - Column name: `O_GROUP` (not `OCC_GROUP`)
-   - Filter: now includes all OCC groups (major, minor, broad, detailed) not just "detailed"
-   - Metro: prefers `MSA_M2024_dl.xlsx` over BOS nonmetropolitan file
-   - AREA_TYPE: handles string values ("3" or "4")
-   - Added User-Agent header to avoid 403 errors
+### Pipeline: 4-Level SOC Remap
+1. **`export_json.py`**: `_soc_level()` remapped from 5 levels to 4:
+   - Level 1: XX-0000 (major), Level 2: XX-X000 or XX-XX00 (minor), Level 3: XX-XXX0 (broad), Level 4: XX-XXXX (detailed)
+   - Added `_soc_parent()` for hierarchy traversal
+   - Added `parentCode` field to occupations array
+   - Added `region_types` filter to `export_level_file()`
+   - Level 4 split: nat+state file + metro-only file (`4-metro`)
+2. **`config.py`**: `json_country_year_level_path()` accepts `int | str` for "4-metro"
+3. **`validate.py`**: Added `validate_completeness()` — compares parent employment vs child sums
+4. **`run_pipeline.py`**: Added `--validate` flag
+5. **48 tests pass** (was 44)
 
 ### Frontend Changes
-6. **`src/dataProvider/types.ts`**: Added `BLSMetaCatalog` interface for meta file, extended `BLSData.metadata` with optional `country`, `maxLevel`, `level`.
-7. **`src/dataProvider/index.tsx`**: Rewritten for multi-file loading:
-   - Fetches meta catalog first, then main country-year file (levels 1+2)
-   - `loadLevel(level)` function for lazy-loading level extensions (3, 4, 5)
-   - `mergeExtension()` merges occupation + regionData + aggregates additively
-   - Cached per level (no re-fetch on repeated selections)
-   - Context exposes: `data`, `loading`, `error`, `loadedLevels`, `loadLevel`, `levelLoading`, `meta`
-8. **`src/hooks/useLevelLoader.ts`**: New hook that watches `digit_level` query param and triggers `loadLevel()` for levels 3+
-9. **Added `useLevelLoader()` to**: `cityComposition/index.tsx`, `goodAt/index.tsx`
+6. **`graphQLTypes.ts`**: `DigitLevel` enum → 4 values (One=1, Two=2, Three=3, Four=4)
+7. **`settings/index.tsx`**: 4 digit level buttons with descriptive labels
+8. **All DigitLevel.Six → DigitLevel.Four** across 9 files
+9. **All DigitLevel.Sector → DigitLevel.One** across 2 files
+10. **`CompositionTreeMap.tsx`**: Smart hierarchical filter (no double-counting), drill-down on click, enhanced tooltip (employees, share%, avg wage, total income), `aMean` in data
+11. **`ClusterCompositionTreeMap.tsx`**: Enhanced tooltip (employees, share%, total income)
+12. **`cityComposition/index.tsx`**: `onDrillDown` handler (isolate sector + increase digit level)
+13. **`CitySearch.tsx`**: Region dropdown reordered — States before Metropolitan Areas
+14. **`dataProvider/index.tsx`**: `fetchAndMerge()` for level keys, handles `4-metro` split
+15. **`dataProvider/types.ts`**: Added `parentCode` to `BLSOccupation`
+16. **`useGlobalIndustriesData.ts`**: Maps `parentCode` to `parentId` and `parentCode`
 
-### Tests
-10. **`tests/test_pipeline.py`**: 44 tests (was 32), added:
-    - `TestConfig`: `test_country_short`, `test_json_country_year_path`, `test_json_country_year_level_path`, `test_json_meta_path`
-    - `TestExportCountryTagged`: 5 tests (country_year, level_file, empty_level, meta, export_all)
-    - `TestExactLevelFilter`: 2 tests (exact_level_5, exact_level_1)
-    - `TestValidateJson.test_validate_country_year_json`
-    - Updated seeded_db fixture with multi-level occupations (7 occs instead of 5)
+### Pipeline Output (4-Level)
+- `bls-data.json` (meta catalog with "4-metro" in levelFiles)
+- `bls-data-us-2024.json` — 1.8 MB (levels 1+2, 116 occupations)
+- `bls-data-us-2024-3.json` — 719 KB (broad, 453 occupations)
+- `bls-data-us-2024-4.json` — 6.0 MB (detailed, nat+state, 819 occupations)
+- `bls-data-us-2024-4-metro.json` — 23 MB (detailed, metro only, 809 occupations)
+- Old `bls-data-us-2024-5.json` deleted
 
-### Pipeline Output (Real Data)
-- **182,187 records** from BLS OES 2024:
-  - National: 1,388 records, 113 level 1+2 occupations
-  - States: 35,606 records
-  - Metros: 145,186 records (380+ MSAs)
-- **Output files**:
-  - `bls-data.json` (meta catalog)
-  - `bls-data-us-2024.json` — 1.8 MB (levels 1+2)
-  - `bls-data-us-2024-3.json` — 2.6 KB
-  - `bls-data-us-2024-4.json` — 721 KB
-  - `bls-data-us-2024-5.json` — 29 MB
+### Validation Results
+- 4 expected discrepancies (BLS data suppression): SOC 27-2000, 27-2010, 27-2030, 29-1210
 
 ## Pending
-- Build frontend and verify treemaps render with real data
-- Level 5 file (29MB) may need compression or further splitting
+- Build frontend (`npm start`) and verify treemaps render correctly
 - Footer still shows Harvard Growth Lab branding
 - Some text still says "city" instead of "region"
+- 23MB metro file may benefit from gzip in production

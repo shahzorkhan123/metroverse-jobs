@@ -165,18 +165,18 @@ const CitySearch = () => {
             ))}
           </optgroup>
         )}
-        {metros.length > 0 && (
-          <optgroup label="Metropolitan Areas">
-            {metros.map((r) => (
+        {states.length > 0 && (
+          <optgroup label="States">
+            {states.map((r) => (
               <option key={r.regionId} value={r.regionId}>
                 {r.name}
               </option>
             ))}
           </optgroup>
         )}
-        {states.length > 0 && (
-          <optgroup label="States">
-            {states.map((r) => (
+        {metros.length > 0 && (
+          <optgroup label="Metropolitan Areas">
+            {metros.map((r) => (
               <option key={r.regionId} value={r.regionId}>
                 {r.name}
               </option>

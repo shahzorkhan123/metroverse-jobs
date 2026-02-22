@@ -74,6 +74,10 @@ def main():
         help="Also generate JSONP file (for bls2 compatibility)",
     )
     parser.add_argument(
+        "--validate", action="store_true", default=False,
+        help="Run data completeness validation after export",
+    )
+    parser.add_argument(
         "--db-path", type=str, default=None,
         help=f"SQLite database path (default: {config.DB_PATH})",
     )
@@ -233,6 +237,20 @@ def main():
                 sys.exit(1)
             else:
                 print("  JSONP validation passed")
+
+        if args.validate:
+            print("\nRunning data completeness validation...")
+            warnings = validate.validate_completeness(
+                conn, country_long, args.year
+            )
+            if warnings:
+                print(f"  {len(warnings)} discrepancies found:")
+                for w in warnings[:20]:
+                    print(f"    - {w}")
+                if len(warnings) > 20:
+                    print(f"    ... and {len(warnings) - 20} more")
+            else:
+                print("  Data completeness validation passed")
 
         print("\nPipeline complete!")
 

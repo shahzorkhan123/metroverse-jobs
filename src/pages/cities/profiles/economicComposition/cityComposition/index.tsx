@@ -1,4 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import queryString from "query-string";
 import UtilityBar, {
   DownloadType,
 } from "../../../../../components/navigation/secondaryHeader/UtilityBar";
@@ -19,6 +21,7 @@ import useGlobalLocationData from "../../../../../hooks/useGlobalLocationData";
 import useSectorMap from "../../../../../hooks/useSectorMap";
 import useClusterMap from "../../../../../hooks/useClusterMap";
 import { useLevelLoader } from "../../../../../hooks/useLevelLoader";
+import { useStaticData } from "../../../../../dataProvider";
 import DownloadImageOverlay from "./DownloadImageOverlay";
 import useQueryParams from "../../../../../hooks/useQueryParams";
 import useFluent from "../../../../../hooks/useFluent";
@@ -48,6 +51,8 @@ interface Props {
 
 const EconomicComposition = (props: Props) => {
   const { cityId } = props;
+  const history = useHistory();
+  const { maxDigitLevel } = useStaticData();
   useLevelLoader();
   const [highlighted, setHighlighted] = useState<string | undefined>(undefined);
   const clearHighlighted = useCallback(
@@ -61,13 +66,14 @@ const EconomicComposition = (props: Props) => {
   const [hiddenClusters, setHiddenClusters] = useState<
     ClassificationNaicsCluster["id"][]
   >([]);
+  const queryParams = useQueryParams();
   const {
     digit_level,
     cluster_level,
     composition_type,
     color_by,
     aggregation,
-  } = useQueryParams();
+  } = queryParams;
   const compositionType = composition_type
     ? (composition_type as CompositionType)
     : defaultCompositionType;
@@ -88,6 +94,23 @@ const EconomicComposition = (props: Props) => {
           ...sectorMap.map((s) => s.id).filter((sId) => sId !== sectorId),
         ]);
   const resetSectors = () => setHiddenSectors([]);
+
+  const sectorMapRef = useRef(sectorMap);
+  sectorMapRef.current = sectorMap;
+  const queryParamsRef = useRef(queryParams);
+  queryParamsRef.current = queryParams;
+  const maxDigitLevelRef = useRef(maxDigitLevel);
+  maxDigitLevelRef.current = maxDigitLevel;
+  const onDrillDown = useCallback((sectorId: string, currentLevel: number) => {
+    // Isolate the clicked sector
+    const allSectorIds = sectorMapRef.current.map((s) => s.id);
+    setHiddenSectors(allSectorIds.filter((id) => id !== sectorId));
+    // Increase digit level by 1 (cap at max available)
+    const nextLevel = Math.min(currentLevel + 1, maxDigitLevelRef.current);
+    const { digit_level: _, ...otherParams } = queryParamsRef.current;
+    const query = queryString.stringify({ ...otherParams, digit_level: nextLevel });
+    history.push(history.location.pathname + "?" + query);
+  }, [history]);
 
   const toggleCluster = (clusterId: ClassificationNaicsCluster["id"]) =>
     hiddenClusters.includes(clusterId)
@@ -217,6 +240,7 @@ const EconomicComposition = (props: Props) => {
       clearHighlighted={clearHighlighted}
       hiddenSectors={hiddenSectors}
       setIndicatorContent={setIndicatorContent}
+      onDrillDown={onDrillDown}
     />
   );
 

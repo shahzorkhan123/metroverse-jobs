@@ -301,8 +301,11 @@ def json_country_year_path(country: str, year: int) -> Path:
     return PUBLIC_DATA_DIR / f"bls-data-{country}-{year}.json"
 
 
-def json_country_year_level_path(country: str, year: int, level: int) -> Path:
-    """Return path for a country-year-level extension JSON file."""
+def json_country_year_level_path(country: str, year: int, level: int | str) -> Path:
+    """Return path for a country-year-level extension JSON file.
+
+    level can be an int (3, 4) or a string ("4-metro") for split files.
+    """
     return PUBLIC_DATA_DIR / f"bls-data-{country}-{year}-{level}.json"
 
 

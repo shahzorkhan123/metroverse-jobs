@@ -20,6 +20,7 @@ interface IndustryDatum {
   name: string | null;
   level: number | null;
   parentId: number | null;
+  parentCode: string | null;
   naicsIdTopParent: number;  // majorGroupId as number
   tradable: boolean;
 }
@@ -45,7 +46,8 @@ const useGlobalIndustriesData = () => {
     code: occ.socCode,
     name: occ.name,
     level: occ.level,
-    parentId: null,
+    parentId: occ.parentCode ? parseInt(occ.parentCode.substring(0, 2), 10) : null,
+    parentCode: occ.parentCode,
     naicsIdTopParent: parseInt(occ.majorGroupId, 10),
     tradable: true,
   }));

@@ -10,6 +10,7 @@ export interface BLSOccupation {
   socCode: string;
   name: string;
   level: number;
+  parentCode: string | null;
   majorGroupId: string;
   majorGroupName: string;
 }

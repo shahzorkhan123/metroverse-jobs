@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import queryString from "query-string";
 import useQueryParams from "../../../hooks/useQueryParams";
 import useFluent from "../../../hooks/useFluent";
+import { useStaticData } from "../../../dataProvider";
 import {
   secondaryFont,
   backgroundDark,
@@ -337,6 +338,7 @@ const Settings = (props: Props) => {
   const history = useHistory();
   const params = useQueryParams();
   const getString = useFluent();
+  const { maxDigitLevel } = useStaticData();
 
   const updateSetting = (param: string, value: string | number) => {
     const query = queryString.stringify({ ...params, [param]: value });
@@ -607,6 +609,7 @@ const Settings = (props: Props) => {
               {DigitLevel.Four}-{getString("global-ui-digit-level")}
             </span>
           </DigitLevelButton>
+          {maxDigitLevel >= DigitLevel.Five && (
           <DigitLevelButton
             onClick={() => updateSetting("digit_level", DigitLevel.Five)}
             $selected={
@@ -619,6 +622,8 @@ const Settings = (props: Props) => {
               {DigitLevel.Five}-{getString("global-ui-digit-level")}
             </span>
           </DigitLevelButton>
+          )}
+          {maxDigitLevel >= DigitLevel.Six && (
           <DigitLevelButton
             onClick={() => updateSetting("digit_level", DigitLevel.Six)}
             $selected={
@@ -631,6 +636,7 @@ const Settings = (props: Props) => {
               {DigitLevel.Six}-{getString("global-ui-digit-level")}
             </span>
           </DigitLevelButton>
+          )}
         </InputContainer>
       </SettingGrid>
     );
