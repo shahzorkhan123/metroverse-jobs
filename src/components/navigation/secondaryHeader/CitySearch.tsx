@@ -5,6 +5,7 @@ import {
   lightBaseColor,
 } from "../../../styling/styleUtils";
 import { useStaticData } from "../../../dataProvider";
+import { BLSRegion } from "../../../dataProvider/types";
 import useCurrentCityId from "../../../hooks/useCurrentCityId";
 import { useHistory, matchPath } from "react-router-dom";
 import { CityRoutes, cityIdParam } from "../../../routing/routes";
@@ -90,7 +91,11 @@ const Label = styled.span`
 `;
 
 const CitySearch = () => {
-  const { data: blsData, loading } = useStaticData();
+  const {
+    data: blsData, loading, meta,
+    selectedCountry, selectedYear, countryMetadata,
+    switchCountryYear,
+  } = useStaticData();
   const cityId = useCurrentCityId();
   const history = useHistory();
   const params = useQueryParams();
@@ -99,19 +104,29 @@ const CitySearch = () => {
     return <Root />;
   }
 
-  const years = blsData.metadata.years;
-  const currentYear = params.year || years[years.length - 1]?.toString() || "2024";
+  // Countries that have actual datasets
+  const countries = meta?.countries.filter(c =>
+    meta.datasets.some(d => d.country === c.code)
+  ) || [];
+
+  // Years for the selected country
+  const years = meta?.yearsByCountry?.[selectedCountry] || blsData.metadata.years;
+  const currentYear = params.year || selectedYear.toString();
+
+  // Region types from metadata (for optgroup labels)
+  const regionTypes = countryMetadata?.regionTypes || [
+    { id: "National", pluralName: "National" },
+    { id: "State", pluralName: "States" },
+    { id: "Metro", pluralName: "Metropolitan Areas" },
+  ];
 
   // Group regions by type
-  const nationals = blsData.regions
-    .filter((r) => r.regionType === "National")
-    .sort((a, b) => a.name.localeCompare(b.name));
-  const metros = blsData.regions
-    .filter((r) => r.regionType === "Metro")
-    .sort((a, b) => a.name.localeCompare(b.name));
-  const states = blsData.regions
-    .filter((r) => r.regionType === "State")
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const regionsByType: { [typeId: string]: BLSRegion[] } = {};
+  regionTypes.forEach((rt) => {
+    regionsByType[rt.id] = blsData.regions
+      .filter((r) => r.regionType === rt.id)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
 
   const onRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const regionId = e.target.value;
@@ -138,11 +153,25 @@ const CitySearch = () => {
     history.push(history.location.pathname + (query ? "?" + query : ""));
   };
 
+  const onCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCountry = e.target.value;
+    if (newCountry === selectedCountry) return;
+    const countryYears = meta?.yearsByCountry?.[newCountry] || [];
+    const year = countryYears[countryYears.length - 1] || 2024;
+    switchCountryYear(newCountry, year);
+    // Navigate to landing page when switching countries
+    history.push("/");
+  };
+
   return (
     <Root>
       <Label>Country</Label>
-      <CountrySelect value="us" onChange={() => {}}>
-        <option value="us">United States</option>
+      <CountrySelect value={selectedCountry} onChange={onCountryChange}>
+        {countries.map((c) => (
+          <option key={c.code} value={c.code}>
+            {c.name}
+          </option>
+        ))}
       </CountrySelect>
 
       <Label>Year</Label>
@@ -156,33 +185,19 @@ const CitySearch = () => {
 
       <Label>Region</Label>
       <RegionSelect value={cityId || ""} onChange={onRegionChange}>
-        {nationals.length > 0 && (
-          <optgroup label="National">
-            {nationals.map((r) => (
-              <option key={r.regionId} value={r.regionId}>
-                {r.name}
-              </option>
-            ))}
-          </optgroup>
-        )}
-        {states.length > 0 && (
-          <optgroup label="States">
-            {states.map((r) => (
-              <option key={r.regionId} value={r.regionId}>
-                {r.name}
-              </option>
-            ))}
-          </optgroup>
-        )}
-        {metros.length > 0 && (
-          <optgroup label="Metropolitan Areas">
-            {metros.map((r) => (
-              <option key={r.regionId} value={r.regionId}>
-                {r.name}
-              </option>
-            ))}
-          </optgroup>
-        )}
+        {regionTypes.map((rt) => {
+          const regions = regionsByType[rt.id] || [];
+          if (regions.length === 0) return null;
+          return (
+            <optgroup key={rt.id} label={rt.pluralName}>
+              {regions.map((r) => (
+                <option key={r.regionId} value={r.regionId}>
+                  {r.name}
+                </option>
+              ))}
+            </optgroup>
+          );
+        })}
       </RegionSelect>
     </Root>
   );

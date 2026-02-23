@@ -23,6 +23,7 @@ import { NodeSizing, ColorBy, ClusterMode } from "../../../../routing/routes";
 import { DigitLevel } from "../../../../types/graphQL/graphQLTypes";
 import { useAggregateIndustryMap } from "../../../../hooks/useAggregateIndustriesData";
 import { defaultYear } from "../../../../Utils";
+import { useStaticData } from "../../../../dataProvider";
 
 const clusterOverlayClassNames = {
   [ClusterMode.outline]: "industry-space-clusters-outlines-class",
@@ -313,6 +314,8 @@ const Chart = (props: Props) => {
     zoomLevel,
     rcaThreshold,
   } = props;
+  const { countryMetadata } = useStaticData();
+  const occupationCodeLabel = (countryMetadata?.terminology?.occupationCode || "SOC Code") + ":";
 
   const chartRef = useRef<HTMLDivElement | null>(null);
   const breadCrumbCluster1Ref = useRef<HTMLButtonElement | null>(null);
@@ -361,6 +364,7 @@ const Chart = (props: Props) => {
             breadCrumbCluster1Button,
             breadCrumbCluster2Button,
             breadCrumbNodeButton,
+            occupationCodeLabel,
           }),
           initialized: true,
         });

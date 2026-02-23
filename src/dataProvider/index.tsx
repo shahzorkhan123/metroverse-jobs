@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { BLSData, BLSMetaCatalog } from './types';
+import { BLSData, BLSMetaCatalog, CountryMetadata } from './types';
 
 interface DataState {
   data: BLSData | null;
@@ -14,14 +14,22 @@ interface DataState {
   error: Error | null;
   /** Which levels have been loaded (e.g. [1, 2] initially, then [1,2,3] after loading level 3) */
   loadedLevels: number[];
-  /** Trigger loading of a specific SOC level (3, 4, or 5). No-op if already loaded. */
+  /** Trigger loading of a specific occupation level (3, 4, etc). No-op if already loaded. */
   loadLevel: (level: number) => void;
   /** True when a level extension file is currently being fetched */
   levelLoading: boolean;
   /** The meta catalog (available datasets, countries, years) */
   meta: BLSMetaCatalog | null;
-  /** Highest digit level available in the data (e.g. 4 for BLS SOC, 6 for NAICS) */
+  /** Highest digit level available in the data */
   maxDigitLevel: number;
+  /** Currently selected country code (e.g. "us", "ind") */
+  selectedCountry: string;
+  /** Currently selected year */
+  selectedYear: number;
+  /** Metadata for the currently selected country */
+  countryMetadata: CountryMetadata | null;
+  /** Switch to a different country/year combination */
+  switchCountryYear: (country: string, year: number) => void;
 }
 
 const BASE_URL = process.env.PUBLIC_URL + '/data';
@@ -34,7 +42,11 @@ const StaticDataContext = createContext<DataState>({
   loadLevel: () => {},
   levelLoading: false,
   meta: null,
-  maxDigitLevel: 6,
+  maxDigitLevel: 4,
+  selectedCountry: 'us',
+  selectedYear: 2024,
+  countryMetadata: null,
+  switchCountryYear: () => {},
 });
 
 export const useStaticData = () => useContext(StaticDataContext);
@@ -104,6 +116,24 @@ function mergeExtension(base: BLSData, ext: BLSData): BLSData {
   };
 }
 
+/** Find dataset entry for a given country+year */
+function findDataset(meta: BLSMetaCatalog, country: string, year: number) {
+  return meta.datasets.find(d => d.country === country && d.year === year);
+}
+
+/** Compute max digit level from meta catalog for a country+year */
+function computeMaxDigitLevel(meta: BLSMetaCatalog, country: string, year: number): number {
+  const dataset = findDataset(meta, country, year);
+  if (!dataset) return 4;
+  const key = `${country}-${year}`;
+  const levelFiles = meta.levelFiles[key] || {};
+  const allLevels = [
+    ...dataset.levels,
+    ...Object.keys(levelFiles).filter(k => /^\d+$/.test(k)).map(Number),
+  ];
+  return allLevels.length > 0 ? Math.max(...allLevels) : 4;
+}
+
 export const StaticDataProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<BLSData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -111,9 +141,14 @@ export const StaticDataProvider: React.FC = ({ children }) => {
   const [loadedLevels, setLoadedLevels] = useState<number[]>([]);
   const [levelLoading, setLevelLoading] = useState(false);
   const [meta, setMeta] = useState<BLSMetaCatalog | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState('us');
+  const [selectedYear, setSelectedYear] = useState(2024);
 
   // Track which levels are currently being fetched to avoid duplicate requests
   const levelFetchingRef = useRef<Set<number>>(new Set());
+
+  // Track which level keys (e.g. "3", "4", "4-metro") have been loaded
+  const loadedKeysRef = useRef<Set<string>>(new Set());
 
   // Initial load: fetch meta catalog, then fetch main data file
   useEffect(() => {
@@ -129,13 +164,26 @@ export const StaticDataProvider: React.FC = ({ children }) => {
         if (cancelled) return;
         setMeta(metaData);
 
-        // Step 2: Pick the first dataset (default country/year)
-        if (metaData.datasets.length === 0) {
-          throw new Error('No datasets found in meta catalog');
-        }
-        const dataset = metaData.datasets[0];
+        // Step 2: Determine initial country from URL or first dataset
+        const urlParams = new URLSearchParams(window.location.hash.split('?')[1] || '');
+        const urlCountry = urlParams.get('country');
+        const initialCountry = (urlCountry && metaData.countryMetadata[urlCountry])
+          ? urlCountry
+          : metaData.datasets[0]?.country || 'us';
 
-        // Step 3: Fetch main data file (levels 1+2)
+        // Step 3: Pick the dataset for initial country
+        const countryYears = metaData.yearsByCountry[initialCountry] || [];
+        const initialYear = countryYears[countryYears.length - 1] || metaData.datasets[0]?.year || 2024;
+        const dataset = findDataset(metaData, initialCountry, initialYear);
+
+        if (!dataset) {
+          throw new Error(`No dataset found for ${initialCountry}/${initialYear}`);
+        }
+
+        setSelectedCountry(initialCountry);
+        setSelectedYear(initialYear);
+
+        // Step 4: Fetch main data file
         const mainRes = await fetch(`${BASE_URL}/${dataset.file}`);
         if (!mainRes.ok) throw new Error(`HTTP ${mainRes.status} fetching ${dataset.file}`);
         const mainData: BLSData = await mainRes.json();
@@ -156,9 +204,6 @@ export const StaticDataProvider: React.FC = ({ children }) => {
     return () => { cancelled = true; };
   }, []);
 
-  // Track which level keys (e.g. "3", "4", "4-metro") have been loaded
-  const loadedKeysRef = useRef<Set<string>>(new Set());
-
   const fetchAndMerge = useCallback(
     (levelKey: string) => {
       if (
@@ -170,9 +215,7 @@ export const StaticDataProvider: React.FC = ({ children }) => {
         return;
       }
 
-      const dataset = meta.datasets[0];
-      if (!dataset) return;
-      const key = `${dataset.country}-${dataset.year}`;
+      const key = `${selectedCountry}-${selectedYear}`;
       const levelFiles = meta.levelFiles[key];
       if (!levelFiles || !levelFiles[levelKey]) {
         return; // silently skip — not all splits exist
@@ -199,7 +242,7 @@ export const StaticDataProvider: React.FC = ({ children }) => {
           setLevelLoading(levelFetchingRef.current.size > 0);
         });
     },
-    [meta, data],
+    [meta, data, selectedCountry, selectedYear],
   );
 
   const loadLevel = useCallback(
@@ -221,23 +264,58 @@ export const StaticDataProvider: React.FC = ({ children }) => {
     [loadedLevels, fetchAndMerge],
   );
 
-  // Compute highest available digit level from meta catalog
-  let maxDigitLevel = 6; // default fallback (original NAICS)
-  if (meta && meta.datasets.length > 0) {
-    const dataset = meta.datasets[0];
-    const key = `${dataset.country}-${dataset.year}`;
-    const levelFiles = meta.levelFiles[key] || {};
-    // Max of: base dataset levels + any numeric level file keys
-    const allLevels = [
-      ...dataset.levels,
-      ...Object.keys(levelFiles).filter(k => /^\d+$/.test(k)).map(Number),
-    ];
-    maxDigitLevel = allLevels.length > 0 ? Math.max(...allLevels) : 6;
-  }
+  const switchCountryYear = useCallback(
+    (country: string, year: number) => {
+      if (!meta) return;
+      const dataset = findDataset(meta, country, year);
+      if (!dataset) {
+        console.warn(`No dataset for ${country}/${year}`);
+        return;
+      }
+
+      setSelectedCountry(country);
+      setSelectedYear(year);
+      setLoading(true);
+      setData(null);
+      setLoadedLevels([]);
+      loadedKeysRef.current = new Set();
+      levelFetchingRef.current = new Set();
+
+      fetch(`${BASE_URL}/${dataset.file}`)
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${dataset.file}`);
+          return res.json();
+        })
+        .then((mainData: BLSData) => {
+          setData(mainData);
+          setLoadedLevels(dataset.levels);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error(`Failed to load dataset for ${country}/${year}:`, err);
+          setError(err instanceof Error ? err : new Error(String(err)));
+          setLoading(false);
+        });
+    },
+    [meta],
+  );
+
+  // Compute highest available digit level from meta catalog for selected country
+  const maxDigitLevel = meta
+    ? computeMaxDigitLevel(meta, selectedCountry, selectedYear)
+    : 4;
+
+  // Get country metadata for the selected country
+  const countryMetadata = meta?.countryMetadata?.[selectedCountry] || null;
 
   return (
     <StaticDataContext.Provider
-      value={{ data, loading, error, loadedLevels, loadLevel, levelLoading, meta, maxDigitLevel }}
+      value={{
+        data, loading, error, loadedLevels, loadLevel, levelLoading,
+        meta, maxDigitLevel,
+        selectedCountry, selectedYear, countryMetadata,
+        switchCountryYear,
+      }}
     >
       {children}
     </StaticDataContext.Provider>

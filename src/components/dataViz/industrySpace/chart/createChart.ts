@@ -97,6 +97,7 @@ interface Input {
   onNodeSelect: (naicsId: string | undefined, action: NodeAction) => void;
   onNodeHover: (naicsId: string | undefined) => void;
   onZoomLevelChange: (zoomLevel: ZoomLevel) => void;
+  occupationCodeLabel?: string;
 }
 
 interface State {
@@ -124,6 +125,7 @@ const createChart = (input: Input) => {
     breadCrumbCluster1Button,
     breadCrumbCluster2Button,
     breadCrumbNodeButton,
+    occupationCodeLabel = "SOC Code:",
   } = input;
 
   const { width, height, outerWidth, outerHeight, margin } = getAspectRatio(
@@ -483,7 +485,7 @@ const createChart = (input: Input) => {
         (c) => c.clusterId === d.country,
       );
       const rows = [
-        ["SOC Code:", d.code ? d.code : ""],
+        [occupationCodeLabel, d.code ? d.code : ""],
         ["Year:", defaultYear.toString()],
         [
           "High Aggregation<br />Knowledge Cluster:",

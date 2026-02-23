@@ -338,7 +338,7 @@ const Settings = (props: Props) => {
   const history = useHistory();
   const params = useQueryParams();
   const getString = useFluent();
-  const { maxDigitLevel } = useStaticData();
+  const { maxDigitLevel, countryMetadata } = useStaticData();
 
   const updateSetting = (param: string, value: string | number) => {
     const query = queryString.stringify({ ...params, [param]: value });
@@ -560,83 +560,26 @@ const Settings = (props: Props) => {
         <Tooltip explanation={tooltipText} />
         <LabelContainer>{getString("global-ui-detail-level")}</LabelContainer>
         <InputContainer>
-          <DigitLevelButton
-            onClick={() => updateSetting("digit_level", DigitLevel.Sector)}
-            $selected={
-              settingsOptions.digitLevel !== false &&
-              ((!params.digit_level && defaultValue === DigitLevel.Sector) ||
-                params.digit_level === DigitLevel.Sector.toString())
-            }
-          >
-            <span>
-              {DigitLevel.Sector}-{getString("global-ui-digit-level")} /{" "}
-              {getString("global-ui-sector-level")}
-            </span>
-          </DigitLevelButton>
-          <DigitLevelButton
-            onClick={() => updateSetting("digit_level", DigitLevel.Two)}
-            $selected={
-              settingsOptions.digitLevel !== false &&
-              ((!params.digit_level && defaultValue === DigitLevel.Two) ||
-                params.digit_level === DigitLevel.Two.toString())
-            }
-          >
-            <span>
-              {DigitLevel.Two}-{getString("global-ui-digit-level")}
-            </span>
-          </DigitLevelButton>
-          <DigitLevelButton
-            onClick={() => updateSetting("digit_level", DigitLevel.Three)}
-            $selected={
-              settingsOptions.digitLevel !== false &&
-              ((!params.digit_level && defaultValue === DigitLevel.Three) ||
-                params.digit_level === DigitLevel.Three.toString())
-            }
-          >
-            <span>
-              {DigitLevel.Three}-{getString("global-ui-digit-level")}
-            </span>
-          </DigitLevelButton>
-          <DigitLevelButton
-            onClick={() => updateSetting("digit_level", DigitLevel.Four)}
-            $selected={
-              settingsOptions.digitLevel !== false &&
-              ((!params.digit_level && defaultValue === DigitLevel.Four) ||
-                params.digit_level === DigitLevel.Four.toString())
-            }
-          >
-            <span>
-              {DigitLevel.Four}-{getString("global-ui-digit-level")}
-            </span>
-          </DigitLevelButton>
-          {maxDigitLevel >= DigitLevel.Five && (
-          <DigitLevelButton
-            onClick={() => updateSetting("digit_level", DigitLevel.Five)}
-            $selected={
-              settingsOptions.digitLevel !== false &&
-              ((!params.digit_level && defaultValue === DigitLevel.Five) ||
-                params.digit_level === DigitLevel.Five.toString())
-            }
-          >
-            <span>
-              {DigitLevel.Five}-{getString("global-ui-digit-level")}
-            </span>
-          </DigitLevelButton>
-          )}
-          {maxDigitLevel >= DigitLevel.Six && (
-          <DigitLevelButton
-            onClick={() => updateSetting("digit_level", DigitLevel.Six)}
-            $selected={
-              settingsOptions.digitLevel !== false &&
-              ((!params.digit_level && defaultValue === DigitLevel.Six) ||
-                params.digit_level === DigitLevel.Six.toString())
-            }
-          >
-            <span>
-              {DigitLevel.Six}-{getString("global-ui-digit-level")}
-            </span>
-          </DigitLevelButton>
-          )}
+          {Array.from({ length: maxDigitLevel }, (_, i) => i + 1).map((level) => {
+            const levelMeta = countryMetadata?.levels?.[String(level)];
+            const levelName = levelMeta?.name;
+            const label = levelName
+              ? `${level}-${getString("global-ui-digit-level")}${level === 1 ? " / " + levelName : ""}`
+              : `${level}-${getString("global-ui-digit-level")}${level === 1 ? " / " + getString("global-ui-sector-level") : ""}`;
+            return (
+              <DigitLevelButton
+                key={level}
+                onClick={() => updateSetting("digit_level", level)}
+                $selected={
+                  settingsOptions.digitLevel !== false &&
+                  ((!params.digit_level && defaultValue === level) ||
+                    params.digit_level === level.toString())
+                }
+              >
+                <span>{label}</span>
+              </DigitLevelButton>
+            );
+          })}
         </InputContainer>
       </SettingGrid>
     );

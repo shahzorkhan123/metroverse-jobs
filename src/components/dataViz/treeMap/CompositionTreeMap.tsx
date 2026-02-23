@@ -37,6 +37,7 @@ import { defaultYear, formatNumber } from "../../../Utils";
 import { scaleLinear } from "d3-scale";
 import QuickError from "../../transitionStateComponents/QuickError";
 import { useStaticData } from "../../../dataProvider";
+import { getHierarchyStrategy } from "../../../utils/occupationHierarchy";
 
 const Root = styled.div`
   width: 100%;
@@ -57,28 +58,7 @@ const TreeMapContainer = styled.div`
   left: 0;
 `;
 
-/** Get parent SOC code for hierarchy traversal.
- *  For level 3 (XX-XXX0), the minor-group parent can be XX-X000 (standard)
- *  or XX-XX00 (SOC 2018 renumbered).  When knownCodes is provided we pick
- *  whichever pattern actually exists; otherwise default to XX-X000.
- */
-function socParent(code: string, knownCodes?: Set<string>): string | null {
-  const prefix = code.substring(0, 3); // "XX-"
-  const digits = code.substring(3);    // "YYYY"
-  if (code.endsWith("-0000")) return null;  // level 1
-  if (code.endsWith("00")) return prefix + "0000";  // level 2 → level 1
-  if (code.endsWith("0")) {
-    // level 3 → level 2: resolve ambiguous minor-group parent
-    const renumbered = prefix + digits.substring(0, 2) + "00";
-    const standard   = prefix + digits[0] + "000";
-    if (renumbered === standard) return standard;
-    if (knownCodes) {
-      return knownCodes.has(renumbered) ? renumbered : standard;
-    }
-    return standard;
-  }
-  return prefix + digits.substring(0, 3) + "0";  // level 4 → level 3
-}
+// Hierarchy traversal is now delegated to getHierarchyStrategy() from occupationHierarchy.ts
 
 interface EconomicCompositionIndustry {
   id: string;
@@ -153,6 +133,8 @@ const CompositionTreeMap = (props: Props) => {
   const industryMap = useGlobalIndustryMap();
   const getString = useFluent();
   const windowDimensions = useWindowWidth();
+  const { countryMetadata } = useStaticData();
+  const hierarchyStrategy = getHierarchyStrategy(countryMetadata?.hierarchyRules?.strategy || 'soc2018');
   const rootRef = useRef<HTMLDivElement | null>(null);
   const tooltipContentRef = useRef<HTMLDivElement | null>(null);
   const highlightedTooltipRef = useRef<HTMLDivElement | null>(null);
@@ -254,9 +236,9 @@ const CompositionTreeMap = (props: Props) => {
     for (const { naicsId } of industries) {
       const ind = industryMap.data[naicsId];
       if (ind && ind.level !== null && ind.level <= digitLevel) {
-        let ancestor = socParent(naicsId, availableCodes);
+        let ancestor = hierarchyStrategy.getParent(naicsId, availableCodes);
         while (ancestor && !availableCodes.has(ancestor)) {
-          ancestor = socParent(ancestor, availableCodes);
+          ancestor = hierarchyStrategy.getParent(ancestor, availableCodes);
         }
         if (ancestor) {
           if (!childrenOf.has(ancestor)) childrenOf.set(ancestor, []);
@@ -425,17 +407,22 @@ const CompositionTreeMap = (props: Props) => {
               : numCompany;
           const share = (value / total) * 100;
           const shareString = share < 0.01 ? "<0.01%" : share.toFixed(2) + "%";
+          const terminology = countryMetadata?.terminology;
+          const codeLabel = terminology?.occupationCode || getString("global-ui-naics-code");
+          const wageLabel = terminology?.wage || "Avg Annual Wage";
+          const empLabel = terminology?.employment || "Employees";
+          const currSymbol = countryMetadata?.currencySymbol || "$";
           const rows: string[][] = [
-            [getString("global-ui-naics-code") + ":", industry.code],
+            [codeLabel + ":", industry.code],
             [getString("global-ui-year") + ":", year.toString()],
-            ["Employees:", numberWithCommas(formatNumber(Math.round(numEmploy)))],
+            [empLabel + ":", numberWithCommas(formatNumber(Math.round(numEmploy)))],
             [
               getString("tooltip-share-generic", { value: compositionType }) +
                 ":",
               shareString,
             ],
-            ["Avg Annual Wage:", "$" + numberWithCommas(formatNumber(Math.round(aMean)))],
-            ["Total Income:", "$" + numberWithCommas(formatNumber(Math.round(numCompany)))],
+            [wageLabel + ":", currSymbol + numberWithCommas(formatNumber(Math.round(aMean)))],
+            ["Total Income:", currSymbol + numberWithCommas(formatNumber(Math.round(numCompany)))],
           ];
           if (
             (colorBy === ColorBy.education || colorBy === ColorBy.wage) &&
@@ -492,17 +479,22 @@ const CompositionTreeMap = (props: Props) => {
               : numCompany;
           const share = (value / total) * 100;
           const shareString = share < 0.01 ? "<0.01%" : share.toFixed(2) + "%";
+          const terminology = countryMetadata?.terminology;
+          const codeLabel = terminology?.occupationCode || getString("global-ui-naics-code");
+          const wageLabel = terminology?.wage || "Avg Annual Wage";
+          const empLabel = terminology?.employment || "Employees";
+          const currSymbol = countryMetadata?.currencySymbol || "$";
           const rows: string[][] = [
-            [getString("global-ui-naics-code") + ":", industry.code],
+            [codeLabel + ":", industry.code],
             [getString("global-ui-year") + ":", year.toString()],
-            ["Employees:", numberWithCommas(formatNumber(Math.round(numEmploy)))],
+            [empLabel + ":", numberWithCommas(formatNumber(Math.round(numEmploy)))],
             [
               getString("tooltip-share-generic", { value: compositionType }) +
                 ":",
               shareString,
             ],
-            ["Avg Annual Wage:", "$" + numberWithCommas(formatNumber(Math.round(aMean)))],
-            ["Total Income:", "$" + numberWithCommas(formatNumber(Math.round(numCompany)))],
+            [wageLabel + ":", currSymbol + numberWithCommas(formatNumber(Math.round(aMean)))],
+            ["Total Income:", currSymbol + numberWithCommas(formatNumber(Math.round(numCompany)))],
           ];
           if (
             (colorBy === ColorBy.education || colorBy === ColorBy.wage) &&

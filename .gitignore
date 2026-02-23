@@ -32,8 +32,7 @@ temp-deploy.txt
 build.zip
 
 # Downloaded data files (keep in data/raw/)
-data/raw/*.xlsx
-data/raw/*.zip
+data/raw/*.*
 
 # Python
 __pycache__/

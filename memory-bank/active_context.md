@@ -1,7 +1,24 @@
 # Active Context
 
 ## Current Focus
-India PLFS data exploration complete. MoSPI MCP server configured. Data structure validated for multi-country support.
+Multi-country metadata architecture implemented. Frontend is now metadata-driven for US and India.
+
+## What Was Done (2026-02-22, Session 5)
+
+### Metadata-Driven Multi-Country Architecture (11-Step Plan)
+All steps completed, 0 TypeScript errors, build succeeds, 48 pipeline tests pass.
+
+1. **`public/data/bls-data.json`**: Added `yearsByCountry`, `countryMetadata` with full US (SOC, 22 groups) and India (NCO, 10 divisions) metadata including terminology, levels, majorGroups, regionTypes, hierarchyRules
+2. **`src/dataProvider/types.ts`**: Added `CountryMetadata` interface, updated `BLSMetaCatalog` with `yearsByCountry`, `countryMetadata`, `flagEmoji`
+3. **`src/dataProvider/index.tsx`**: Added `selectedCountry`, `selectedYear`, `countryMetadata`, `switchCountryYear()` to DataState. URL-based initial country selection. Country-aware `fetchAndMerge`. `maxDigitLevel` computed per country.
+4. **`src/utils/occupationHierarchy.ts`** (NEW): Strategy pattern — `SOC2018Strategy` (XX-XXXX format, renumbered code handling) and `NCO2015Strategy` (digit-length levels, substring parent). Factory: `getHierarchyStrategy(name)`.
+5. **`src/components/dataViz/treeMap/CompositionTreeMap.tsx`**: Replaced inline `socParent()` with `hierarchyStrategy.getParent()`. Tooltips now use metadata-driven labels (occupationCode, wage, employment, currencySymbol).
+6. **`src/pages/landing/index.tsx`**: Country selector cards before region search. Flag emojis, country name, classification system subtitle. Back button to change country. Country-specific quick links.
+7. **`src/components/navigation/secondaryHeader/CitySearch.tsx`**: Country dropdown from `meta.countries` (not hardcoded). Year dropdown from `yearsByCountry[selectedCountry]`. Region optgroups from `countryMetadata.regionTypes[].pluralName`. `onCountryChange` calls `switchCountryYear()`.
+8. **`src/hooks/useSectorMap.ts`**: Uses `countryMetadata.majorGroups` with names/colors directly. Falls back to SOC `sectorColorMap` + fluent strings.
+9. **`src/hooks/useTerminology.ts`** (NEW): Returns `countryMetadata.terminology` or US defaults.
+10. **`src/components/dataViz/settings/index.tsx`**: Dynamic digit level buttons from `maxDigitLevel`. Level names from `countryMetadata.levels[n].name`.
+11. **`src/components/dataViz/industrySpace/chart/`**: `createChart.ts` accepts `occupationCodeLabel` parameter. `index.tsx` passes label from `countryMetadata.terminology.occupationCode`.
 
 ## What Was Done (2026-02-22, Session 4)
 
@@ -97,7 +114,8 @@ India PLFS data exploration complete. MoSPI MCP server configured. Data structur
 - 48 tests passing
 
 ## Pending
-- Footer still shows Harvard Growth Lab branding
+- India data pipeline: Create fetch/import/export scripts for India PLFS data
+- India test data: Generate India JSON data files for the frontend
 - Some text still says "city" instead of "region"
 - Large file sizes (8MB main, 17+23MB metro) — gzip recommended in production
 - GDP/income validation (values shift across levels due to aMean rounding in synthesis)

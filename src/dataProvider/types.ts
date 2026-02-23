@@ -71,6 +71,19 @@ export interface BLSData {
   };
 }
 
+/** Per-country metadata (terminology, levels, colors, hierarchy) */
+export interface CountryMetadata {
+  classificationSystem: string;
+  currency: string;
+  currencySymbol: string;
+  terminology: Record<string, string>;
+  levels: Record<string, { name: string }>;
+  maxLevel: number;
+  regionTypes: { id: string; pluralName: string }[];
+  majorGroups: { id: string; name: string; color: string }[];
+  hierarchyRules: { strategy: string };
+}
+
 /** Meta catalog file (bls-data.json) */
 export interface BLSMetaCatalog {
   datasets: {
@@ -84,7 +97,8 @@ export interface BLSMetaCatalog {
       [level: string]: string;
     };
   };
-  countries: { code: string; name: string }[];
-  years: number[];
+  countries: { code: string; name: string; flagEmoji?: string }[];
+  yearsByCountry: { [countryCode: string]: number[] };
+  countryMetadata: { [countryCode: string]: CountryMetadata };
   lastUpdated: string;
 }
