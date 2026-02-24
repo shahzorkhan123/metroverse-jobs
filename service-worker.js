@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/metroverse-jobs/precache-manifest.99a93388efd5d9f4b4a011ed5b15b363.js"
+  "/metroverse-jobs/precache-manifest.e787a7b9401a3d91ac430ef7e2abe821.js"
 );
 
 self.addEventListener('message', (event) => {
