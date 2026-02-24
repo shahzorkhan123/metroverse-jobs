@@ -159,8 +159,13 @@ const CitySearch = () => {
     const countryYears = meta?.yearsByCountry?.[newCountry] || [];
     const year = countryYears[countryYears.length - 1] || 2024;
     switchCountryYear(newCountry, year);
-    // Navigate to landing page when switching countries
-    history.push("/");
+    // Navigate to the national region of the new country
+    const countryInfo = countries.find(c => c.code === newCountry);
+    if (countryInfo) {
+      const nationalId = "national-" + countryInfo.name.toLowerCase().replace(/\s+/g, "-");
+      const route = createRoute.city(CityRoutes.CityOverview, nationalId);
+      history.push(route);
+    }
   };
 
   return (

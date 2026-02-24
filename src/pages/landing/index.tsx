@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components/macro";
 import {
   secondaryFont,
@@ -194,85 +194,41 @@ const Attribution = styled.div`
   }
 `;
 
-/* Country selector styles */
-const CountrySelectorTitle = styled.h2`
-  color: #fff;
-  font-family: ${secondaryFont};
-  font-weight: 400;
-  text-transform: uppercase;
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 1.2rem;
-  border-bottom: solid 0.3rem ${primaryColor};
-  padding-bottom: 0.5rem;
-`;
-
-const CountryGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-`;
-
-const CountryCard = styled.button`
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  padding: 2rem 1.5rem;
-  cursor: pointer;
-  font-family: ${secondaryFont};
-  text-transform: uppercase;
+const CountryDropdownRow = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-color: ${primaryColor};
-  }
+  margin-bottom: 0.5rem;
 `;
 
-const CountryFlag = styled.span`
-  font-size: 2.5rem;
-  line-height: 1;
-`;
-
-const CountryName = styled.span`
-  font-size: 1rem;
-  letter-spacing: 0.05em;
-`;
-
-const CountrySubtitle = styled.span`
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: none;
-`;
-
-const BackButton = styled.button`
-  background: none;
-  border: none;
+const CountryLabel = styled.label`
   color: rgba(255, 255, 255, 0.6);
   font-family: ${secondaryFont};
   font-size: 0.75rem;
   text-transform: uppercase;
-  cursor: pointer;
-  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+`;
 
-  &:hover {
+const CountrySelect = styled.select`
+  background-color: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 0.4rem 0.75rem;
+  font-family: ${secondaryFont};
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &:focus {
+    border-color: ${primaryColor};
+  }
+
+  option {
+    background-color: #08111e;
     color: #fff;
   }
 `;
-
-/** Convert 2-letter country code to flag emoji */
-function flagEmoji(code: string): string {
-  const codePoints = code
-    .toUpperCase()
-    .split("")
-    .map((char) => 127397 + char.charCodeAt(0));
-  return String.fromCodePoint(...codePoints);
-}
 
 const Landing = () => {
   const { loading, error, data } = useGlobalLocationData();
@@ -280,15 +236,10 @@ const Landing = () => {
   const history = useHistory();
   const getString = useFluent();
 
-  // If only one country has data, skip country selection
   const countriesWithData = meta?.countries.filter(c => {
     const years = meta.yearsByCountry?.[c.code];
     return years && years.length > 0 && meta.datasets.some(d => d.country === c.code);
   }) || [];
-  const hasMultipleCountries = countriesWithData.length > 1;
-
-  // Track whether user has selected a country (auto-true if only one option)
-  const [countrySelected, setCountrySelected] = useState(!hasMultipleCountries);
 
   const navigateToRegion = useCallback(
     (regionId: string) => {
@@ -307,65 +258,19 @@ const Landing = () => {
     [navigateToRegion],
   );
 
-  const onCountrySelect = useCallback(
-    (countryCode: string) => {
+  const onCountryChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const countryCode = e.target.value;
       const years = meta?.yearsByCountry?.[countryCode] || [];
       const year = years[years.length - 1];
       if (year) {
         switchCountryYear(countryCode, year);
       }
-      setCountrySelected(true);
     },
     [meta, switchCountryYear],
   );
 
-  // Country selector view
-  if (hasMultipleCountries && !countrySelected) {
-    const countryMeta = meta?.countryMetadata || {};
-    return (
-      <Root>
-        <CenterPanel>
-          <CountrySelectorTitle>
-            Select a Country
-          </CountrySelectorTitle>
-          <CountryGrid>
-            {countriesWithData.map((country) => {
-              const cm = countryMeta[country.code];
-              return (
-                <CountryCard
-                  key={country.code}
-                  onClick={() => onCountrySelect(country.code)}
-                >
-                  <CountryFlag>
-                    {flagEmoji(country.flagEmoji || country.code)}
-                  </CountryFlag>
-                  <CountryName>{country.name}</CountryName>
-                  {cm && (
-                    <CountrySubtitle>
-                      {cm.classificationSystem} &middot; {cm.regionTypes.length} region types
-                    </CountrySubtitle>
-                  )}
-                </CountryCard>
-              );
-            })}
-          </CountryGrid>
-          <Attribution>
-            Based on{" "}
-            <a
-              href="https://metroverse.cid.harvard.edu/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Metroverse
-            </a>{" "}
-            by Harvard Growth Lab. Licensed under CC BY-NC-SA 4.0.
-          </Attribution>
-        </CenterPanel>
-      </Root>
-    );
-  }
-
-  // Region search view (after country is selected)
+  // Region search bar
   let searchBar: React.ReactElement<any>;
   if (loading === true) {
     searchBar = (
@@ -425,14 +330,22 @@ const Landing = () => {
     </QuickLinks>
   ) : null;
 
+  // Country dropdown (only if multiple countries available)
+  const countryDropdown = countriesWithData.length > 1 ? (
+    <CountryDropdownRow>
+      <CountryLabel>Country</CountryLabel>
+      <CountrySelect value={selectedCountry} onChange={onCountryChange}>
+        {countriesWithData.map((c) => (
+          <option key={c.code} value={c.code}>{c.name}</option>
+        ))}
+      </CountrySelect>
+    </CountryDropdownRow>
+  ) : null;
+
   return (
     <Root>
       <CenterPanel>
-        {hasMultipleCountries && (
-          <BackButton onClick={() => setCountrySelected(false)}>
-            &larr; Change Country
-          </BackButton>
-        )}
+        {countryDropdown}
         <Heading />
         <SearchContainer>{searchBar}</SearchContainer>
         {quickLinks}
