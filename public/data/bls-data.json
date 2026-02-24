@@ -1,16 +1,22 @@
 {
   "datasets": [
     {
+      "country": "in",
+      "year": 2024,
+      "file": "bls-data-in-2024.json",
+      "levels": [
+        1,
+        2
+      ]
+    },
+    {
       "country": "us",
       "year": 2024,
       "file": "bls-data-us-2024.json",
-      "levels": [1, 2]
-    },
-    {
-      "country": "ind",
-      "year": 2024,
-      "file": "bls-data-in-2024.json",
-      "levels": [1, 2]
+      "levels": [
+        1,
+        2
+      ]
     }
   ],
   "levelFiles": {
@@ -20,17 +26,32 @@
       "3-metro": "bls-data-us-2024-3-metro.json",
       "4-metro": "bls-data-us-2024-4-metro.json"
     },
-    "ind-2024": {
+    "in-2024": {
       "3": "bls-data-in-2024-3.json"
     }
   },
   "countries": [
-    { "code": "us", "name": "United States", "flagEmoji": "US" },
-    { "code": "ind", "name": "India", "flagEmoji": "IN" }
+    {
+      "code": "in",
+      "name": "India",
+      "flagEmoji": "IN"
+    },
+    {
+      "code": "us",
+      "name": "United States",
+      "flagEmoji": "US"
+    }
+  ],
+  "years": [
+    2024
   ],
   "yearsByCountry": {
-    "us": [2024],
-    "ind": [2024]
+    "in": [
+      2024
+    ],
+    "us": [
+      2024
+    ]
   },
   "countryMetadata": {
     "us": {
@@ -44,76 +65,237 @@
         "employment": "Employment"
       },
       "levels": {
-        "1": { "name": "Major Group" },
-        "2": { "name": "Minor Group" },
-        "3": { "name": "Broad Occupation" },
-        "4": { "name": "Detailed Occupation" }
+        "1": {
+          "name": "Major Group"
+        },
+        "2": {
+          "name": "Minor Group"
+        },
+        "3": {
+          "name": "Broad Occupation"
+        },
+        "4": {
+          "name": "Detailed Occupation"
+        }
       },
       "maxLevel": 4,
       "regionTypes": [
-        { "id": "National", "pluralName": "National" },
-        { "id": "State", "pluralName": "States" },
-        { "id": "Metro", "pluralName": "Metropolitan Areas" }
+        {
+          "id": "National",
+          "pluralName": "National"
+        },
+        {
+          "id": "State",
+          "pluralName": "States"
+        },
+        {
+          "id": "Metro",
+          "pluralName": "Metropolitan Areas"
+        }
       ],
       "majorGroups": [
-        { "id": "11", "name": "Management", "color": "#A973BE" },
-        { "id": "13", "name": "Business and Financial Operations", "color": "#F1866C" },
-        { "id": "15", "name": "Computer and Mathematical", "color": "#488098" },
-        { "id": "17", "name": "Architecture and Engineering", "color": "#6A6AAD" },
-        { "id": "19", "name": "Life, Physical, Social Science", "color": "#77C898" },
-        { "id": "21", "name": "Community and Social Service", "color": "#93CFD0" },
-        { "id": "23", "name": "Legal", "color": "#D35162" },
-        { "id": "25", "name": "Educational Instruction", "color": "#FFC135" },
-        { "id": "27", "name": "Arts, Design, Entertainment", "color": "#F28188" },
-        { "id": "29", "name": "Healthcare Practitioners", "color": "#5B9BD5" },
-        { "id": "31", "name": "Healthcare Support", "color": "#70AD47" },
-        { "id": "33", "name": "Protective Service", "color": "#BF8F00" },
-        { "id": "35", "name": "Food Preparation", "color": "#ED7D31" },
-        { "id": "37", "name": "Building and Grounds", "color": "#8DB4E2" },
-        { "id": "39", "name": "Personal Care", "color": "#C5B0D5" },
-        { "id": "41", "name": "Sales", "color": "#FF6B6B" },
-        { "id": "43", "name": "Office and Administrative", "color": "#4ECDC4" },
-        { "id": "45", "name": "Farming, Fishing, Forestry", "color": "#556B2F" },
-        { "id": "47", "name": "Construction", "color": "#DAA520" },
-        { "id": "49", "name": "Installation, Maintenance", "color": "#708090" },
-        { "id": "51", "name": "Production", "color": "#CD853F" },
-        { "id": "53", "name": "Transportation", "color": "#9370DB" }
+        {
+          "id": "11",
+          "name": "Management",
+          "color": "#A973BE"
+        },
+        {
+          "id": "13",
+          "name": "Business and Financial Operations",
+          "color": "#F1866C"
+        },
+        {
+          "id": "15",
+          "name": "Computer and Mathematical",
+          "color": "#488098"
+        },
+        {
+          "id": "17",
+          "name": "Architecture and Engineering",
+          "color": "#6A6AAD"
+        },
+        {
+          "id": "19",
+          "name": "Life, Physical, Social Science",
+          "color": "#77C898"
+        },
+        {
+          "id": "21",
+          "name": "Community and Social Service",
+          "color": "#93CFD0"
+        },
+        {
+          "id": "23",
+          "name": "Legal",
+          "color": "#D35162"
+        },
+        {
+          "id": "25",
+          "name": "Educational Instruction",
+          "color": "#FFC135"
+        },
+        {
+          "id": "27",
+          "name": "Arts, Design, Entertainment",
+          "color": "#F28188"
+        },
+        {
+          "id": "29",
+          "name": "Healthcare Practitioners",
+          "color": "#5B9BD5"
+        },
+        {
+          "id": "31",
+          "name": "Healthcare Support",
+          "color": "#70AD47"
+        },
+        {
+          "id": "33",
+          "name": "Protective Service",
+          "color": "#BF8F00"
+        },
+        {
+          "id": "35",
+          "name": "Food Preparation",
+          "color": "#ED7D31"
+        },
+        {
+          "id": "37",
+          "name": "Building and Grounds",
+          "color": "#8DB4E2"
+        },
+        {
+          "id": "39",
+          "name": "Personal Care",
+          "color": "#C5B0D5"
+        },
+        {
+          "id": "41",
+          "name": "Sales",
+          "color": "#FF6B6B"
+        },
+        {
+          "id": "43",
+          "name": "Office and Administrative",
+          "color": "#4ECDC4"
+        },
+        {
+          "id": "45",
+          "name": "Farming, Fishing, Forestry",
+          "color": "#556B2F"
+        },
+        {
+          "id": "47",
+          "name": "Construction",
+          "color": "#DAA520"
+        },
+        {
+          "id": "49",
+          "name": "Installation, Maintenance",
+          "color": "#708090"
+        },
+        {
+          "id": "51",
+          "name": "Production",
+          "color": "#CD853F"
+        },
+        {
+          "id": "53",
+          "name": "Transportation",
+          "color": "#9370DB"
+        }
       ],
-      "hierarchyRules": { "strategy": "soc2018" }
+      "hierarchyRules": {
+        "strategy": "soc2018"
+      }
     },
-    "ind": {
+    "in": {
       "classificationSystem": "NCO",
       "currency": "INR",
       "currencySymbol": "\u20b9",
       "terminology": {
         "occupationCode": "NCO Code",
         "majorGroup": "Division",
-        "wage": "Monthly Wage",
+        "wage": "Annual Mean Wage",
         "employment": "Workers"
       },
       "levels": {
-        "1": { "name": "Division" },
-        "2": { "name": "Sub-Division" },
-        "3": { "name": "Group" }
+        "1": {
+          "name": "Division"
+        },
+        "2": {
+          "name": "Sub-Division"
+        },
+        "3": {
+          "name": "Group"
+        }
       },
       "maxLevel": 3,
       "regionTypes": [
-        { "id": "National", "pluralName": "National" },
-        { "id": "State", "pluralName": "States/UTs" }
+        {
+          "id": "National",
+          "pluralName": "National"
+        },
+        {
+          "id": "State",
+          "pluralName": "States/UTs"
+        },
+        {
+          "id": "Metro",
+          "pluralName": "Cities"
+        }
       ],
       "majorGroups": [
-        { "id": "1", "name": "Managers", "color": "#A973BE" },
-        { "id": "2", "name": "Professionals", "color": "#F1866C" },
-        { "id": "3", "name": "Technicians and Associate Professionals", "color": "#488098" },
-        { "id": "4", "name": "Clerical Support Workers", "color": "#6A6AAD" },
-        { "id": "5", "name": "Service and Sales Workers", "color": "#77C898" },
-        { "id": "6", "name": "Skilled Agricultural Workers", "color": "#556B2F" },
-        { "id": "7", "name": "Craft and Related Trades Workers", "color": "#DAA520" },
-        { "id": "8", "name": "Plant and Machine Operators", "color": "#CD853F" },
-        { "id": "9", "name": "Elementary Occupations", "color": "#708090" }
+        {
+          "id": "1",
+          "name": "Managers",
+          "color": "#A973BE"
+        },
+        {
+          "id": "2",
+          "name": "Professionals",
+          "color": "#F1866C"
+        },
+        {
+          "id": "3",
+          "name": "Technicians and Associate Professionals",
+          "color": "#488098"
+        },
+        {
+          "id": "4",
+          "name": "Clerical Support Workers",
+          "color": "#6A6AAD"
+        },
+        {
+          "id": "5",
+          "name": "Service and Sales Workers",
+          "color": "#77C898"
+        },
+        {
+          "id": "6",
+          "name": "Skilled Agricultural, Forestry and Fishery Workers",
+          "color": "#556B2F"
+        },
+        {
+          "id": "7",
+          "name": "Craft and Related Trades Workers",
+          "color": "#DAA520"
+        },
+        {
+          "id": "8",
+          "name": "Plant and Machine Operators and Assemblers",
+          "color": "#CD853F"
+        },
+        {
+          "id": "9",
+          "name": "Elementary Occupations",
+          "color": "#708090"
+        }
       ],
-      "hierarchyRules": { "strategy": "nco2015" }
+      "hierarchyRules": {
+        "strategy": "nco2015"
+      }
     }
   },
-  "lastUpdated": "2026-02-23"
+  "lastUpdated": "2026-02-24"
 }

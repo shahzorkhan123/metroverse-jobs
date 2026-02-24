@@ -57,11 +57,31 @@ export const useStaticData = () => useContext(StaticDataContext);
  * so we add them additively to what's already loaded.
  */
 function mergeExtension(base: BLSData, ext: BLSData): BLSData {
-  // Merge occupations (add new ones)
-  const existingCodes = new Set(base.occupations.map((o) => o.socCode));
-  const newOccupations = ext.occupations.filter(
-    (o) => !existingCodes.has(o.socCode),
-  );
+  const extOccupationMap = (ext.metadata as any)?.occupationMap || {};
+
+  // Merge occupations (add new ones), hydrating from metadata map when slim payload is used.
+  const existingByCode = new Map(base.occupations.map((o) => [o.socCode, o]));
+  const extCodes = new Set<string>([
+    ...ext.occupations.map((o) => o.socCode),
+    ...Object.keys(extOccupationMap),
+  ]);
+
+  const newOccupations = Array.from(extCodes)
+    .filter((socCode) => !existingByCode.has(socCode))
+    .map((socCode) => {
+      const raw = ext.occupations.find((o) => o.socCode === socCode) as any || { socCode };
+      const mapped = (extOccupationMap as any)[socCode] || {};
+      const majorGroupId = raw.majorGroupId || mapped.majorGroupId || (socCode.includes('-') ? socCode.slice(0, 2) : socCode.slice(0, 1));
+      const level = raw.level || mapped.level || (socCode.includes('-') ? 4 : socCode.length);
+      return {
+        socCode,
+        name: raw.name || mapped.name || `Occupation ${socCode}`,
+        level,
+        parentCode: raw.parentCode ?? mapped.parentCode ?? null,
+        majorGroupId,
+        majorGroupName: raw.majorGroupName || mapped.majorGroupName || '',
+      };
+    });
 
   // Merge majorGroups (add any new ones)
   const existingGroups = new Set(base.majorGroups.map((g) => g.groupId));

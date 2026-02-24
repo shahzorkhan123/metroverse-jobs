@@ -179,12 +179,13 @@ def _synthesize_missing_levels(records: list[dict],
                 else:
                     complexity = 0.5
 
+                fallback_prefix = "NCO" if code_system == "NCO" else "SOC"
                 synth = {
                     "year": year,
                     "Region_Type": rt,
                     "Region": region,
                     "SOC_Code": parent_code,
-                    "OCC_TITLE": soc_names.get(parent_code, f"SOC {parent_code}"),
+                    "OCC_TITLE": soc_names.get(parent_code, f"{fallback_prefix} {parent_code}"),
                     "SOC_Major_Group": major_group,
                     "SOC_Major_Group_Name": soc_mg_names.get(major_group, ""),
                     "TOT_EMP": total_emp,
@@ -263,7 +264,8 @@ def _detect_code_system(conn: sqlite3.Connection,
 def _build_static_data(records: list[dict],
                        max_level: int | None = None,
                        exact_level: int | None = None,
-                       code_system: str = "SOC") -> dict:
+                       code_system: str = "SOC",
+                       slim_occupations: bool = False) -> dict:
     """Build the static data structure for a BLS JSON file.
 
     If max_level is set, only include occupations at levels <= max_level.
@@ -323,16 +325,26 @@ def _build_static_data(records: list[dict],
     all_soc_codes = set(occupations_set.keys())
     color_map = _get_major_group_colors(code_system)
     occupations = []
+    occupation_map: dict[str, dict] = {}
     for soc_code in sorted(occupations_set.keys()):
         occ = occupations_set[soc_code]
-        occupations.append({
+        occ_record = {
             "socCode": soc_code,
             "name": occ["name"],
             "level": _get_level(soc_code, code_system),
             "parentCode": _get_parent(soc_code, code_system, all_soc_codes),
             "majorGroupId": occ["majorGroupId"],
             "majorGroupName": occ["majorGroupName"],
-        })
+        }
+        occupation_map[soc_code] = {
+            "name": occ_record["name"],
+            "level": occ_record["level"],
+            "parentCode": occ_record["parentCode"],
+            "majorGroupId": occ_record["majorGroupId"],
+            "majorGroupName": occ_record["majorGroupName"],
+        }
+        if not slim_occupations:
+            occupations.append(occ_record)
 
     # Build major groups array
     major_groups = []
@@ -418,12 +430,16 @@ def _build_static_data(records: list[dict],
     else:
         source = "BLS OES + O*NET"
 
+    metadata = {
+        "lastUpdated": date.today().isoformat(),
+        "years": sorted(years),
+        "source": source,
+    }
+    if slim_occupations:
+        metadata["occupationMap"] = occupation_map
+
     output = {
-        "metadata": {
-            "lastUpdated": date.today().isoformat(),
-            "years": sorted(years),
-            "source": source,
-        },
+        "metadata": metadata,
         "regions": regions,
         "occupations": occupations,
         "majorGroups": major_groups,
@@ -498,7 +514,12 @@ def export_level_file(conn: sqlite3.Connection,
     records = [r for r in records if r["year"] == year]
     if region_types:
         records = [r for r in records if r["Region_Type"] in region_types]
-    data = _build_static_data(records, exact_level=level, code_system=code_system)
+    data = _build_static_data(
+        records,
+        exact_level=level,
+        code_system=code_system,
+        slim_occupations=(country_code == "IND"),
+    )
     data["metadata"]["country"] = short
     data["metadata"]["level"] = level
 
@@ -528,10 +549,121 @@ def export_meta(country_configs: list[dict],
     if output_path is None:
         output_path = config.json_meta_path()
 
-    datasets = []
-    level_files: dict[str, dict[str, str]] = {}
-    countries_seen: dict[str, str] = {}
-    years_seen: set[int] = set()
+    # Start from existing meta if present, so exporting one country doesn't drop others.
+    existing = {}
+    if output_path.exists():
+        try:
+            with open(output_path, "r", encoding="utf-8") as f:
+                existing = json.load(f)
+        except Exception:
+            existing = {}
+
+    datasets_by_key: dict[tuple[str, int], dict] = {}
+    for item in existing.get("datasets", []):
+        datasets_by_key[(item.get("country"), item.get("year"))] = item
+
+    level_files: dict[str, dict[str, str]] = {
+        k: dict(v) for k, v in existing.get("levelFiles", {}).items()
+    }
+    countries_map: dict[str, dict] = {
+        c.get("code"): dict(c)
+        for c in existing.get("countries", [])
+        if c.get("code")
+    }
+    years_by_country: dict[str, set[int]] = {
+        c: set(int(y) for y in ys)
+        for c, ys in existing.get("yearsByCountry", {}).items()
+    }
+    country_metadata = dict(existing.get("countryMetadata", {}))
+
+    code_to_flag = {
+        "us": "US",
+        "in": "IN",
+        "gb": "GB",
+        "eg": "EG",
+        "ca": "CA",
+        "mx": "MX",
+        "eu": "EU",
+    }
+
+    # reverse map short -> long country code
+    short_to_long = {
+        config.country_short(long_code): long_code
+        for long_code in config.COUNTRIES
+    }
+
+    def default_country_metadata(long_code: str) -> dict:
+        cfg = config.COUNTRIES.get(long_code, {})
+        code_system = cfg.get("code_system", "SOC")
+        currency = cfg.get("currency", "USD")
+
+        if code_system == "NCO":
+            major_groups = [
+                {
+                    "id": gid,
+                    "name": config.NCO_MAJOR_GROUPS.get(gid, f"Division {gid}"),
+                    "color": config.NCO_MAJOR_GROUP_COLORS.get(gid, "#999999"),
+                }
+                for gid in sorted(config.NCO_MAJOR_GROUP_COLORS.keys())
+            ]
+            return {
+                "classificationSystem": "NCO",
+                "currency": currency,
+                "currencySymbol": "₹" if currency == "INR" else currency,
+                "terminology": {
+                    "occupationCode": "NCO Code",
+                    "majorGroup": "Division",
+                    "wage": "Annual Mean Wage",
+                    "employment": "Workers",
+                },
+                "levels": {
+                    "1": {"name": "Division"},
+                    "2": {"name": "Sub-Division"},
+                    "3": {"name": "Group"},
+                },
+                "maxLevel": 3,
+                "regionTypes": [
+                    {"id": "National", "pluralName": "National"},
+                    {"id": "State", "pluralName": "States/UTs"},
+                    {"id": "Metro", "pluralName": "Cities"},
+                ],
+                "majorGroups": major_groups,
+                "hierarchyRules": {"strategy": "nco2015"},
+            }
+
+        major_groups = [
+            {
+                "id": gid,
+                "name": config.SOC_MAJOR_GROUPS.get(gid, gid),
+                "color": config.SOC_MAJOR_GROUP_COLORS.get(gid, "#999999"),
+            }
+            for gid in sorted(config.SOC_MAJOR_GROUP_COLORS.keys())
+        ]
+        return {
+            "classificationSystem": "SOC",
+            "currency": currency,
+            "currencySymbol": "$" if currency == "USD" else currency,
+            "terminology": {
+                "occupationCode": "SOC Code",
+                "majorGroup": "Major Group",
+                "wage": "Annual Mean Wage",
+                "employment": "Employment",
+            },
+            "levels": {
+                "1": {"name": "Major Group"},
+                "2": {"name": "Minor Group"},
+                "3": {"name": "Broad Occupation"},
+                "4": {"name": "Detailed Occupation"},
+            },
+            "maxLevel": 4,
+            "regionTypes": [
+                {"id": "National", "pluralName": "National"},
+                {"id": "State", "pluralName": "States"},
+                {"id": "Metro", "pluralName": "Metropolitan Areas"},
+            ],
+            "majorGroups": major_groups,
+            "hierarchyRules": {"strategy": "soc2018"},
+        }
 
     for cfg in country_configs:
         short = cfg["country_short"]
@@ -539,39 +671,58 @@ def export_meta(country_configs: list[dict],
         name = cfg["country_name"]
         levels = cfg["levels_available"]
 
-        countries_seen[short] = name
-        years_seen.add(year)
-
-        main_file = f"bls-data-{short}-{year}.json"
-        datasets.append({
+        datasets_by_key[(short, year)] = {
             "country": short,
             "year": year,
-            "file": main_file,
+            "file": f"bls-data-{short}-{year}.json",
             "levels": [1, 2],
-        })
+        }
 
         key = f"{short}-{year}"
-        level_files[key] = {}
+        if key not in level_files:
+            level_files[key] = {}
         for lvl in levels:
             if lvl > 2:
                 level_files[key][str(lvl)] = f"bls-data-{short}-{year}-{lvl}.json"
-
-        # Merge extra level files (e.g. "4-metro")
         for lkey, lfile in cfg.get("level_files_extra", {}).items():
             level_files[key][lkey] = lfile
+
+        country_entry = {
+            "code": short,
+            "name": name,
+        }
+        existing_country_entry = countries_map.get(short, {})
+        if "flagEmoji" in existing_country_entry:
+            country_entry["flagEmoji"] = existing_country_entry["flagEmoji"]
+        countries_map[short] = country_entry
+
+        years_by_country.setdefault(short, set()).add(year)
+
+        long_code = cfg.get("country_code") or short_to_long.get(short)
+        if long_code:
+            country_metadata[short] = default_country_metadata(long_code)
+
+    years_seen = sorted({d["year"] for d in datasets_by_key.values()})
+    datasets = sorted(
+        datasets_by_key.values(),
+        key=lambda d: (d["country"], d["year"]),
+    )
 
     meta = {
         "datasets": datasets,
         "levelFiles": level_files,
-        "countries": [{"code": c, "name": n}
-                      for c, n in sorted(countries_seen.items())],
-        "years": sorted(years_seen),
+        "countries": [countries_map[c] for c in sorted(countries_map.keys())],
+        "years": years_seen,
+        "yearsByCountry": {
+            c: sorted(list(ys)) for c, ys in sorted(years_by_country.items())
+        },
+        "countryMetadata": country_metadata,
         "lastUpdated": date.today().isoformat(),
     }
 
     _write_json(meta, output_path)
     print(f"  {output_path.name}: {len(datasets)} datasets, "
-          f"{len(countries_seen)} countries")
+            f"{len(countries_map)} countries")
 
 
 def export_all(conn: sqlite3.Connection,

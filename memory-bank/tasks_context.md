@@ -12,6 +12,11 @@
 - GDP/income validation across levels (aMean rounding in synthesis)
 
 ## Completed
+### Phase 4: India Subnational Pipeline
+- Added weighted PLFS microdata importer for India state-level and optional city-level aggregates
+- Added configurable suppression thresholds and level rollups (state 1-2 digit, city 1-digit default)
+- Added pipeline/config integration and test coverage (`TestIndiaPlfsImport`)
+
 ### Phase 1: Foundation & Core Viz
 - Fork metroverse-front-end → metroverse-jobs
 - Clone to D:\Projects\metroverse-jobs

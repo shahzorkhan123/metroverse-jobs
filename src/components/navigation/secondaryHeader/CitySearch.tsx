@@ -6,6 +6,7 @@ import {
 } from "../../../styling/styleUtils";
 import { useStaticData } from "../../../dataProvider";
 import { BLSRegion } from "../../../dataProvider/types";
+import { formatRegionDisplayName } from "../../../hooks/useGlobalLocationData";
 import useCurrentCityId from "../../../hooks/useCurrentCityId";
 import { useHistory, matchPath } from "react-router-dom";
 import { CityRoutes, cityIdParam } from "../../../routing/routes";
@@ -125,7 +126,11 @@ const CitySearch = () => {
   regionTypes.forEach((rt) => {
     regionsByType[rt.id] = blsData.regions
       .filter((r) => r.regionType === rt.id)
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) =>
+        formatRegionDisplayName(a.name, a.regionType).localeCompare(
+          formatRegionDisplayName(b.name, b.regionType),
+        ),
+      );
   });
 
   const onRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -197,7 +202,7 @@ const CitySearch = () => {
             <optgroup key={rt.id} label={rt.pluralName}>
               {regions.map((r) => (
                 <option key={r.regionId} value={r.regionId}>
-                  {r.name}
+                  {formatRegionDisplayName(r.name, r.regionType)}
                 </option>
               ))}
             </optgroup>

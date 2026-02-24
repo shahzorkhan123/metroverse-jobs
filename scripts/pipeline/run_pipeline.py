@@ -154,7 +154,7 @@ def main():
 
             print(f"\nImporting data for year {args.year}...")
 
-            if args.country.lower() == "ind":
+            if country_long == "IND":
                 # India PLFS pipeline
                 from scripts.pipeline import import_plfs
                 total = import_plfs.import_all_india(conn, year=args.year)
@@ -170,7 +170,7 @@ def main():
             conn.commit()
             print(f"\nTotal imported: {total} records")
 
-            if args.country.lower() != "ind":
+            if country_long != "IND":
                 # Complexity scores already computed in import_plfs
                 print("\nComputing complexity scores (GDP normalization)...")
                 db.compute_complexity_scores(conn)
