@@ -5,6 +5,12 @@
       "year": 2024,
       "file": "bls-data-us-2024.json",
       "levels": [1, 2]
+    },
+    {
+      "country": "ind",
+      "year": 2024,
+      "file": "bls-data-in-2024.json",
+      "levels": [1, 2]
     }
   ],
   "levelFiles": {
@@ -13,6 +19,9 @@
       "4": "bls-data-us-2024-4.json",
       "3-metro": "bls-data-us-2024-3-metro.json",
       "4-metro": "bls-data-us-2024-4-metro.json"
+    },
+    "ind-2024": {
+      "3": "bls-data-in-2024-3.json"
     }
   },
   "countries": [
@@ -101,11 +110,10 @@
         { "id": "6", "name": "Skilled Agricultural Workers", "color": "#556B2F" },
         { "id": "7", "name": "Craft and Related Trades Workers", "color": "#DAA520" },
         { "id": "8", "name": "Plant and Machine Operators", "color": "#CD853F" },
-        { "id": "9", "name": "Elementary Occupations", "color": "#708090" },
-        { "id": "0", "name": "Armed Forces Occupations", "color": "#BF8F00" }
+        { "id": "9", "name": "Elementary Occupations", "color": "#708090" }
       ],
       "hierarchyRules": { "strategy": "nco2015" }
     }
   },
-  "lastUpdated": "2026-02-22"
+  "lastUpdated": "2026-02-23"
 }

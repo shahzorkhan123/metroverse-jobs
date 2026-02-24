@@ -10,12 +10,12 @@ import {
   CompositionType,
 } from "../../../../../types/graphQL/graphQLTypes";
 import {
-  sectorColorMap,
   clusterColorMap,
   FullPageOverlay,
   educationColorRange,
   wageColorRange,
 } from "../../../../../styling/styleUtils";
+import useSectorMap from "../../../../../hooks/useSectorMap";
 import html2canvas from "html2canvas";
 import {
   AggregationMode,
@@ -57,6 +57,7 @@ export default (props: Props) => {
     colorBy,
   } = props;
 
+  const dynamicColorMap = useSectorMap();
   const industryResponse = useEconomicCompositionQuery({ cityId, year });
   const clusterResponse = useClusterCompositionQuery({ cityId, year });
   const industryMap = useGlobalIndustryMap();
@@ -174,7 +175,7 @@ export default (props: Props) => {
         });
       } else {
         const { industries } = industryResponse.data;
-        colorMap = sectorColorMap;
+        colorMap = dynamicColorMap;
         if (
           colorBy === ColorBy.education &&
           aggregateIndustryDataMap.data !== undefined

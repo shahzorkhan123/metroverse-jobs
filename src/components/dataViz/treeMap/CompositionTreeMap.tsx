@@ -8,10 +8,10 @@ import {
 import { usePrevious } from "react-use";
 import TreeMap, { transformData, Inputs } from "react-canvas-treemap";
 import {
-  sectorColorMap,
   educationColorRange,
   wageColorRange,
 } from "../../../styling/styleUtils";
+import useSectorMap from "../../../hooks/useSectorMap";
 import { useWindowWidth } from "../../../contextProviders/appContext";
 import styled from "styled-components/macro";
 import noop from "lodash/noop";
@@ -135,6 +135,7 @@ const CompositionTreeMap = (props: Props) => {
   const windowDimensions = useWindowWidth();
   const { countryMetadata } = useStaticData();
   const hierarchyStrategy = getHierarchyStrategy(countryMetadata?.hierarchyRules?.strategy || 'soc2018');
+  const dynamicColorMap = useSectorMap();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const tooltipContentRef = useRef<HTMLDivElement | null>(null);
   const highlightedTooltipRef = useRef<HTMLDivElement | null>(null);
@@ -379,7 +380,7 @@ const CompositionTreeMap = (props: Props) => {
         data: treeMapData,
         width: dimensions.width,
         height: dimensions.height,
-        colorMap: sectorColorMap,
+        colorMap: dynamicColorMap,
       });
       const loadingOverlay = loading ? <LoadingBlock /> : null;
       const onHover = (id: string) => {
@@ -389,7 +390,7 @@ const CompositionTreeMap = (props: Props) => {
           ({ naicsId }) => naicsId === id,
         );
         if (industry && industryWithData && node) {
-          const color = sectorColorMap.find(
+          const color = dynamicColorMap.find(
             (c) => c.id === industry.naicsIdTopParent.toString(),
           );
           // Use adjusted values (residual for parents) for consistent display
@@ -461,7 +462,7 @@ const CompositionTreeMap = (props: Props) => {
           ({ naicsId }) => naicsId === highlighted,
         );
         if (industry && industryWithData && node) {
-          const color = sectorColorMap.find(
+          const color = dynamicColorMap.find(
             (c) => c.id === industry.naicsIdTopParent.toString(),
           );
           // Use adjusted values (residual for parents) for consistent display

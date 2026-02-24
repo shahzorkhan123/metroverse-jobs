@@ -39,10 +39,12 @@ COUNTRIES = {
     },
     "IND": {
         "name": "India",
-        "code_system": "ISCO",
+        "code_system": "NCO",
         "currency": "INR",
-        "national_csv": DATA_DIR / "ind_occupational_data.csv",
         "national_region_name": "India",
+        "table25_csv": RAW_DIR / "ind_table25_nco_distribution.csv",
+        "table50_csv": RAW_DIR / "ind_table50_nco_wages.csv",
+        "total_workers": 483_000_000,  # PLFS 2023-24 estimate (~48.3 crore)
     },
     "EGY": {
         "name": "Egypt",
@@ -187,6 +189,32 @@ SOC_MAJOR_GROUP_COLORS = {
     "49": "#708090",  # Installation, Maintenance - Slate Gray
     "51": "#CD853F",  # Production - Peru
     "53": "#9370DB",  # Transportation - Medium Purple
+}
+
+# NCO-2015 major group names (India PLFS)
+NCO_MAJOR_GROUPS = {
+    "1": "Managers",
+    "2": "Professionals",
+    "3": "Technicians and Associate Professionals",
+    "4": "Clerical Support Workers",
+    "5": "Service and Sales Workers",
+    "6": "Skilled Agricultural, Forestry and Fishery Workers",
+    "7": "Craft and Related Trades Workers",
+    "8": "Plant and Machine Operators and Assemblers",
+    "9": "Elementary Occupations",
+}
+
+# NCO Major Group colors (matching bls-data.json countryMetadata)
+NCO_MAJOR_GROUP_COLORS = {
+    "1": "#A973BE",  # Managers - Purple
+    "2": "#F1866C",  # Professionals - Coral
+    "3": "#488098",  # Technicians - Steel Blue
+    "4": "#6A6AAD",  # Clerical Support - Indigo
+    "5": "#77C898",  # Service and Sales - Green
+    "6": "#556B2F",  # Skilled Agricultural - Olive
+    "7": "#DAA520",  # Craft Workers - Goldenrod
+    "8": "#CD853F",  # Plant and Machine Operators - Peru
+    "9": "#708090",  # Elementary Occupations - Slate Gray
 }
 
 # State filename stem to display name mapping

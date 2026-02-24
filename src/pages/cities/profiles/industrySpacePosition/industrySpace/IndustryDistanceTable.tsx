@@ -8,8 +8,8 @@ import styled from "styled-components/macro";
 import {
   lightBorderColor,
   lightBaseColor,
-  sectorColorMap,
 } from "../../../../../styling/styleUtils";
+import useSectorMap from "../../../../../hooks/useSectorMap";
 import { rgba } from "polished";
 import MiniMap from "../../../../../components/dataViz/industrySpace/MiniMap";
 
@@ -88,6 +88,7 @@ interface Props {
 const IndustryDistanceTable = (props: Props) => {
   const { id, hovered, setHovered, setHighlighted, children } = props;
 
+  const dynamicColorMap = useSectorMap();
   const getString = useFluent();
   const layout = useLayoutData();
   const { data: industryData } = useGlobalIndustryMap();
@@ -120,7 +121,7 @@ const IndustryDistanceTable = (props: Props) => {
         const industry = industryData[trg];
         if (industry) {
           const parent = industryData[industry.naicsIdTopParent];
-          const parentIndustry = sectorColorMap.find(
+          const parentIndustry = dynamicColorMap.find(
             (s) => s.id === industry.naicsIdTopParent.toString(),
           );
           const onMouseEnter = () => setHovered(industry.naicsId);

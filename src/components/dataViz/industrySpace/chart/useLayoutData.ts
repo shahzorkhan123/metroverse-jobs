@@ -4,10 +4,10 @@ import { useGlobalClusterMap } from "../../../../hooks/useGlobalClusterData";
 import LAYOUT_DATA from "./data/layout_data.json";
 import { ClassificationNaicsIndustry } from "../../../../types/graphQL/graphQLTypes";
 import {
-  sectorColorMap,
   wageColorRange,
   educationColorRange,
 } from "../../../../styling/styleUtils";
+import useSectorMap from "../../../../hooks/useSectorMap";
 import { useAggregateIndustryMap } from "../../../../hooks/useAggregateIndustriesData";
 import { DigitLevel } from "../../../../types/graphQL/graphQLTypes";
 import { defaultYear } from "../../../../Utils";
@@ -84,6 +84,7 @@ const useLayoutData = (): Output => {
     data: undefined,
   });
 
+  const dynamicColorMap = useSectorMap();
   const { loading, error, data: industryData } = useGlobalIndustryMap();
   const {
     loading: clusterLoading,
@@ -164,7 +165,7 @@ const useLayoutData = (): Output => {
           nodes: LAYOUT_DATA.nodes.map((n) => {
             const industry = industryData[n.id.toString()];
             const parent = industryData[industry.naicsIdTopParent.toString()];
-            const parentIndustry = sectorColorMap.find(
+            const parentIndustry = dynamicColorMap.find(
               (s) => s.id === industry.naicsIdTopParent.toString(),
             );
             const globalIndustry = industries[industry.naicsId];

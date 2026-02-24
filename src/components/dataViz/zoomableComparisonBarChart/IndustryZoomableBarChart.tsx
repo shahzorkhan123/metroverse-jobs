@@ -17,11 +17,11 @@ import PreChartRow, {
 import ErrorBoundary from "../ErrorBoundary";
 import styled from "styled-components/macro";
 import {
-  sectorColorMap,
   secondaryFont,
   baseColor,
   clusterColorMap,
 } from "../../../styling/styleUtils";
+import useSectorMap from "../../../hooks/useSectorMap";
 import SimpleError from "../../transitionStateComponents/SimpleError";
 import LoadingBlock, {
   LoadingOverlay,
@@ -222,6 +222,7 @@ const IndustryZoomableBarChart = (props: Props) => {
     hiddenClusters,
   } = props;
 
+  const dynamicColorMap = useSectorMap();
   const { loading, error, data } = useComparisonQuery({
     primaryCity,
     comparison,
@@ -236,7 +237,7 @@ const IndustryZoomableBarChart = (props: Props) => {
   const industryOrClusterMap = isClusterView ? clusterMap : industryMap;
   const parentField = isClusterView ? "clusterIdTopParent" : "naicsIdTopParent";
   const idField = isClusterView ? "clusterId" : "naicsId";
-  const colorMap = isClusterView ? clusterColorMap : sectorColorMap;
+  const colorMap = isClusterView ? clusterColorMap : dynamicColorMap;
   const hiddenIndustriesOrClusters = isClusterView
     ? hiddenClusters
     : hiddenSectors;

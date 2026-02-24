@@ -86,9 +86,14 @@ def main():
     db_path = Path(args.db_path) if args.db_path else config.DB_PATH
     export_countries = args.export_country or ["USA"]
     # Map short country code to 3-letter code for DB queries
+    # Supports both 2-letter ("us", "in") and 3-letter ("usa", "ind") inputs
     _short_to_long = {v: k for k, v in
                       {k: config.country_short(k) for k in config.COUNTRIES}.items()}
-    country_long = _short_to_long.get(args.country.lower(), "USA")
+    _three_to_long = {k.lower(): k for k in config.COUNTRIES}
+    country_lower = args.country.lower()
+    country_long = (_short_to_long.get(country_lower)
+                    or _three_to_long.get(country_lower)
+                    or "USA")
 
     print("=== BLS Data Pipeline ===")
     print(f"  Year: {args.year}")
@@ -149,7 +154,11 @@ def main():
 
             print(f"\nImporting data for year {args.year}...")
 
-            if combined_csv_path and combined_csv_path.exists():
+            if args.country.lower() == "ind":
+                # India PLFS pipeline
+                from scripts.pipeline import import_plfs
+                total = import_plfs.import_all_india(conn, year=args.year)
+            elif combined_csv_path and combined_csv_path.exists():
                 # Import from fetched combined CSV
                 total = import_csv.import_combined_csv(
                     conn, combined_csv_path, args.year
@@ -161,8 +170,10 @@ def main():
             conn.commit()
             print(f"\nTotal imported: {total} records")
 
-            print("\nComputing complexity scores (GDP normalization)...")
-            db.compute_complexity_scores(conn)
+            if args.country.lower() != "ind":
+                # Complexity scores already computed in import_plfs
+                print("\nComputing complexity scores (GDP normalization)...")
+                db.compute_complexity_scores(conn)
 
             # Validate DB
             print("\nValidating database...")

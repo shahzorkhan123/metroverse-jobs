@@ -1,12 +1,12 @@
 import React, { useState, useRef } from "react";
 import { scaleLog } from "d3-scale";
 import {
-  sectorColorMap,
   educationColorRange,
   wageColorRange,
   Mult,
   FractionMult,
 } from "../../../styling/styleUtils";
+import useSectorMap from "../../../hooks/useSectorMap";
 import ComparisonBarChart, {
   RowHoverEvent,
   BarDatum,
@@ -43,6 +43,7 @@ interface Props {
 const Industries = (props: Props) => {
   const { data, highlighted, hiddenSectors, colorBy, digitLevel } = props;
 
+  const dynamicColorMap = useSectorMap();
   const industryMap = useGlobalIndustryMap();
   const aggregateIndustryDataMap = useAggregateIndustryMap({
     level: digitLevel,
@@ -156,7 +157,7 @@ const Industries = (props: Props) => {
       }
     } else {
       const colorDatum = industry
-        ? sectorColorMap.find(
+        ? dynamicColorMap.find(
             (s) => s.id === industry.naicsIdTopParent.toString(),
           )
         : undefined;

@@ -17,6 +17,7 @@ from pathlib import Path
 from . import config
 
 SOC_MAJOR_GROUP_COLORS = config.SOC_MAJOR_GROUP_COLORS
+NCO_MAJOR_GROUP_COLORS = config.NCO_MAJOR_GROUP_COLORS
 
 
 def _soc_level(soc_code: str) -> int:
@@ -63,7 +64,56 @@ def _soc_parent(soc_code: str, known_codes: set[str] | None = None) -> str | Non
     return None  # level 1 has no parent
 
 
-def _synthesize_missing_levels(records: list[dict]) -> list[dict]:
+def _nco_level(nco_code: str) -> int:
+    """NCO hierarchy: level = number of digits in the code."""
+    return len(nco_code.strip())
+
+
+def _nco_parent(nco_code: str, known_codes: set[str] | None = None) -> str | None:
+    """Get parent NCO code: drop last digit."""
+    code = nco_code.strip()
+    if len(code) <= 1:
+        return None
+    return code[:-1]
+
+
+def _nco_major_group_id(nco_code: str) -> str:
+    """Get the 1-digit division (major group) for any NCO code."""
+    return nco_code[0]
+
+
+def _get_level(occ_code: str, code_system: str) -> int:
+    """Dispatch to SOC or NCO level function."""
+    if code_system == "NCO":
+        return _nco_level(occ_code)
+    return _soc_level(occ_code)
+
+
+def _get_parent(occ_code: str, code_system: str,
+                known_codes: set[str] | None = None) -> str | None:
+    """Dispatch to SOC or NCO parent function."""
+    if code_system == "NCO":
+        return _nco_parent(occ_code, known_codes)
+    return _soc_parent(occ_code, known_codes)
+
+
+def _get_major_group_id(occ_code: str, code_system: str) -> str:
+    """Get the major group ID for an occupation code."""
+    if code_system == "NCO":
+        return _nco_major_group_id(occ_code)
+    # SOC: first two digits (e.g. "11" from "11-1011")
+    return occ_code[:2] if "-" in occ_code else occ_code[:1]
+
+
+def _get_major_group_colors(code_system: str) -> dict[str, str]:
+    """Get the color map for a code system."""
+    if code_system == "NCO":
+        return NCO_MAJOR_GROUP_COLORS
+    return SOC_MAJOR_GROUP_COLORS
+
+
+def _synthesize_missing_levels(records: list[dict],
+                               code_system: str = "SOC") -> list[dict]:
     """Synthesize missing intermediate SOC levels by aggregating children.
 
     BLS doesn't publish level 2 (minor group) or some level 3 (broad) data
@@ -76,18 +126,18 @@ def _synthesize_missing_levels(records: list[dict]) -> list[dict]:
     """
     from collections import defaultdict
 
-    # Build global SOC name + major-group-name lookup
+    # Build global name + major-group-name lookup
     soc_names: dict[str, str] = {}
     soc_mg_names: dict[str, str] = {}
     for r in records:
         code = r["SOC_Code"]
         if code not in soc_names:
             soc_names[code] = r["OCC_TITLE"]
-        mg = code[:2]
+        mg = _get_major_group_id(code, code_system)
         if mg not in soc_mg_names:
             soc_mg_names[mg] = r.get("SOC_Major_Group_Name", "")
 
-    # Build global set of all SOC codes (national data has the complete hierarchy)
+    # Build global set of all codes (national data has the complete hierarchy)
     all_codes = {r["SOC_Code"] for r in records}
 
     # Group records by (region_type, region, year)
@@ -98,17 +148,20 @@ def _synthesize_missing_levels(records: list[dict]) -> list[dict]:
 
     all_synthetic: list[dict] = []
 
+    # Determine max level for synthesis based on code system
+    max_level = 4 if code_system == "SOC" else 3
+
     for (rt, region, year), code_map in by_region_year.items():
-        # Bottom-up: synthesize level 3 first (from level 4), then level 2
-        for target_level in [3, 2]:
+        # Bottom-up: synthesize from highest level down to level 2
+        for target_level in range(max_level - 1, 1, -1):
             child_level = target_level + 1
             missing_parents: dict[str, list[dict]] = defaultdict(list)
 
             for code, rec in list(code_map.items()):
-                if _soc_level(code) == child_level:
-                    parent = _soc_parent(code, all_codes)
+                if _get_level(code, code_system) == child_level:
+                    parent = _get_parent(code, code_system, all_codes)
                     if (parent
-                            and _soc_level(parent) == target_level
+                            and _get_level(parent, code_system) == target_level
                             and parent not in code_map):
                         missing_parents[parent].append(rec)
 
@@ -116,7 +169,7 @@ def _synthesize_missing_levels(records: list[dict]) -> list[dict]:
                 total_emp = sum(c["TOT_EMP"] for c in children)
                 total_gdp = sum(c["GDP"] for c in children)
                 a_mean = round(total_gdp / total_emp) if total_emp > 0 else 0
-                major_group = parent_code[:2]
+                major_group = _get_major_group_id(parent_code, code_system)
 
                 if total_emp > 0:
                     complexity = sum(
@@ -159,7 +212,8 @@ def _query_records(conn: sqlite3.Connection,
     query = """
         SELECT o.year, r.region_type, r.name as region,
                o.occupation_code, o.occupation_title, o.major_group_name,
-               o.employment, o.mean_annual_wage, o.gdp, o.complexity_score
+               o.employment, o.mean_annual_wage, o.gdp, o.complexity_score,
+               c.code_system
         FROM occupations o
         JOIN regions r ON o.region_id = r.id
         JOIN countries c ON r.country_id = c.id
@@ -174,8 +228,12 @@ def _query_records(conn: sqlite3.Connection,
     records = []
     for row in conn.execute(query, params).fetchall():
         (year, region_type, region, occ_code, occ_title, major_group,
-         employment, wage, gdp, complexity) = row
-        soc_group = occ_code[:2] if "-" in occ_code else ""
+         employment, wage, gdp, complexity, code_system) = row
+        # SOC uses XX-XXXX format with dash; NCO uses plain digits
+        if "-" in occ_code:
+            soc_group = occ_code[:2]
+        else:
+            soc_group = occ_code[0]  # NCO: 1-digit division
         records.append({
             "year": year,
             "Region_Type": region_type,
@@ -192,26 +250,36 @@ def _query_records(conn: sqlite3.Connection,
     return records
 
 
+def _detect_code_system(conn: sqlite3.Connection,
+                        country_code: str) -> str:
+    """Look up code_system from the countries table."""
+    row = conn.execute(
+        "SELECT code_system FROM countries WHERE code = ?",
+        (country_code,),
+    ).fetchone()
+    return row[0] if row else "SOC"
+
+
 def _build_static_data(records: list[dict],
                        max_level: int | None = None,
-                       exact_level: int | None = None) -> dict:
+                       exact_level: int | None = None,
+                       code_system: str = "SOC") -> dict:
     """Build the static data structure for a BLS JSON file.
 
     If max_level is set, only include occupations at levels <= max_level.
     If exact_level is set, only include occupations at exactly that level.
     """
-    # Synthesize missing intermediate SOC levels before filtering.
-    # This fills gaps where BLS doesn't publish level 2/3 for states/metros.
-    synthetic = _synthesize_missing_levels(records)
+    # Synthesize missing intermediate levels before filtering.
+    synthetic = _synthesize_missing_levels(records, code_system)
     if synthetic:
         records = records + synthetic
 
     if exact_level is not None:
         filtered = [r for r in records
-                    if _soc_level(r["SOC_Code"]) == exact_level]
+                    if _get_level(r["SOC_Code"], code_system) == exact_level]
     elif max_level is not None:
         filtered = [r for r in records
-                    if _soc_level(r["SOC_Code"]) <= max_level]
+                    if _get_level(r["SOC_Code"], code_system) <= max_level]
     else:
         filtered = records
 
@@ -253,14 +321,15 @@ def _build_static_data(records: list[dict],
 
     # Build occupations array
     all_soc_codes = set(occupations_set.keys())
+    color_map = _get_major_group_colors(code_system)
     occupations = []
     for soc_code in sorted(occupations_set.keys()):
         occ = occupations_set[soc_code]
         occupations.append({
             "socCode": soc_code,
             "name": occ["name"],
-            "level": _soc_level(soc_code),
-            "parentCode": _soc_parent(soc_code, all_soc_codes),
+            "level": _get_level(soc_code, code_system),
+            "parentCode": _get_parent(soc_code, code_system, all_soc_codes),
             "majorGroupId": occ["majorGroupId"],
             "majorGroupName": occ["majorGroupName"],
         })
@@ -268,7 +337,7 @@ def _build_static_data(records: list[dict],
     # Build major groups array
     major_groups = []
     for gid in sorted(major_groups_set.keys()):
-        color = SOC_MAJOR_GROUP_COLORS.get(gid, "#999999")
+        color = color_map.get(gid, "#999999")
         major_groups.append({
             "groupId": gid,
             "name": major_groups_set[gid],
@@ -343,11 +412,17 @@ def _build_static_data(records: list[dict],
             },
         }
 
+    # Source attribution based on code system
+    if code_system == "NCO":
+        source = "PLFS Annual Report 2023-24, Tables 25 and 50"
+    else:
+        source = "BLS OES + O*NET"
+
     output = {
         "metadata": {
             "lastUpdated": date.today().isoformat(),
             "years": sorted(years),
-            "source": "BLS OES + O*NET",
+            "source": source,
         },
         "regions": regions,
         "occupations": occupations,
@@ -384,10 +459,11 @@ def export_country_year(conn: sqlite3.Connection,
     if output_path is None:
         output_path = config.json_country_year_path(short, year)
 
+    code_system = _detect_code_system(conn, country_code)
     records = _query_records(conn, [country_code])
     # Filter to requested year
     records = [r for r in records if r["year"] == year]
-    data = _build_static_data(records, max_level=2)
+    data = _build_static_data(records, max_level=2, code_system=code_system)
     data["metadata"]["country"] = short
     data["metadata"]["maxLevel"] = 2
 
@@ -417,11 +493,12 @@ def export_level_file(conn: sqlite3.Connection,
     if output_path is None:
         output_path = config.json_country_year_level_path(short, year, level)
 
+    code_system = _detect_code_system(conn, country_code)
     records = _query_records(conn, [country_code])
     records = [r for r in records if r["year"] == year]
     if region_types:
         records = [r for r in records if r["Region_Type"] in region_types]
-    data = _build_static_data(records, exact_level=level)
+    data = _build_static_data(records, exact_level=level, code_system=code_system)
     data["metadata"]["country"] = short
     data["metadata"]["level"] = level
 
@@ -511,9 +588,10 @@ def export_all(conn: sqlite3.Connection,
     main_count = export_country_year(conn, country_code, year)
 
     # Determine which levels exist in data
+    code_system = _detect_code_system(conn, country_code)
     records = _query_records(conn, [country_code])
     records = [r for r in records if r["year"] == year]
-    all_levels = sorted(set(_soc_level(r["SOC_Code"]) for r in records))
+    all_levels = sorted(set(_get_level(r["SOC_Code"], code_system) for r in records))
 
     # Export level extension files
     level_counts: dict[int, int] = {}

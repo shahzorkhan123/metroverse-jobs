@@ -18,9 +18,9 @@ import styled from "styled-components/macro";
 import {
   clusterColorMap,
   educationColorRange,
-  sectorColorMap,
   wageColorRange,
 } from "../../../styling/styleUtils";
+import useSectorMap from "../../../hooks/useSectorMap";
 import SimpleError from "../../transitionStateComponents/SimpleError";
 import LoadingBlock, {
   LoadingOverlay,
@@ -134,6 +134,7 @@ const TopIndustryComparisonBarChart = (props: Props) => {
     colorBy,
   } = props;
 
+  const dynamicColorMap = useSectorMap();
   const currentCity = useCurrentCity();
   const industryMap = useGlobalIndustryMap();
   const clusterMap = useGlobalClusterMap();
@@ -150,7 +151,7 @@ const TopIndustryComparisonBarChart = (props: Props) => {
     : aggregateIndustryDataMap.data.globalMinMax;
   const industryOrClusterMap = isClusterView ? clusterMap : industryMap;
   const parentField = isClusterView ? "clusterIdTopParent" : "naicsIdTopParent";
-  const colorMap = isClusterView ? clusterColorMap : sectorColorMap;
+  const colorMap = isClusterView ? clusterColorMap : dynamicColorMap;
   const level = isClusterView ? clusterLevel : digitLevel;
   const hiddenIndustriesOrClusters = isClusterView
     ? hiddenClusters

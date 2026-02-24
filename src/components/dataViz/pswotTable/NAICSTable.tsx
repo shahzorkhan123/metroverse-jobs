@@ -9,7 +9,7 @@ import {
 } from "../../../types/graphQL/graphQLTypes";
 import Table, { getQuadrant } from "./Table";
 import { RowDatum } from "./TableRow";
-import { sectorColorMap } from "../../../styling/styleUtils";
+import useSectorMap from "../../../hooks/useSectorMap";
 
 interface Props {
   digitLevel: DigitLevel;
@@ -27,6 +27,7 @@ const PSWOTTable = (props: Props) => {
     highlighted,
     clearHighlighted,
   } = props;
+  const dynamicColorMap = useSectorMap();
   const rcaData = useRCAData(digitLevel);
   const industries = useGlobalIndustriesData();
 
@@ -77,7 +78,7 @@ const PSWOTTable = (props: Props) => {
             : 0;
         const rca = rcaDatum && rcaDatum.rca ? rcaDatum.rca : 0;
         const quadrant = getQuadrant(rca, density);
-        const parent = sectorColorMap.find(
+        const parent = dynamicColorMap.find(
           (dd) => d.naicsIdTopParent.toString() === dd.id,
         );
         const datum: RowDatum = {

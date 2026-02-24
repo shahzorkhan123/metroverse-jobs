@@ -1,0 +1,2567 @@
+{
+  "metadata": {
+    "lastUpdated": "2026-02-23",
+    "years": [
+      2024
+    ],
+    "source": "PLFS Annual Report 2023-24, Tables 25 and 50",
+    "level": 3,
+    "country": "in"
+  },
+  "regions": [
+    {
+      "regionId": "national-india",
+      "name": "India",
+      "regionType": "National"
+    }
+  ],
+  "occupations": [
+    {
+      "socCode": "111",
+      "name": "Legislators",
+      "level": 3,
+      "parentCode": "11",
+      "majorGroupId": "1",
+      "majorGroupName": "Managers"
+    },
+    {
+      "socCode": "112",
+      "name": "Senior government officials",
+      "level": 3,
+      "parentCode": "11",
+      "majorGroupId": "1",
+      "majorGroupName": "Managers"
+    },
+    {
+      "socCode": "121",
+      "name": "Business services and administration managers",
+      "level": 3,
+      "parentCode": "12",
+      "majorGroupId": "1",
+      "majorGroupName": "Managers"
+    },
+    {
+      "socCode": "122",
+      "name": "Sales marketing and development managers",
+      "level": 3,
+      "parentCode": "12",
+      "majorGroupId": "1",
+      "majorGroupName": "Managers"
+    },
+    {
+      "socCode": "131",
+      "name": "Production managers in agriculture forestry and fisheries",
+      "level": 3,
+      "parentCode": "13",
+      "majorGroupId": "1",
+      "majorGroupName": "Managers"
+    },
+    {
+      "socCode": "132",
+      "name": "Manufacturing mining construction and distribution managers",
+      "level": 3,
+      "parentCode": "13",
+      "majorGroupId": "1",
+      "majorGroupName": "Managers"
+    },
+    {
+      "socCode": "133",
+      "name": "ICT service managers",
+      "level": 3,
+      "parentCode": "13",
+      "majorGroupId": "1",
+      "majorGroupName": "Managers"
+    },
+    {
+      "socCode": "134",
+      "name": "Professional services managers",
+      "level": 3,
+      "parentCode": "13",
+      "majorGroupId": "1",
+      "majorGroupName": "Managers"
+    },
+    {
+      "socCode": "141",
+      "name": "Hotel and restaurant managers",
+      "level": 3,
+      "parentCode": "14",
+      "majorGroupId": "1",
+      "majorGroupName": "Managers"
+    },
+    {
+      "socCode": "142",
+      "name": "Retail and wholesale trade managers",
+      "level": 3,
+      "parentCode": "14",
+      "majorGroupId": "1",
+      "majorGroupName": "Managers"
+    },
+    {
+      "socCode": "143",
+      "name": "Other services managers",
+      "level": 3,
+      "parentCode": "14",
+      "majorGroupId": "1",
+      "majorGroupName": "Managers"
+    },
+    {
+      "socCode": "211",
+      "name": "Physical and earth science professionals",
+      "level": 3,
+      "parentCode": "21",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "213",
+      "name": "Life science professionals",
+      "level": 3,
+      "parentCode": "21",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "214",
+      "name": "Engineering professionals (excluding electrotechnology)",
+      "level": 3,
+      "parentCode": "21",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "215",
+      "name": "Electrotechnology engineers",
+      "level": 3,
+      "parentCode": "21",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "216",
+      "name": "Architects planners surveyors and designers",
+      "level": 3,
+      "parentCode": "21",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "221",
+      "name": "Medical doctors",
+      "level": 3,
+      "parentCode": "22",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "222",
+      "name": "Nursing and midwifery professionals",
+      "level": 3,
+      "parentCode": "22",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "223",
+      "name": "Traditional and complementary medicine professionals",
+      "level": 3,
+      "parentCode": "22",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "224",
+      "name": "Paramedical practitioners",
+      "level": 3,
+      "parentCode": "22",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "225",
+      "name": "Veterinarians",
+      "level": 3,
+      "parentCode": "22",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "226",
+      "name": "Other health professionals",
+      "level": 3,
+      "parentCode": "22",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "231",
+      "name": "University and higher education teachers",
+      "level": 3,
+      "parentCode": "23",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "232",
+      "name": "Vocational education teachers",
+      "level": 3,
+      "parentCode": "23",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "233",
+      "name": "Secondary education teachers",
+      "level": 3,
+      "parentCode": "23",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "234",
+      "name": "Primary school and early childhood teachers",
+      "level": 3,
+      "parentCode": "23",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "235",
+      "name": "Other teaching professionals",
+      "level": 3,
+      "parentCode": "23",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "241",
+      "name": "Finance professionals",
+      "level": 3,
+      "parentCode": "24",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "242",
+      "name": "Administration professionals",
+      "level": 3,
+      "parentCode": "24",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "243",
+      "name": "Sales marketing and public relations professionals",
+      "level": 3,
+      "parentCode": "24",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "251",
+      "name": "Software and applications developers and analysts",
+      "level": 3,
+      "parentCode": "25",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "252",
+      "name": "Database and network professionals",
+      "level": 3,
+      "parentCode": "25",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "261",
+      "name": "Legal professionals",
+      "level": 3,
+      "parentCode": "26",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "262",
+      "name": "Librarians and related information professionals",
+      "level": 3,
+      "parentCode": "26",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "263",
+      "name": "Social and religious professionals",
+      "level": 3,
+      "parentCode": "26",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "264",
+      "name": "Authors journalists and linguists",
+      "level": 3,
+      "parentCode": "26",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "265",
+      "name": "Creative and performing artists",
+      "level": 3,
+      "parentCode": "26",
+      "majorGroupId": "2",
+      "majorGroupName": "Professionals"
+    },
+    {
+      "socCode": "311",
+      "name": "Physical and engineering science technicians",
+      "level": 3,
+      "parentCode": "31",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "312",
+      "name": "Mining manufacturing and construction supervisors",
+      "level": 3,
+      "parentCode": "31",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "313",
+      "name": "Process control technicians",
+      "level": 3,
+      "parentCode": "31",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "314",
+      "name": "Life science technicians and related associate professionals",
+      "level": 3,
+      "parentCode": "31",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "315",
+      "name": "Ship and aircraft controllers and technicians",
+      "level": 3,
+      "parentCode": "31",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "321",
+      "name": "Medical and pharmaceutical technicians",
+      "level": 3,
+      "parentCode": "32",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "322",
+      "name": "Nursing and midwifery associate professionals",
+      "level": 3,
+      "parentCode": "32",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "323",
+      "name": "Traditional and complementary medicine associate professionals",
+      "level": 3,
+      "parentCode": "32",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "331",
+      "name": "Financial and mathematical associate professionals",
+      "level": 3,
+      "parentCode": "33",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "332",
+      "name": "Sales and purchasing agents and brokers",
+      "level": 3,
+      "parentCode": "33",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "333",
+      "name": "Business services agents",
+      "level": 3,
+      "parentCode": "33",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "334",
+      "name": "Administrative and specialized secretaries",
+      "level": 3,
+      "parentCode": "33",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "335",
+      "name": "Regulatory government associate professionals",
+      "level": 3,
+      "parentCode": "33",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "341",
+      "name": "Legal social and religious associate professionals",
+      "level": 3,
+      "parentCode": "34",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "342",
+      "name": "Sports and fitness workers",
+      "level": 3,
+      "parentCode": "34",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "343",
+      "name": "Artistic cultural and culinary associate professionals",
+      "level": 3,
+      "parentCode": "34",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "351",
+      "name": "ICT operations and user support technicians",
+      "level": 3,
+      "parentCode": "35",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "352",
+      "name": "Telecommunications and broadcasting technicians",
+      "level": 3,
+      "parentCode": "35",
+      "majorGroupId": "3",
+      "majorGroupName": "Technicians and Associate Professionals"
+    },
+    {
+      "socCode": "411",
+      "name": "General office clerks",
+      "level": 3,
+      "parentCode": "41",
+      "majorGroupId": "4",
+      "majorGroupName": "Clerical Support Workers"
+    },
+    {
+      "socCode": "412",
+      "name": "Secretaries",
+      "level": 3,
+      "parentCode": "41",
+      "majorGroupId": "4",
+      "majorGroupName": "Clerical Support Workers"
+    },
+    {
+      "socCode": "413",
+      "name": "Keyboard operators",
+      "level": 3,
+      "parentCode": "41",
+      "majorGroupId": "4",
+      "majorGroupName": "Clerical Support Workers"
+    },
+    {
+      "socCode": "421",
+      "name": "Tellers money collectors and related clerks",
+      "level": 3,
+      "parentCode": "42",
+      "majorGroupId": "4",
+      "majorGroupName": "Clerical Support Workers"
+    },
+    {
+      "socCode": "422",
+      "name": "Client information workers",
+      "level": 3,
+      "parentCode": "42",
+      "majorGroupId": "4",
+      "majorGroupName": "Clerical Support Workers"
+    },
+    {
+      "socCode": "431",
+      "name": "Numerical clerks",
+      "level": 3,
+      "parentCode": "43",
+      "majorGroupId": "4",
+      "majorGroupName": "Clerical Support Workers"
+    },
+    {
+      "socCode": "432",
+      "name": "Material recording and transport clerks",
+      "level": 3,
+      "parentCode": "43",
+      "majorGroupId": "4",
+      "majorGroupName": "Clerical Support Workers"
+    },
+    {
+      "socCode": "441",
+      "name": "Other clerical support workers",
+      "level": 3,
+      "parentCode": "44",
+      "majorGroupId": "4",
+      "majorGroupName": "Clerical Support Workers"
+    },
+    {
+      "socCode": "511",
+      "name": "Travel attendants conductors and guides",
+      "level": 3,
+      "parentCode": "51",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "512",
+      "name": "Cooks",
+      "level": 3,
+      "parentCode": "51",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "513",
+      "name": "Waiters and bartenders",
+      "level": 3,
+      "parentCode": "51",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "514",
+      "name": "Hairdressers beauticians and related workers",
+      "level": 3,
+      "parentCode": "51",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "515",
+      "name": "Building and housekeeping supervisors",
+      "level": 3,
+      "parentCode": "51",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "516",
+      "name": "Other personal services workers",
+      "level": 3,
+      "parentCode": "51",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "521",
+      "name": "Street and market salespersons",
+      "level": 3,
+      "parentCode": "52",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "522",
+      "name": "Shop salespersons",
+      "level": 3,
+      "parentCode": "52",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "523",
+      "name": "Cashiers and ticket clerks",
+      "level": 3,
+      "parentCode": "52",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "524",
+      "name": "Other sales workers",
+      "level": 3,
+      "parentCode": "52",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "531",
+      "name": "Child care workers and teachers aides",
+      "level": 3,
+      "parentCode": "53",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "532",
+      "name": "Personal care workers in health services",
+      "level": 3,
+      "parentCode": "53",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "541",
+      "name": "Protective services workers",
+      "level": 3,
+      "parentCode": "54",
+      "majorGroupId": "5",
+      "majorGroupName": "Service and Sales Workers"
+    },
+    {
+      "socCode": "611",
+      "name": "Market gardeners and crop growers",
+      "level": 3,
+      "parentCode": "61",
+      "majorGroupId": "6",
+      "majorGroupName": "Skilled Agricultural, Forestry and Fishery Workers"
+    },
+    {
+      "socCode": "612",
+      "name": "Animal producers",
+      "level": 3,
+      "parentCode": "61",
+      "majorGroupId": "6",
+      "majorGroupName": "Skilled Agricultural, Forestry and Fishery Workers"
+    },
+    {
+      "socCode": "613",
+      "name": "Mixed crop and animal producers",
+      "level": 3,
+      "parentCode": "61",
+      "majorGroupId": "6",
+      "majorGroupName": "Skilled Agricultural, Forestry and Fishery Workers"
+    },
+    {
+      "socCode": "621",
+      "name": "Forestry and related workers",
+      "level": 3,
+      "parentCode": "62",
+      "majorGroupId": "6",
+      "majorGroupName": "Skilled Agricultural, Forestry and Fishery Workers"
+    },
+    {
+      "socCode": "622",
+      "name": "Fishery workers incl hunters and trappers",
+      "level": 3,
+      "parentCode": "62",
+      "majorGroupId": "6",
+      "majorGroupName": "Skilled Agricultural, Forestry and Fishery Workers"
+    },
+    {
+      "socCode": "631",
+      "name": "Subsistence crop farmers",
+      "level": 3,
+      "parentCode": "63",
+      "majorGroupId": "6",
+      "majorGroupName": "Skilled Agricultural, Forestry and Fishery Workers"
+    },
+    {
+      "socCode": "632",
+      "name": "Subsistence livestock farmers",
+      "level": 3,
+      "parentCode": "63",
+      "majorGroupId": "6",
+      "majorGroupName": "Skilled Agricultural, Forestry and Fishery Workers"
+    },
+    {
+      "socCode": "633",
+      "name": "Subsistence mixed crop and livestock farmers",
+      "level": 3,
+      "parentCode": "63",
+      "majorGroupId": "6",
+      "majorGroupName": "Skilled Agricultural, Forestry and Fishery Workers"
+    },
+    {
+      "socCode": "634",
+      "name": "Subsistence fishers hunters and gatherers",
+      "level": 3,
+      "parentCode": "63",
+      "majorGroupId": "6",
+      "majorGroupName": "Skilled Agricultural, Forestry and Fishery Workers"
+    },
+    {
+      "socCode": "711",
+      "name": "Building frame and related trades workers",
+      "level": 3,
+      "parentCode": "71",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "712",
+      "name": "Building finishers and related trades workers",
+      "level": 3,
+      "parentCode": "71",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "713",
+      "name": "Painters building structure cleaners etc",
+      "level": 3,
+      "parentCode": "71",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "721",
+      "name": "Sheet and structural metal workers moulders etc",
+      "level": 3,
+      "parentCode": "72",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "722",
+      "name": "Blacksmiths toolmakers and related trades workers",
+      "level": 3,
+      "parentCode": "72",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "723",
+      "name": "Machinery mechanics and repairers",
+      "level": 3,
+      "parentCode": "72",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "731",
+      "name": "Handicraft workers",
+      "level": 3,
+      "parentCode": "73",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "732",
+      "name": "Printing trades workers",
+      "level": 3,
+      "parentCode": "73",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "741",
+      "name": "Electrical equipment installers and repairers",
+      "level": 3,
+      "parentCode": "74",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "742",
+      "name": "Electronics and telecoms installers and repairers",
+      "level": 3,
+      "parentCode": "74",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "751",
+      "name": "Food processing and related trades workers",
+      "level": 3,
+      "parentCode": "75",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "752",
+      "name": "Wood treaters cabinet makers and related trades workers",
+      "level": 3,
+      "parentCode": "75",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "753",
+      "name": "Garment and related trades workers",
+      "level": 3,
+      "parentCode": "75",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "754",
+      "name": "Other craft and related workers",
+      "level": 3,
+      "parentCode": "75",
+      "majorGroupId": "7",
+      "majorGroupName": "Craft and Related Trades Workers"
+    },
+    {
+      "socCode": "811",
+      "name": "Mining and mineral processing plant operators",
+      "level": 3,
+      "parentCode": "81",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "812",
+      "name": "Metal processing and finishing plant operators",
+      "level": 3,
+      "parentCode": "81",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "813",
+      "name": "Chemical and photographic products plant and machine operators",
+      "level": 3,
+      "parentCode": "81",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "814",
+      "name": "Rubber plastic and paper products machine operators",
+      "level": 3,
+      "parentCode": "81",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "815",
+      "name": "Textile fur and leather products machine operators",
+      "level": 3,
+      "parentCode": "81",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "816",
+      "name": "Food and related products machine operators",
+      "level": 3,
+      "parentCode": "81",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "817",
+      "name": "Wood processing and papermaking plant operators",
+      "level": 3,
+      "parentCode": "81",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "818",
+      "name": "Other stationary plant and machine operators",
+      "level": 3,
+      "parentCode": "81",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "821",
+      "name": "Assemblers",
+      "level": 3,
+      "parentCode": "82",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "831",
+      "name": "Locomotive engine drivers and related workers",
+      "level": 3,
+      "parentCode": "83",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "832",
+      "name": "Car van and motorcycle drivers",
+      "level": 3,
+      "parentCode": "83",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "833",
+      "name": "Heavy truck and bus drivers",
+      "level": 3,
+      "parentCode": "83",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "834",
+      "name": "Mobile plant operators",
+      "level": 3,
+      "parentCode": "83",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "835",
+      "name": "Ships deck crews and related workers",
+      "level": 3,
+      "parentCode": "83",
+      "majorGroupId": "8",
+      "majorGroupName": "Plant and Machine Operators and Assemblers"
+    },
+    {
+      "socCode": "911",
+      "name": "Domestic housekeepers and helpers",
+      "level": 3,
+      "parentCode": "91",
+      "majorGroupId": "9",
+      "majorGroupName": "Elementary Occupations"
+    },
+    {
+      "socCode": "912",
+      "name": "Vehicle window laundry and other hand cleaning workers",
+      "level": 3,
+      "parentCode": "91",
+      "majorGroupId": "9",
+      "majorGroupName": "Elementary Occupations"
+    },
+    {
+      "socCode": "921",
+      "name": "Agricultural forestry and fishery labourers",
+      "level": 3,
+      "parentCode": "92",
+      "majorGroupId": "9",
+      "majorGroupName": "Elementary Occupations"
+    },
+    {
+      "socCode": "931",
+      "name": "Mining and construction labourers",
+      "level": 3,
+      "parentCode": "93",
+      "majorGroupId": "9",
+      "majorGroupName": "Elementary Occupations"
+    },
+    {
+      "socCode": "932",
+      "name": "Manufacturing labourers",
+      "level": 3,
+      "parentCode": "93",
+      "majorGroupId": "9",
+      "majorGroupName": "Elementary Occupations"
+    },
+    {
+      "socCode": "933",
+      "name": "Transport and storage labourers",
+      "level": 3,
+      "parentCode": "93",
+      "majorGroupId": "9",
+      "majorGroupName": "Elementary Occupations"
+    },
+    {
+      "socCode": "941",
+      "name": "Food preparation assistants",
+      "level": 3,
+      "parentCode": "94",
+      "majorGroupId": "9",
+      "majorGroupName": "Elementary Occupations"
+    },
+    {
+      "socCode": "951",
+      "name": "Street and related service workers",
+      "level": 3,
+      "parentCode": "95",
+      "majorGroupId": "9",
+      "majorGroupName": "Elementary Occupations"
+    },
+    {
+      "socCode": "952",
+      "name": "Street vendors (excluding food)",
+      "level": 3,
+      "parentCode": "95",
+      "majorGroupId": "9",
+      "majorGroupName": "Elementary Occupations"
+    },
+    {
+      "socCode": "961",
+      "name": "Refuse workers",
+      "level": 3,
+      "parentCode": "96",
+      "majorGroupId": "9",
+      "majorGroupName": "Elementary Occupations"
+    },
+    {
+      "socCode": "962",
+      "name": "Other elementary workers",
+      "level": 3,
+      "parentCode": "96",
+      "majorGroupId": "9",
+      "majorGroupName": "Elementary Occupations"
+    }
+  ],
+  "majorGroups": [
+    {
+      "groupId": "1",
+      "name": "Managers",
+      "color": "#A973BE"
+    },
+    {
+      "groupId": "2",
+      "name": "Professionals",
+      "color": "#F1866C"
+    },
+    {
+      "groupId": "3",
+      "name": "Technicians and Associate Professionals",
+      "color": "#488098"
+    },
+    {
+      "groupId": "4",
+      "name": "Clerical Support Workers",
+      "color": "#6A6AAD"
+    },
+    {
+      "groupId": "5",
+      "name": "Service and Sales Workers",
+      "color": "#77C898"
+    },
+    {
+      "groupId": "6",
+      "name": "Skilled Agricultural, Forestry and Fishery Workers",
+      "color": "#556B2F"
+    },
+    {
+      "groupId": "7",
+      "name": "Craft and Related Trades Workers",
+      "color": "#DAA520"
+    },
+    {
+      "groupId": "8",
+      "name": "Plant and Machine Operators and Assemblers",
+      "color": "#CD853F"
+    },
+    {
+      "groupId": "9",
+      "name": "Elementary Occupations",
+      "color": "#708090"
+    }
+  ],
+  "regionData": {
+    "national-india": {
+      "2024": [
+        {
+          "socCode": "111",
+          "totEmp": 338100,
+          "gdp": 174431199600,
+          "aMean": 42993,
+          "complexity": 0.0068
+        },
+        {
+          "socCode": "112",
+          "totEmp": 8645700,
+          "gdp": 4460454961200,
+          "aMean": 42993,
+          "complexity": 0.1789
+        },
+        {
+          "socCode": "121",
+          "totEmp": 1980300,
+          "gdp": 1021668454800,
+          "aMean": 42993,
+          "complexity": 0.0408
+        },
+        {
+          "socCode": "122",
+          "totEmp": 1159200,
+          "gdp": 598049827200,
+          "aMean": 42993,
+          "complexity": 0.0238
+        },
+        {
+          "socCode": "131",
+          "totEmp": 96600,
+          "gdp": 49837485600,
+          "aMean": 42993,
+          "complexity": 0.0018
+        },
+        {
+          "socCode": "132",
+          "totEmp": 917700,
+          "gdp": 473456113200,
+          "aMean": 42993,
+          "complexity": 0.0188
+        },
+        {
+          "socCode": "133",
+          "totEmp": 241500,
+          "gdp": 124593714000,
+          "aMean": 42993,
+          "complexity": 0.0048
+        },
+        {
+          "socCode": "134",
+          "totEmp": 579600,
+          "gdp": 299024913600,
+          "aMean": 42993,
+          "complexity": 0.0118
+        },
+        {
+          "socCode": "141",
+          "totEmp": 386400,
+          "gdp": 199349942400,
+          "aMean": 42993,
+          "complexity": 0.0078
+        },
+        {
+          "socCode": "142",
+          "totEmp": 386400,
+          "gdp": 199349942400,
+          "aMean": 42993,
+          "complexity": 0.0078
+        },
+        {
+          "socCode": "143",
+          "totEmp": 627900,
+          "gdp": 323943656400,
+          "aMean": 42993,
+          "complexity": 0.0128
+        },
+        {
+          "socCode": "211",
+          "totEmp": 96600,
+          "gdp": 41471539200,
+          "aMean": 35776,
+          "complexity": 0.0014
+        },
+        {
+          "socCode": "213",
+          "totEmp": 96600,
+          "gdp": 41471539200,
+          "aMean": 35776,
+          "complexity": 0.0014
+        },
+        {
+          "socCode": "214",
+          "totEmp": 1110900,
+          "gdp": 476922700800,
+          "aMean": 35776,
+          "complexity": 0.0189
+        },
+        {
+          "socCode": "215",
+          "totEmp": 289800,
+          "gdp": 124414617600,
+          "aMean": 35776,
+          "complexity": 0.0047
+        },
+        {
+          "socCode": "216",
+          "totEmp": 579600,
+          "gdp": 248829235200,
+          "aMean": 35776,
+          "complexity": 0.0097
+        },
+        {
+          "socCode": "221",
+          "totEmp": 772800,
+          "gdp": 331772313600,
+          "aMean": 35776,
+          "complexity": 0.0131
+        },
+        {
+          "socCode": "222",
+          "totEmp": 579600,
+          "gdp": 248829235200,
+          "aMean": 35776,
+          "complexity": 0.0097
+        },
+        {
+          "socCode": "223",
+          "totEmp": 48300,
+          "gdp": 20735769600,
+          "aMean": 35776,
+          "complexity": 0.0006
+        },
+        {
+          "socCode": "224",
+          "totEmp": 144900,
+          "gdp": 62207308800,
+          "aMean": 35776,
+          "complexity": 0.0022
+        },
+        {
+          "socCode": "225",
+          "totEmp": 96600,
+          "gdp": 41471539200,
+          "aMean": 35776,
+          "complexity": 0.0014
+        },
+        {
+          "socCode": "226",
+          "totEmp": 483000,
+          "gdp": 207357696000,
+          "aMean": 35776,
+          "complexity": 0.0081
+        },
+        {
+          "socCode": "231",
+          "totEmp": 1014300,
+          "gdp": 435451161600,
+          "aMean": 35776,
+          "complexity": 0.0172
+        },
+        {
+          "socCode": "232",
+          "totEmp": 96600,
+          "gdp": 41471539200,
+          "aMean": 35776,
+          "complexity": 0.0014
+        },
+        {
+          "socCode": "233",
+          "totEmp": 3091200,
+          "gdp": 1327089254400,
+          "aMean": 35776,
+          "complexity": 0.053
+        },
+        {
+          "socCode": "234",
+          "totEmp": 5023200,
+          "gdp": 2156520038400,
+          "aMean": 35776,
+          "complexity": 0.0863
+        },
+        {
+          "socCode": "235",
+          "totEmp": 1883700,
+          "gdp": 808695014400,
+          "aMean": 35776,
+          "complexity": 0.0322
+        },
+        {
+          "socCode": "241",
+          "totEmp": 2028600,
+          "gdp": 870902323200,
+          "aMean": 35776,
+          "complexity": 0.0347
+        },
+        {
+          "socCode": "242",
+          "totEmp": 434700,
+          "gdp": 186621926400,
+          "aMean": 35776,
+          "complexity": 0.0072
+        },
+        {
+          "socCode": "243",
+          "totEmp": 821100,
+          "gdp": 352508083200,
+          "aMean": 35776,
+          "complexity": 0.0139
+        },
+        {
+          "socCode": "251",
+          "totEmp": 3574200,
+          "gdp": 1534446950400,
+          "aMean": 35776,
+          "complexity": 0.0614
+        },
+        {
+          "socCode": "252",
+          "totEmp": 241500,
+          "gdp": 103678848000,
+          "aMean": 35776,
+          "complexity": 0.0039
+        },
+        {
+          "socCode": "261",
+          "totEmp": 772800,
+          "gdp": 331772313600,
+          "aMean": 35776,
+          "complexity": 0.0131
+        },
+        {
+          "socCode": "262",
+          "totEmp": 48300,
+          "gdp": 20735769600,
+          "aMean": 35776,
+          "complexity": 0.0006
+        },
+        {
+          "socCode": "263",
+          "totEmp": 1255800,
+          "gdp": 539130009600,
+          "aMean": 35776,
+          "complexity": 0.0214
+        },
+        {
+          "socCode": "264",
+          "totEmp": 241500,
+          "gdp": 103678848000,
+          "aMean": 35776,
+          "complexity": 0.0039
+        },
+        {
+          "socCode": "265",
+          "totEmp": 579600,
+          "gdp": 248829235200,
+          "aMean": 35776,
+          "complexity": 0.0097
+        },
+        {
+          "socCode": "311",
+          "totEmp": 531300,
+          "gdp": 154283144400,
+          "aMean": 24199,
+          "complexity": 0.0059
+        },
+        {
+          "socCode": "312",
+          "totEmp": 2173500,
+          "gdp": 631158318000,
+          "aMean": 24199,
+          "complexity": 0.0251
+        },
+        {
+          "socCode": "313",
+          "totEmp": 483000,
+          "gdp": 140257404000,
+          "aMean": 24199,
+          "complexity": 0.0054
+        },
+        {
+          "socCode": "314",
+          "totEmp": 48300,
+          "gdp": 14025740400,
+          "aMean": 24199,
+          "complexity": 0.0003
+        },
+        {
+          "socCode": "315",
+          "totEmp": 48300,
+          "gdp": 14025740400,
+          "aMean": 24199,
+          "complexity": 0.0003
+        },
+        {
+          "socCode": "321",
+          "totEmp": 579600,
+          "gdp": 168308884800,
+          "aMean": 24199,
+          "complexity": 0.0065
+        },
+        {
+          "socCode": "322",
+          "totEmp": 1787100,
+          "gdp": 518952394800,
+          "aMean": 24199,
+          "complexity": 0.0206
+        },
+        {
+          "socCode": "323",
+          "totEmp": 48300,
+          "gdp": 14025740400,
+          "aMean": 24199,
+          "complexity": 0.0003
+        },
+        {
+          "socCode": "331",
+          "totEmp": 434700,
+          "gdp": 126231663600,
+          "aMean": 24199,
+          "complexity": 0.0048
+        },
+        {
+          "socCode": "332",
+          "totEmp": 1449000,
+          "gdp": 420772212000,
+          "aMean": 24199,
+          "complexity": 0.0166
+        },
+        {
+          "socCode": "333",
+          "totEmp": 676200,
+          "gdp": 196360365600,
+          "aMean": 24199,
+          "complexity": 0.0076
+        },
+        {
+          "socCode": "334",
+          "totEmp": 386400,
+          "gdp": 112205923200,
+          "aMean": 24199,
+          "complexity": 0.0043
+        },
+        {
+          "socCode": "335",
+          "totEmp": 483000,
+          "gdp": 140257404000,
+          "aMean": 24199,
+          "complexity": 0.0054
+        },
+        {
+          "socCode": "341",
+          "totEmp": 193200,
+          "gdp": 56102961600,
+          "aMean": 24199,
+          "complexity": 0.002
+        },
+        {
+          "socCode": "342",
+          "totEmp": 193200,
+          "gdp": 56102961600,
+          "aMean": 24199,
+          "complexity": 0.002
+        },
+        {
+          "socCode": "343",
+          "totEmp": 579600,
+          "gdp": 168308884800,
+          "aMean": 24199,
+          "complexity": 0.0065
+        },
+        {
+          "socCode": "351",
+          "totEmp": 289800,
+          "gdp": 84154442400,
+          "aMean": 24199,
+          "complexity": 0.0031
+        },
+        {
+          "socCode": "352",
+          "totEmp": 241500,
+          "gdp": 70128702000,
+          "aMean": 24199,
+          "complexity": 0.0026
+        },
+        {
+          "socCode": "411",
+          "totEmp": 3429300,
+          "gdp": 971836185600,
+          "aMean": 23616,
+          "complexity": 0.0388
+        },
+        {
+          "socCode": "412",
+          "totEmp": 144900,
+          "gdp": 41063500800,
+          "aMean": 23616,
+          "complexity": 0.0014
+        },
+        {
+          "socCode": "413",
+          "totEmp": 144900,
+          "gdp": 41063500800,
+          "aMean": 23616,
+          "complexity": 0.0014
+        },
+        {
+          "socCode": "421",
+          "totEmp": 869400,
+          "gdp": 246381004800,
+          "aMean": 23616,
+          "complexity": 0.0096
+        },
+        {
+          "socCode": "422",
+          "totEmp": 531300,
+          "gdp": 150566169600,
+          "aMean": 23616,
+          "complexity": 0.0058
+        },
+        {
+          "socCode": "431",
+          "totEmp": 1642200,
+          "gdp": 465386342400,
+          "aMean": 23616,
+          "complexity": 0.0184
+        },
+        {
+          "socCode": "432",
+          "totEmp": 434700,
+          "gdp": 123190502400,
+          "aMean": 23616,
+          "complexity": 0.0047
+        },
+        {
+          "socCode": "441",
+          "totEmp": 1980300,
+          "gdp": 561201177600,
+          "aMean": 23616,
+          "complexity": 0.0223
+        },
+        {
+          "socCode": "511",
+          "totEmp": 483000,
+          "gdp": 84783888000,
+          "aMean": 14628,
+          "complexity": 0.0032
+        },
+        {
+          "socCode": "512",
+          "totEmp": 4685100,
+          "gdp": 822403713600,
+          "aMean": 14628,
+          "complexity": 0.0328
+        },
+        {
+          "socCode": "513",
+          "totEmp": 724500,
+          "gdp": 127175832000,
+          "aMean": 14628,
+          "complexity": 0.0049
+        },
+        {
+          "socCode": "514",
+          "totEmp": 2415000,
+          "gdp": 423919440000,
+          "aMean": 14628,
+          "complexity": 0.0168
+        },
+        {
+          "socCode": "515",
+          "totEmp": 1159200,
+          "gdp": 203481331200,
+          "aMean": 14628,
+          "complexity": 0.0079
+        },
+        {
+          "socCode": "516",
+          "totEmp": 579600,
+          "gdp": 101740665600,
+          "aMean": 14628,
+          "complexity": 0.0038
+        },
+        {
+          "socCode": "521",
+          "totEmp": 4347000,
+          "gdp": 763054992000,
+          "aMean": 14628,
+          "complexity": 0.0304
+        },
+        {
+          "socCode": "522",
+          "totEmp": 32361000,
+          "gdp": 5680520496000,
+          "aMean": 14628,
+          "complexity": 0.2278
+        },
+        {
+          "socCode": "523",
+          "totEmp": 386400,
+          "gdp": 67827110400,
+          "aMean": 14628,
+          "complexity": 0.0025
+        },
+        {
+          "socCode": "524",
+          "totEmp": 3042900,
+          "gdp": 534138494400,
+          "aMean": 14628,
+          "complexity": 0.0212
+        },
+        {
+          "socCode": "531",
+          "totEmp": 676200,
+          "gdp": 118697443200,
+          "aMean": 14628,
+          "complexity": 0.0045
+        },
+        {
+          "socCode": "532",
+          "totEmp": 966000,
+          "gdp": 169567776000,
+          "aMean": 14628,
+          "complexity": 0.0066
+        },
+        {
+          "socCode": "541",
+          "totEmp": 4588500,
+          "gdp": 805446936000,
+          "aMean": 14628,
+          "complexity": 0.0321
+        },
+        {
+          "socCode": "611",
+          "totEmp": 27386100,
+          "gdp": 3719799190800,
+          "aMean": 11319,
+          "complexity": 0.1491
+        },
+        {
+          "socCode": "612",
+          "totEmp": 64287300,
+          "gdp": 8732015384400,
+          "aMean": 11319,
+          "complexity": 0.3504
+        },
+        {
+          "socCode": "613",
+          "totEmp": 28400400,
+          "gdp": 3857569531200,
+          "aMean": 11319,
+          "complexity": 0.1546
+        },
+        {
+          "socCode": "621",
+          "totEmp": 1593900,
+          "gdp": 216496249200,
+          "aMean": 11319,
+          "complexity": 0.0084
+        },
+        {
+          "socCode": "622",
+          "totEmp": 1062600,
+          "gdp": 144330832800,
+          "aMean": 11319,
+          "complexity": 0.0055
+        },
+        {
+          "socCode": "631",
+          "totEmp": 11881800,
+          "gdp": 1613881130400,
+          "aMean": 11319,
+          "complexity": 0.0646
+        },
+        {
+          "socCode": "632",
+          "totEmp": 2076900,
+          "gdp": 282101173200,
+          "aMean": 11319,
+          "complexity": 0.0111
+        },
+        {
+          "socCode": "633",
+          "totEmp": 1400700,
+          "gdp": 190254279600,
+          "aMean": 11319,
+          "complexity": 0.0074
+        },
+        {
+          "socCode": "634",
+          "totEmp": 869400,
+          "gdp": 118088863200,
+          "aMean": 11319,
+          "complexity": 0.0045
+        },
+        {
+          "socCode": "711",
+          "totEmp": 8694000,
+          "gdp": 1601434800000,
+          "aMean": 15350,
+          "complexity": 0.0641
+        },
+        {
+          "socCode": "712",
+          "totEmp": 3332700,
+          "gdp": 613883340000,
+          "aMean": 15350,
+          "complexity": 0.0244
+        },
+        {
+          "socCode": "713",
+          "totEmp": 3574200,
+          "gdp": 658367640000,
+          "aMean": 15350,
+          "complexity": 0.0262
+        },
+        {
+          "socCode": "721",
+          "totEmp": 2173500,
+          "gdp": 400358700000,
+          "aMean": 15350,
+          "complexity": 0.0158
+        },
+        {
+          "socCode": "722",
+          "totEmp": 821100,
+          "gdp": 151246620000,
+          "aMean": 15350,
+          "complexity": 0.0058
+        },
+        {
+          "socCode": "723",
+          "totEmp": 4588500,
+          "gdp": 845201700000,
+          "aMean": 15350,
+          "complexity": 0.0337
+        },
+        {
+          "socCode": "731",
+          "totEmp": 5457900,
+          "gdp": 1005345180000,
+          "aMean": 15350,
+          "complexity": 0.0401
+        },
+        {
+          "socCode": "732",
+          "totEmp": 289800,
+          "gdp": 53381160000,
+          "aMean": 15350,
+          "complexity": 0.0019
+        },
+        {
+          "socCode": "741",
+          "totEmp": 3332700,
+          "gdp": 613883340000,
+          "aMean": 15350,
+          "complexity": 0.0244
+        },
+        {
+          "socCode": "742",
+          "totEmp": 821100,
+          "gdp": 151246620000,
+          "aMean": 15350,
+          "complexity": 0.0058
+        },
+        {
+          "socCode": "751",
+          "totEmp": 5796000,
+          "gdp": 1067623200000,
+          "aMean": 15350,
+          "complexity": 0.0426
+        },
+        {
+          "socCode": "752",
+          "totEmp": 1207500,
+          "gdp": 222421500000,
+          "aMean": 15350,
+          "complexity": 0.0087
+        },
+        {
+          "socCode": "753",
+          "totEmp": 12944400,
+          "gdp": 2384358480000,
+          "aMean": 15350,
+          "complexity": 0.0955
+        },
+        {
+          "socCode": "754",
+          "totEmp": 289800,
+          "gdp": 53381160000,
+          "aMean": 15350,
+          "complexity": 0.0019
+        },
+        {
+          "socCode": "811",
+          "totEmp": 289800,
+          "gdp": 55314705600,
+          "aMean": 15906,
+          "complexity": 0.002
+        },
+        {
+          "socCode": "812",
+          "totEmp": 289800,
+          "gdp": 55314705600,
+          "aMean": 15906,
+          "complexity": 0.002
+        },
+        {
+          "socCode": "813",
+          "totEmp": 338100,
+          "gdp": 64533823200,
+          "aMean": 15906,
+          "complexity": 0.0023
+        },
+        {
+          "socCode": "814",
+          "totEmp": 627900,
+          "gdp": 119848528800,
+          "aMean": 15906,
+          "complexity": 0.0046
+        },
+        {
+          "socCode": "815",
+          "totEmp": 1883700,
+          "gdp": 359545586400,
+          "aMean": 15906,
+          "complexity": 0.0142
+        },
+        {
+          "socCode": "816",
+          "totEmp": 966000,
+          "gdp": 184382352000,
+          "aMean": 15906,
+          "complexity": 0.0072
+        },
+        {
+          "socCode": "817",
+          "totEmp": 96600,
+          "gdp": 18438235200,
+          "aMean": 15906,
+          "complexity": 0.0005
+        },
+        {
+          "socCode": "818",
+          "totEmp": 821100,
+          "gdp": 156724999200,
+          "aMean": 15906,
+          "complexity": 0.006
+        },
+        {
+          "socCode": "821",
+          "totEmp": 386400,
+          "gdp": 73752940800,
+          "aMean": 15906,
+          "complexity": 0.0027
+        },
+        {
+          "socCode": "831",
+          "totEmp": 241500,
+          "gdp": 46095588000,
+          "aMean": 15906,
+          "complexity": 0.0016
+        },
+        {
+          "socCode": "832",
+          "totEmp": 13717200,
+          "gdp": 2618229398400,
+          "aMean": 15906,
+          "complexity": 0.1049
+        },
+        {
+          "socCode": "833",
+          "totEmp": 4685100,
+          "gdp": 894254407200,
+          "aMean": 15906,
+          "complexity": 0.0357
+        },
+        {
+          "socCode": "834",
+          "totEmp": 966000,
+          "gdp": 184382352000,
+          "aMean": 15906,
+          "complexity": 0.0072
+        },
+        {
+          "socCode": "835",
+          "totEmp": 48300,
+          "gdp": 9219117600,
+          "aMean": 15906,
+          "complexity": 0.0001
+        },
+        {
+          "socCode": "911",
+          "totEmp": 7003500,
+          "gdp": 896476014000,
+          "aMean": 10667,
+          "complexity": 0.0357
+        },
+        {
+          "socCode": "912",
+          "totEmp": 772800,
+          "gdp": 98921491200,
+          "aMean": 10667,
+          "complexity": 0.0037
+        },
+        {
+          "socCode": "921",
+          "totEmp": 38253600,
+          "gdp": 4896613814400,
+          "aMean": 10667,
+          "complexity": 0.1964
+        },
+        {
+          "socCode": "931",
+          "totEmp": 40233900,
+          "gdp": 5150100135600,
+          "aMean": 10667,
+          "complexity": 0.2065
+        },
+        {
+          "socCode": "932",
+          "totEmp": 7969500,
+          "gdp": 1020127878000,
+          "aMean": 10667,
+          "complexity": 0.0407
+        },
+        {
+          "socCode": "933",
+          "totEmp": 4250400,
+          "gdp": 544068201600,
+          "aMean": 10667,
+          "complexity": 0.0216
+        },
+        {
+          "socCode": "941",
+          "totEmp": 483000,
+          "gdp": 61825932000,
+          "aMean": 10667,
+          "complexity": 0.0022
+        },
+        {
+          "socCode": "951",
+          "totEmp": 48300,
+          "gdp": 6182593200,
+          "aMean": 10667,
+          "complexity": 0.0
+        },
+        {
+          "socCode": "952",
+          "totEmp": 1255800,
+          "gdp": 160747423200,
+          "aMean": 10667,
+          "complexity": 0.0062
+        },
+        {
+          "socCode": "961",
+          "totEmp": 1835400,
+          "gdp": 234938541600,
+          "aMean": 10667,
+          "complexity": 0.0092
+        },
+        {
+          "socCode": "962",
+          "totEmp": 627900,
+          "gdp": 80373711600,
+          "aMean": 10667,
+          "complexity": 0.003
+        }
+      ]
+    }
+  },
+  "aggregates": {
+    "2024": {
+      "byOccupation": {
+        "111": {
+          "totalEmploy": 338100,
+          "avgWage": 42993.0,
+          "avgComplexity": 0.0068
+        },
+        "112": {
+          "totalEmploy": 8645700,
+          "avgWage": 42993.0,
+          "avgComplexity": 0.1789
+        },
+        "121": {
+          "totalEmploy": 1980300,
+          "avgWage": 42993.0,
+          "avgComplexity": 0.0408
+        },
+        "122": {
+          "totalEmploy": 1159200,
+          "avgWage": 42993.0,
+          "avgComplexity": 0.0238
+        },
+        "131": {
+          "totalEmploy": 96600,
+          "avgWage": 42993.0,
+          "avgComplexity": 0.0018
+        },
+        "132": {
+          "totalEmploy": 917700,
+          "avgWage": 42993.0,
+          "avgComplexity": 0.0188
+        },
+        "133": {
+          "totalEmploy": 241500,
+          "avgWage": 42993.0,
+          "avgComplexity": 0.0048
+        },
+        "134": {
+          "totalEmploy": 579600,
+          "avgWage": 42993.0,
+          "avgComplexity": 0.0118
+        },
+        "141": {
+          "totalEmploy": 386400,
+          "avgWage": 42993.0,
+          "avgComplexity": 0.0078
+        },
+        "142": {
+          "totalEmploy": 386400,
+          "avgWage": 42993.0,
+          "avgComplexity": 0.0078
+        },
+        "143": {
+          "totalEmploy": 627900,
+          "avgWage": 42993.0,
+          "avgComplexity": 0.0128
+        },
+        "211": {
+          "totalEmploy": 96600,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0014
+        },
+        "213": {
+          "totalEmploy": 96600,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0014
+        },
+        "214": {
+          "totalEmploy": 1110900,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0189
+        },
+        "215": {
+          "totalEmploy": 289800,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0047
+        },
+        "216": {
+          "totalEmploy": 579600,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0097
+        },
+        "221": {
+          "totalEmploy": 772800,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0131
+        },
+        "222": {
+          "totalEmploy": 579600,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0097
+        },
+        "223": {
+          "totalEmploy": 48300,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0006
+        },
+        "224": {
+          "totalEmploy": 144900,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0022
+        },
+        "225": {
+          "totalEmploy": 96600,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0014
+        },
+        "226": {
+          "totalEmploy": 483000,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0081
+        },
+        "231": {
+          "totalEmploy": 1014300,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0172
+        },
+        "232": {
+          "totalEmploy": 96600,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0014
+        },
+        "233": {
+          "totalEmploy": 3091200,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.053
+        },
+        "234": {
+          "totalEmploy": 5023200,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0863
+        },
+        "235": {
+          "totalEmploy": 1883700,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0322
+        },
+        "241": {
+          "totalEmploy": 2028600,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0347
+        },
+        "242": {
+          "totalEmploy": 434700,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0072
+        },
+        "243": {
+          "totalEmploy": 821100,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0139
+        },
+        "251": {
+          "totalEmploy": 3574200,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0614
+        },
+        "252": {
+          "totalEmploy": 241500,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0039
+        },
+        "261": {
+          "totalEmploy": 772800,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0131
+        },
+        "262": {
+          "totalEmploy": 48300,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0006
+        },
+        "263": {
+          "totalEmploy": 1255800,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0214
+        },
+        "264": {
+          "totalEmploy": 241500,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0039
+        },
+        "265": {
+          "totalEmploy": 579600,
+          "avgWage": 35776.0,
+          "avgComplexity": 0.0097
+        },
+        "311": {
+          "totalEmploy": 531300,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0059
+        },
+        "312": {
+          "totalEmploy": 2173500,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0251
+        },
+        "313": {
+          "totalEmploy": 483000,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0054
+        },
+        "314": {
+          "totalEmploy": 48300,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0003
+        },
+        "315": {
+          "totalEmploy": 48300,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0003
+        },
+        "321": {
+          "totalEmploy": 579600,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0065
+        },
+        "322": {
+          "totalEmploy": 1787100,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0206
+        },
+        "323": {
+          "totalEmploy": 48300,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0003
+        },
+        "331": {
+          "totalEmploy": 434700,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0048
+        },
+        "332": {
+          "totalEmploy": 1449000,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0166
+        },
+        "333": {
+          "totalEmploy": 676200,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0076
+        },
+        "334": {
+          "totalEmploy": 386400,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0043
+        },
+        "335": {
+          "totalEmploy": 483000,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0054
+        },
+        "341": {
+          "totalEmploy": 193200,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.002
+        },
+        "342": {
+          "totalEmploy": 193200,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.002
+        },
+        "343": {
+          "totalEmploy": 579600,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0065
+        },
+        "351": {
+          "totalEmploy": 289800,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0031
+        },
+        "352": {
+          "totalEmploy": 241500,
+          "avgWage": 24199.0,
+          "avgComplexity": 0.0026
+        },
+        "411": {
+          "totalEmploy": 3429300,
+          "avgWage": 23616.0,
+          "avgComplexity": 0.0388
+        },
+        "412": {
+          "totalEmploy": 144900,
+          "avgWage": 23616.0,
+          "avgComplexity": 0.0014
+        },
+        "413": {
+          "totalEmploy": 144900,
+          "avgWage": 23616.0,
+          "avgComplexity": 0.0014
+        },
+        "421": {
+          "totalEmploy": 869400,
+          "avgWage": 23616.0,
+          "avgComplexity": 0.0096
+        },
+        "422": {
+          "totalEmploy": 531300,
+          "avgWage": 23616.0,
+          "avgComplexity": 0.0058
+        },
+        "431": {
+          "totalEmploy": 1642200,
+          "avgWage": 23616.0,
+          "avgComplexity": 0.0184
+        },
+        "432": {
+          "totalEmploy": 434700,
+          "avgWage": 23616.0,
+          "avgComplexity": 0.0047
+        },
+        "441": {
+          "totalEmploy": 1980300,
+          "avgWage": 23616.0,
+          "avgComplexity": 0.0223
+        },
+        "511": {
+          "totalEmploy": 483000,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0032
+        },
+        "512": {
+          "totalEmploy": 4685100,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0328
+        },
+        "513": {
+          "totalEmploy": 724500,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0049
+        },
+        "514": {
+          "totalEmploy": 2415000,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0168
+        },
+        "515": {
+          "totalEmploy": 1159200,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0079
+        },
+        "516": {
+          "totalEmploy": 579600,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0038
+        },
+        "521": {
+          "totalEmploy": 4347000,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0304
+        },
+        "522": {
+          "totalEmploy": 32361000,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.2278
+        },
+        "523": {
+          "totalEmploy": 386400,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0025
+        },
+        "524": {
+          "totalEmploy": 3042900,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0212
+        },
+        "531": {
+          "totalEmploy": 676200,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0045
+        },
+        "532": {
+          "totalEmploy": 966000,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0066
+        },
+        "541": {
+          "totalEmploy": 4588500,
+          "avgWage": 14628.0,
+          "avgComplexity": 0.0321
+        },
+        "611": {
+          "totalEmploy": 27386100,
+          "avgWage": 11319.0,
+          "avgComplexity": 0.1491
+        },
+        "612": {
+          "totalEmploy": 64287300,
+          "avgWage": 11319.0,
+          "avgComplexity": 0.3504
+        },
+        "613": {
+          "totalEmploy": 28400400,
+          "avgWage": 11319.0,
+          "avgComplexity": 0.1546
+        },
+        "621": {
+          "totalEmploy": 1593900,
+          "avgWage": 11319.0,
+          "avgComplexity": 0.0084
+        },
+        "622": {
+          "totalEmploy": 1062600,
+          "avgWage": 11319.0,
+          "avgComplexity": 0.0055
+        },
+        "631": {
+          "totalEmploy": 11881800,
+          "avgWage": 11319.0,
+          "avgComplexity": 0.0646
+        },
+        "632": {
+          "totalEmploy": 2076900,
+          "avgWage": 11319.0,
+          "avgComplexity": 0.0111
+        },
+        "633": {
+          "totalEmploy": 1400700,
+          "avgWage": 11319.0,
+          "avgComplexity": 0.0074
+        },
+        "634": {
+          "totalEmploy": 869400,
+          "avgWage": 11319.0,
+          "avgComplexity": 0.0045
+        },
+        "711": {
+          "totalEmploy": 8694000,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0641
+        },
+        "712": {
+          "totalEmploy": 3332700,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0244
+        },
+        "713": {
+          "totalEmploy": 3574200,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0262
+        },
+        "721": {
+          "totalEmploy": 2173500,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0158
+        },
+        "722": {
+          "totalEmploy": 821100,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0058
+        },
+        "723": {
+          "totalEmploy": 4588500,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0337
+        },
+        "731": {
+          "totalEmploy": 5457900,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0401
+        },
+        "732": {
+          "totalEmploy": 289800,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0019
+        },
+        "741": {
+          "totalEmploy": 3332700,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0244
+        },
+        "742": {
+          "totalEmploy": 821100,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0058
+        },
+        "751": {
+          "totalEmploy": 5796000,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0426
+        },
+        "752": {
+          "totalEmploy": 1207500,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0087
+        },
+        "753": {
+          "totalEmploy": 12944400,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0955
+        },
+        "754": {
+          "totalEmploy": 289800,
+          "avgWage": 15350.0,
+          "avgComplexity": 0.0019
+        },
+        "811": {
+          "totalEmploy": 289800,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.002
+        },
+        "812": {
+          "totalEmploy": 289800,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.002
+        },
+        "813": {
+          "totalEmploy": 338100,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.0023
+        },
+        "814": {
+          "totalEmploy": 627900,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.0046
+        },
+        "815": {
+          "totalEmploy": 1883700,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.0142
+        },
+        "816": {
+          "totalEmploy": 966000,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.0072
+        },
+        "817": {
+          "totalEmploy": 96600,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.0005
+        },
+        "818": {
+          "totalEmploy": 821100,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.006
+        },
+        "821": {
+          "totalEmploy": 386400,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.0027
+        },
+        "831": {
+          "totalEmploy": 241500,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.0016
+        },
+        "832": {
+          "totalEmploy": 13717200,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.1049
+        },
+        "833": {
+          "totalEmploy": 4685100,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.0357
+        },
+        "834": {
+          "totalEmploy": 966000,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.0072
+        },
+        "835": {
+          "totalEmploy": 48300,
+          "avgWage": 15906.0,
+          "avgComplexity": 0.0001
+        },
+        "911": {
+          "totalEmploy": 7003500,
+          "avgWage": 10667.0,
+          "avgComplexity": 0.0357
+        },
+        "912": {
+          "totalEmploy": 772800,
+          "avgWage": 10667.0,
+          "avgComplexity": 0.0037
+        },
+        "921": {
+          "totalEmploy": 38253600,
+          "avgWage": 10667.0,
+          "avgComplexity": 0.1964
+        },
+        "931": {
+          "totalEmploy": 40233900,
+          "avgWage": 10667.0,
+          "avgComplexity": 0.2065
+        },
+        "932": {
+          "totalEmploy": 7969500,
+          "avgWage": 10667.0,
+          "avgComplexity": 0.0407
+        },
+        "933": {
+          "totalEmploy": 4250400,
+          "avgWage": 10667.0,
+          "avgComplexity": 0.0216
+        },
+        "941": {
+          "totalEmploy": 483000,
+          "avgWage": 10667.0,
+          "avgComplexity": 0.0022
+        },
+        "951": {
+          "totalEmploy": 48300,
+          "avgWage": 10667.0,
+          "avgComplexity": 0.0
+        },
+        "952": {
+          "totalEmploy": 1255800,
+          "avgWage": 10667.0,
+          "avgComplexity": 0.0062
+        },
+        "961": {
+          "totalEmploy": 1835400,
+          "avgWage": 10667.0,
+          "avgComplexity": 0.0092
+        },
+        "962": {
+          "totalEmploy": 627900,
+          "avgWage": 10667.0,
+          "avgComplexity": 0.003
+        }
+      },
+      "minMaxStats": {
+        "minWage": 10667,
+        "maxWage": 42993,
+        "medianWage": 23616,
+        "minComplexity": 0.0,
+        "maxComplexity": 0.3504,
+        "medianComplexity": 0.0078
+      }
+    }
+  }
+}
