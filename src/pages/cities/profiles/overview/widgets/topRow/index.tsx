@@ -1,26 +1,22 @@
 import React from "react";
-import { usePeerGroupCityCount } from "../../../../../../components/navigation/secondaryHeader/comparisons/AddComparisonModal";
-import useCurrentCity from "../../../../../../hooks/useCurrentCity";
+import useCurrentCityId from "../../../../../../hooks/useCurrentCityId";
 import { TitleBase, YearText, Icon, ValueBase, ListItem } from "../styleUtils";
 import PopulationSVG from "../../../../../../assets/icons/population.svg";
 import RankingSVG from "../../../../../../assets/icons/ranking.svg";
 import GdpPerCapitaSVG from "../../../../../../assets/icons/gdppercapita.svg";
 import DataReliabilitySVG from "../../../../../../assets/icons/datareliability.svg";
 import {
-  populationDisplayYear,
-  gdpPerCapitaDisplayYear,
-  rankingDisplayYear,
   defaultYear,
   formatNumberLong,
   numberWithCommas,
 } from "../../../../../../Utils";
-import useFluent, { ordinalNumber } from "../../../../../../hooks/useFluent";
+import useTerminology from "../../../../../../hooks/useTerminology";
+import { useStaticData } from "../../../../../../dataProvider";
 
 import styled from "styled-components";
 import Tooltip from "../../../../../../components/general/Tooltip";
 import SimpleTextLoading from "../../../../../../components/transitionStateComponents/SimpleTextLoading";
 import {
-  getNewDataQualityLevel,
   NewDataQualityLevel,
   dataQualityColors,
 } from "../../../../../../components/general/Utils";
@@ -63,98 +59,129 @@ const LegendRow = styled.div`
 `;
 
 const TopRow = () => {
-  const { loading: cityLoading, city } = useCurrentCity();
-  const { loading, error, data } = usePeerGroupCityCount(
-    city && city.cityId ? city.cityId : null,
-  );
-  const getString = useFluent();
+  const cityId = useCurrentCityId();
+  const { data: blsData, loading, selectedYear } = useStaticData();
+  const terminology = useTerminology();
 
-  let population: React.ReactElement<any> | null;
-  let gdppc: React.ReactElement<any> | null;
+  let workersElement: React.ReactElement<any> | null;
+  let wageElement: React.ReactElement<any> | null;
+  let incomeElement: React.ReactElement<any> | null;
+  let coverageElement: React.ReactElement<any> | null;
   let flagColor: React.ReactElement<any> | null = null;
-  let alertTitle: string = "---";
-  let description: string = "---";
-  let dataQualityTooltip: React.ReactElement<any> | null = null;
-  let regionPopRank: string = "---";
-  let regionGdppcRank: string = "---";
-  if (loading || cityLoading) {
-    population = <SimpleTextLoading />;
-    gdppc = <SimpleTextLoading />;
-  } else if (error) {
-    console.error(error);
-    population = <>---</>;
-    gdppc = <>---</>;
-  } else if (data && city) {
-    const dataFlag = city.dataFlag;
-    const dataQualityLevel = getNewDataQualityLevel(dataFlag);
+  let qualityLabel = "---";
+  let dataQualityTooltip: React.ReactElement<any> | string = "---";
 
-    if (dataQualityLevel === NewDataQualityLevel.HIGH) {
-      alertTitle = getString("data-disclaimer-high-quality-title");
-      description = getString("data-disclaimer-high-quality-desc");
-    } else if (dataQualityLevel === NewDataQualityLevel.MEDIUM) {
-      alertTitle = getString("data-disclaimer-medium-quality-title");
-      description = getString("data-disclaimer-medium-quality-desc");
-    } else if (dataQualityLevel === NewDataQualityLevel.LOW) {
-      alertTitle = getString("data-disclaimer-low-quality-title");
-      description = getString("data-disclaimer-low-quality-desc");
-    }
-
-    flagColor = (
-      <DataLegend>
-        <LargeDot
-          style={{ backgroundColor: dataQualityColors.get(dataQualityLevel) }}
-        />
-      </DataLegend>
-    );
-
-    dataQualityTooltip = (
-      <>
-        <div dangerouslySetInnerHTML={{ __html: description }}></div>
-        <LegendContainer>
-          <h1>Metroverse Data Quality Scale</h1>
-          <LegendRow>
-            <SmallDot
-              style={{
-                backgroundColor: dataQualityColors.get(
-                  NewDataQualityLevel.HIGH,
-                ),
-              }}
-            />
-            High Quality
-          </LegendRow>
-          <LegendRow>
-            <SmallDot
-              style={{
-                backgroundColor: dataQualityColors.get(
-                  NewDataQualityLevel.MEDIUM,
-                ),
-              }}
-            />
-            Medium Quality
-          </LegendRow>
-          <LegendRow>
-            <SmallDot
-              style={{
-                backgroundColor: dataQualityColors.get(NewDataQualityLevel.LOW),
-              }}
-            />
-            Low Quality
-          </LegendRow>
-        </LegendContainer>
-      </>
-    );
-
-    population = <>{formatNumberLong(city.population ? city.population : 0)}</>;
-    gdppc = <>${numberWithCommas(city.gdppc ? Math.round(city.gdppc) : 0)}</>;
-    regionPopRank = ordinalNumber([
-      city.regionPopRank ?? 0,
-    ]).toUpperCase();
-    regionGdppcRank = ordinalNumber([
-      city.regionGdppcRank ?? 0,
-    ]).toUpperCase();
+  if (loading || !blsData || !cityId) {
+    workersElement = <SimpleTextLoading />;
+    wageElement = <SimpleTextLoading />;
+    incomeElement = <SimpleTextLoading />;
+    coverageElement = <SimpleTextLoading />;
   } else {
-    population = <>---</>;
-    gdppc = <>---</>;
+    const yearDataByRegion = blsData.regionData[cityId] || {};
+    const records =
+      yearDataByRegion[selectedYear] ||
+      yearDataByRegion[defaultYear] ||
+      Object.values(yearDataByRegion)[0] ||
+      [];
+
+    if (records.length === 0) {
+      workersElement = <>---</>;
+      wageElement = <>---</>;
+      incomeElement = <>---</>;
+      coverageElement = <>---</>;
+    } else {
+      const occLevelByCode = new Map<string, number>();
+      blsData.occupations.forEach((o) => occLevelByCode.set(o.socCode, o.level));
+
+      const levels = records
+        .map((r) => occLevelByCode.get(r.socCode))
+        .filter((lvl): lvl is number => lvl !== undefined);
+
+      const minLevel = levels.length > 0 ? Math.min(...levels) : 1;
+      const maxLevel = levels.length > 0 ? Math.max(...levels) : 1;
+      const baseLevelRecords = records.filter(
+        (r) => (occLevelByCode.get(r.socCode) || minLevel) === minLevel,
+      );
+
+      const totalWorkers = baseLevelRecords.reduce(
+        (sum, r) => sum + (r.totEmp || 0),
+        0,
+      );
+      const totalIncome = baseLevelRecords.reduce((sum, r) => sum + (r.gdp || 0), 0);
+      const avgWage = totalWorkers > 0 ? Math.round(totalIncome / totalWorkers) : 0;
+      const wageCoverage =
+        baseLevelRecords.filter((r) => (r.aMean || 0) > 0).length /
+        Math.max(baseLevelRecords.length, 1);
+
+      let dataQualityLevel = NewDataQualityLevel.LOW;
+      if (wageCoverage >= 0.9) {
+        dataQualityLevel = NewDataQualityLevel.HIGH;
+      } else if (wageCoverage >= 0.75) {
+        dataQualityLevel = NewDataQualityLevel.MEDIUM;
+      }
+
+      qualityLabel =
+        dataQualityLevel === NewDataQualityLevel.HIGH
+          ? "High"
+          : dataQualityLevel === NewDataQualityLevel.MEDIUM
+            ? "Medium"
+            : "Low";
+
+      dataQualityTooltip = (
+        <>
+          <div>
+            Based on share of occupations with positive wage values in this region.
+          </div>
+          <LegendContainer>
+            <h1>Data Quality Scale</h1>
+            <LegendRow>
+              <SmallDot
+                style={{
+                  backgroundColor: dataQualityColors.get(NewDataQualityLevel.HIGH),
+                }}
+              />
+              High (≥90% wage coverage)
+            </LegendRow>
+            <LegendRow>
+              <SmallDot
+                style={{
+                  backgroundColor: dataQualityColors.get(NewDataQualityLevel.MEDIUM),
+                }}
+              />
+              Medium (75–89%)
+            </LegendRow>
+            <LegendRow>
+              <SmallDot
+                style={{
+                  backgroundColor: dataQualityColors.get(NewDataQualityLevel.LOW),
+                }}
+              />
+              Low (&lt;75%)
+            </LegendRow>
+          </LegendContainer>
+        </>
+      );
+
+      flagColor = (
+        <DataLegend>
+          <LargeDot
+            style={{ backgroundColor: dataQualityColors.get(dataQualityLevel) }}
+          />
+        </DataLegend>
+      );
+
+      workersElement = <>{formatNumberLong(totalWorkers)}</>;
+      wageElement = <>${numberWithCommas(avgWage)}</>;
+      incomeElement = <>{formatNumberLong(totalIncome)}</>;
+      coverageElement = (
+        <>
+          <ListItem>{records.length} occupations</ListItem>
+          <ListItem>
+            Levels {minLevel}-{maxLevel}
+          </ListItem>
+        </>
+      );
+    }
   }
 
   return (
@@ -162,54 +189,46 @@ const TopRow = () => {
       <div>
         <TitleBase>
           <Icon src={PopulationSVG} />
-          {getString("global-text-population")}
+          {terminology.employment}
           <YearText>
-            {populationDisplayYear}
-            <Tooltip explanation={getString("global-text-population-about")} />
+            {selectedYear}
+            <Tooltip explanation={`Total ${terminology.employment.toLowerCase()} at base occupation level`} />
           </YearText>
         </TitleBase>
-        <ValueBase>{population}</ValueBase>
+        <ValueBase>{workersElement}</ValueBase>
       </div>
       <div>
         <TitleBase>
           <Icon src={GdpPerCapitaSVG} />
-          {getString("global-text-gdp-per-capita")}
+          {terminology.wage}
           <YearText>
-            {gdpPerCapitaDisplayYear}
-            <Tooltip
-              explanation={getString("global-text-gdp-per-capita-about")}
-            />
+            {selectedYear}
+            <Tooltip explanation={`Weighted average ${terminology.wage.toLowerCase()} in selected region`} />
           </YearText>
         </TitleBase>
-        <ValueBase>{gdppc}</ValueBase>
+        <ValueBase>{wageElement}</ValueBase>
       </div>
       <div>
         <TitleBase>
           <Icon src={RankingSVG} />
-          {getString("city-overview-ranking-title")}*
-          <YearText>{rankingDisplayYear}</YearText>
+          Estimated Income
+          <YearText>{selectedYear}</YearText>
         </TitleBase>
-        <ValueBase>
-          <ListItem>
-            {getString("city-overview-ranking-pop", { value: regionPopRank })}
-          </ListItem>
-          <ListItem>
-            {getString("city-overview-ranking-gdp", { value: regionGdppcRank })}
-          </ListItem>
-        </ValueBase>
+        <ValueBase>{incomeElement}</ValueBase>
       </div>
       <div>
         <TitleBase>
           <Icon src={DataReliabilitySVG} />
-          {getString("city-overview-data-quality")}
+          Data Coverage
           <YearText>
-            {defaultYear}
+            {selectedYear}
             <Tooltip explanation={dataQualityTooltip} />
           </YearText>
         </TitleBase>
         <ValueBase>
           {flagColor}
-          {alertTitle}
+          {qualityLabel}
+          {coverageElement}
         </ValueBase>
       </div>
     </>

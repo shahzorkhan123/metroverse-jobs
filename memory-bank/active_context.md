@@ -31,6 +31,19 @@ Multi-country metadata architecture implemented. Frontend is now metadata-driven
    - Rebuilt India outputs successfully with new level structure and filter.
    - Confirmed metro/state level-3 exports are generated (`bls-data-in-2024-3-metro.json`).
 
+## What Was Done (2026-02-24, Session 10)
+
+### City Overview Population + Static Location Graphic
+1. **Overview widgets populated from static region data**:
+   - Replaced legacy peer-group/population/ranking dependencies in overview widgets with direct metrics from `regionData`.
+   - Added workers, annual wage, estimated income, occupation coverage, and top occupations lists for both US and India.
+2. **Static location panel**:
+   - Replaced map placeholder with a static world-locator graphic using country centroid markers (`us`, `in`).
+   - Keeps static-host compatibility (no Mapbox/backend dependency).
+3. **Sanity checks**:
+   - TypeScript file-level checks pass for modified overview components.
+   - Full production build blocked by environment Node/OpenSSL mismatch (`ERR_OSSL_EVP_UNSUPPORTED` with Node 24 + CRA3/Webpack4).
+
 ## What Was Done (2026-02-24, Session 6)
 
 ### India State + City-Level PLFS Importer

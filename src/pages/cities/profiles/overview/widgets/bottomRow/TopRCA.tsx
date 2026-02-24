@@ -1,14 +1,7 @@
 import React from "react";
-import { defaultYear } from "../../../../../../Utils";
-import {
-  DigitLevel,
-  PeerGroup,
-} from "../../../../../../types/graphQL/graphQLTypes";
-import { useClusterIntensityQuery } from "../../../../../../components/dataViz/industrySpace/chart/useRCAData";
 import orderBy from "lodash/orderBy";
-import useGlobalClusterData from "../../../../../../hooks/useGlobalClusterData";
-import useGlobalIndustriesData from "../../../../../../hooks/useGlobalIndustriesData";
 import useFluent from "../../../../../../hooks/useFluent";
+import { useStaticData } from "../../../../../../dataProvider";
 import {
   Icon,
   ListItem,
@@ -19,7 +12,6 @@ import {
 } from "../styleUtils";
 import Tooltip from "../../../../../../components/general/Tooltip";
 import TopIndustriesSVG from "../../../../../../assets/icons/topindustries.svg";
-import TopClustersSVG from "../../../../../../assets/icons/topknowledgecluster.svg";
 import SimpleTextLoading from "../../../../../../components/transitionStateComponents/SimpleTextLoading";
 import styled from "styled-components";
 import { breakPoints } from "../../../../../../styling/GlobalGrid";
@@ -37,78 +29,36 @@ interface Props {
 
 const TopRCA = ({ cityId }: Props) => {
   const getString = useFluent();
-  const { loading, error, data } = useClusterIntensityQuery({
-    cityId: cityId !== null ? parseInt(cityId, 10) : null,
-    year: defaultYear,
-    level: DigitLevel.Sector,
-    peerGroup: PeerGroup.GlobalPopulation,
-    partnerCityIds: [],
-    variable: "employ",
-  });
-  const clusters = useGlobalClusterData();
-  const industries = useGlobalIndustriesData();
+  const { data: blsData, loading, selectedYear } = useStaticData();
 
   let topIndustriesElement: React.ReactElement<any> | null;
-  let topClustersElement: React.ReactElement<any> | null;
-  if (loading || clusters.loading || industries.loading) {
+  if (loading || !blsData) {
     topIndustriesElement = <SimpleTextLoading />;
-    topClustersElement = <SimpleTextLoading />;
-  } else if (error) {
-    console.error(error);
-    topIndustriesElement = null;
-    topClustersElement = null;
-  } else if (clusters.error) {
-    console.error(clusters.error);
-    topIndustriesElement = null;
-    topClustersElement = null;
-  } else if (industries.error) {
-    console.error(industries.error);
-    topIndustriesElement = null;
-    topClustersElement = null;
-  } else if (data && clusters.data && industries.data) {
-    const { c3Rca, naicsRca } = data;
-
-    const industriesGreaterThan1 = naicsRca.filter((d) => {
-      const industry = industries.data?.industries.find(
-        (dd) => dd.naicsId === d.naicsId + "",
-      );
-      return d.rca && d.rca >= 1 && industry && industry.name !== "Other";
-    });
-    const topIndustries = orderBy(
-      industriesGreaterThan1 ? industriesGreaterThan1 : naicsRca,
-      ["rca"],
-      ["desc"],
-    )
-      .slice(0, industriesGreaterThan1 ? 3 : 1)
-      .map((d) => {
-        const industry = industries.data?.industries.find(
-          (dd) => dd.naicsId === d.naicsId + "",
-        );
-        return (
-          <ListItem key={d.naicsId}>{industry?.name?.toUpperCase()}</ListItem>
-        );
-      });
-    topIndustriesElement = <>{topIndustries}</>;
-
-    const clustersGreaterThan1 = c3Rca.filter((d) => d.rca && d.rca >= 1);
-    const topClusters = orderBy(
-      clustersGreaterThan1 ? clustersGreaterThan1 : c3Rca,
-      ["rca"],
-      ["desc"],
-    )
-      .slice(0, clustersGreaterThan1 ? 3 : 1)
-      .map((d) => {
-        const cluster = clusters.data?.clusters.find(
-          (dd) => dd.clusterId === d.clusterId + "",
-        );
-        return (
-          <ListItem key={d.clusterId}>{cluster?.name?.toUpperCase()}</ListItem>
-        );
-      });
-    topClustersElement = <>{topClusters}</>;
   } else {
-    topIndustriesElement = null;
-    topClustersElement = null;
+    const yearDataByRegion = blsData.regionData[cityId] || {};
+    const records =
+      yearDataByRegion[selectedYear] ||
+      yearDataByRegion[Object.keys(yearDataByRegion)[0]] ||
+      [];
+    const occMap = new Map(blsData.occupations.map((o) => [o.socCode, o]));
+
+    const minLevel = records.reduce((min, r) => {
+      const level = occMap.get(r.socCode)?.level || min;
+      return Math.min(min, level);
+    }, Number.MAX_SAFE_INTEGER);
+
+    const topIndustries = orderBy(
+      records.filter((r) => (occMap.get(r.socCode)?.level || minLevel) === minLevel),
+      ["totEmp"],
+      ["desc"],
+    )
+      .slice(0, 3)
+      .map((r) => {
+        const occName = occMap.get(r.socCode)?.name || r.socCode;
+        return <ListItem key={r.socCode}>{occName.toUpperCase()}</ListItem>;
+      });
+
+    topIndustriesElement = <>{topIndustries}</>;
   }
 
   return (
@@ -117,41 +67,16 @@ const TopRCA = ({ cityId }: Props) => {
         <TitleBase>
           <Icon src={TopIndustriesSVG} />
           <WrappableText>
-            {getString("city-overview-top-specialized-industries")}**
+            {getString("city-overview-top-specialized-industries")}
           </WrappableText>
           <YearText>
-            {defaultYear}
+            {selectedYear}
             <Tooltip
-              explanation={
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: getString(
-                      "city-overview-top-specialized-industries-tooltip",
-                    ),
-                  }}
-                />
-              }
+              explanation={getString("city-overview-top-specialized-industries-tooltip")}
             />
           </YearText>
         </TitleBase>
         <ValueBase>{topIndustriesElement}</ValueBase>
-      </Cell>
-      <Cell>
-        <TitleBase>
-          <Icon src={TopClustersSVG} />
-          <WrappableText>
-            {getString("city-overview-top-knowledge-clusters")}**
-          </WrappableText>
-          <YearText>
-            {defaultYear}
-            <Tooltip
-              explanation={getString(
-                "city-overview-top-knowledge-clusters-tooltip",
-              )}
-            />
-          </YearText>
-        </TitleBase>
-        <ValueBase>{topClustersElement}</ValueBase>
       </Cell>
     </>
   );
