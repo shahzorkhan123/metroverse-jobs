@@ -27,7 +27,8 @@
       "4-metro": "bls-data-us-2024-4-metro.json"
     },
     "in-2024": {
-      "3": "bls-data-in-2024-3.json"
+      "3": "bls-data-in-2024-3.json",
+      "3-metro": "bls-data-in-2024-3-metro.json"
     }
   },
   "countries": [

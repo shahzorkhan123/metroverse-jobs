@@ -606,6 +606,8 @@ class TestIndiaPlfsImport:
                 city_levels=[1],
                 min_obs_state=1,
                 min_obs_city=1,
+                district_top_n=0,
+                district_population_min=0,
             )
 
             assert counts["state"] > 0
@@ -666,6 +668,8 @@ class TestIndiaPlfsImport:
                 national_levels=[1],
                 min_obs_state=1,
                 min_obs_city=1,
+                district_top_n=0,
+                district_population_min=0,
             )
 
             row = tmp_db.execute(
@@ -686,3 +690,45 @@ class TestIndiaPlfsImport:
             assert row[0] == 5
             # CWS earnings are weekly; annualized by x52.
             assert row[1] == 52000
+
+    def test_city_output_is_limited_to_top_population_districts(
+        self,
+        tmp_db,
+        monkeypatch,
+    ):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            csv_path = Path(tmpdir) / "ind_plfs_micro_sample_topn.csv"
+            csv_path.write_text(
+                "st_name,district_name,Principal_Occupation_Code,CWS_Earnings_Salaried,Subsample_Multiplier\n"
+                "Karnataka,DistrictA,111,1000,4000\n"
+                "Karnataka,DistrictA,111,1000,4000\n"
+                "Karnataka,DistrictB,111,1000,1000\n",
+                encoding="utf-8",
+            )
+
+            monkeypatch.setitem(config.COUNTRIES["IND"], "district_top_n", 1)
+            monkeypatch.setitem(config.COUNTRIES["IND"], "district_population_min", 0)
+
+            import_plfs.import_india_subnational_from_microdata(
+                tmp_db,
+                year=2024,
+                micro_csv_path=csv_path,
+                state_levels=[1],
+                city_levels=[1],
+                national_levels=[1],
+                min_obs_state=1,
+                min_obs_city=1,
+            )
+
+            metro_regions = tmp_db.execute(
+                """
+                SELECT r.name
+                FROM regions r
+                JOIN countries c ON r.country_id = c.id
+                WHERE c.code = 'IND' AND r.region_type = 'Metro'
+                ORDER BY r.name
+                """
+            ).fetchall()
+
+            assert len(metro_regions) == 1
+            assert metro_regions[0][0] == "DistrictA, Karnataka"

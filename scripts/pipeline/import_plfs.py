@@ -375,6 +375,8 @@ def import_india_subnational_from_microdata(
     min_obs_state: int | None = 30,
     min_obs_city: int | None = 30,
     city_region_type: str = "Metro",
+    district_top_n: int | None = None,
+    district_population_min: float | None = None,
 ) -> dict[str, int]:
     """Import weighted state/city aggregates from PLFS person-level microdata CSV.
 
@@ -383,10 +385,16 @@ def import_india_subnational_from_microdata(
       - occupation code: one of OCC_CODE_CANDIDATES
       - survey weight: one of WEIGHT_CANDIDATES
 
-    Optional columns:
+        Optional columns:
     - wage: one of WAGE_CANDIDATES (auto-normalized to annual INR)
       - city/district: one of CITY_NAME_CANDIDATES
       - occupation title: one of OCC_TITLE_CANDIDATES
+
+        District inclusion for city-level output is population-based (weighted),
+        not occupation-cell sample-size based:
+            - rank districts by weighted population proxy from microdata weights
+            - keep top N districts (default from config: 400)
+            - optional minimum weighted population cutoff
     """
     ind_config = config.COUNTRIES["IND"]
     path = micro_csv_path or ind_config.get("plfs_micro_csv")
@@ -398,8 +406,11 @@ def import_india_subnational_from_microdata(
     national_levels = national_levels or ind_config.get("national_levels", [1, 2, 3])
     if min_obs_state is None:
         min_obs_state = int(ind_config.get("min_obs_state", 30))
-    if min_obs_city is None:
-        min_obs_city = int(ind_config.get("min_obs_city", 30))
+    # City/district filtering is population-based; min_obs_city is ignored.
+    if district_top_n is None:
+        district_top_n = int(ind_config.get("district_top_n", 400) or 0)
+    if district_population_min is None:
+        district_population_min = float(ind_config.get("district_population_min", 0) or 0)
 
     country_cfg = config.COUNTRIES["IND"]
     country_id = db.ensure_country(
@@ -445,23 +456,12 @@ def import_india_subnational_from_microdata(
             "wage_weight_den": 0.0,
             "obs_n": 0,
         })
+        district_population = defaultdict(float)
 
         for row in reader:
-            code = _normalize_nco_code(row.get(occ_col))
-            if not code:
-                continue
-
             weight = _normalize_person_weight(_to_float(row.get(wt_col)), wt_col)
             if weight is None or weight <= 0:
                 continue
-
-            raw_wage = _to_float(row.get(wage_col)) if wage_col else None
-            wage = _normalize_annual_wage(raw_wage, wage_col)
-
-            if occ_title_col:
-                maybe_title = str(row.get(occ_title_col, "")).strip()
-                if maybe_title and code not in title_by_code:
-                    title_by_code[code] = maybe_title
 
             state_name = _state_name_from_row(row, state_col)
             state_code = _state_code_from_row(row, state_col)
@@ -472,6 +472,20 @@ def import_india_subnational_from_microdata(
                 state_name=state_name,
                 district_labels=district_labels,
             )
+            if city_name:
+                district_population[city_name] += weight
+
+            code = _normalize_nco_code(row.get(occ_col))
+            if not code:
+                continue
+
+            raw_wage = _to_float(row.get(wage_col)) if wage_col else None
+            wage = _normalize_annual_wage(raw_wage, wage_col)
+
+            if occ_title_col:
+                maybe_title = str(row.get(occ_title_col, "")).strip()
+                if maybe_title and code not in title_by_code:
+                    title_by_code[code] = maybe_title
 
             for lvl_code in _expand_nco_code_levels(code, national_levels):
                 key = ("National", country_cfg.get("national_region_name", "India"), lvl_code)
@@ -501,6 +515,20 @@ def import_india_subnational_from_microdata(
                         slot["wage_weighted_sum"] += wage * weight
                         slot["wage_weight_den"] += weight
 
+    district_items = sorted(
+        district_population.items(),
+        key=lambda item: item[1],
+        reverse=True,
+    )
+    if district_population_min > 0:
+        district_items = [
+            (name, pop_weight) for name, pop_weight in district_items
+            if pop_weight >= district_population_min
+        ]
+    if district_top_n > 0:
+        district_items = district_items[:district_top_n]
+    allowed_city_names = {name for name, _pop_weight in district_items}
+
     national_count = 0
     state_count = 0
     city_count = 0
@@ -510,7 +538,7 @@ def import_india_subnational_from_microdata(
         obs_n = int(stats["obs_n"])
         if region_type == "State" and obs_n < min_obs_state:
             continue
-        if region_type == city_region_type and obs_n < min_obs_city:
+        if region_type == city_region_type and region_name not in allowed_city_names:
             continue
 
         employment = int(round(stats["emp_weight"]))

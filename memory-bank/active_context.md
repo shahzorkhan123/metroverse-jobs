@@ -3,6 +3,34 @@
 ## Current Focus
 Multi-country metadata architecture implemented. Frontend is now metadata-driven for US and India.
 
+## What Was Done (2026-02-24, Session 8)
+
+### India District Output Restriction (Population-Based)
+1. **`scripts/pipeline/import_plfs.py`**:
+   - Replaced city/district occupation-cell suppression (`min_obs_city`) with district population ranking.
+   - District population proxy is computed from normalized PLFS person weights.
+   - City-level output now keeps only the top configured districts by population.
+2. **`scripts/pipeline/config.py`**:
+   - Added India config defaults: `district_top_n: 400`, `district_population_min: 0`.
+3. **`tests/test_pipeline.py`**:
+   - Added regression test `test_city_output_is_limited_to_top_population_districts`.
+4. **Verification**:
+   - Rebuilt India pipeline and confirmed output now has exactly `400` Metro (district) regions.
+
+## What Was Done (2026-02-24, Session 9)
+
+### India Full Level Coverage + 1M District Population Filter
+1. **`scripts/pipeline/config.py`**:
+   - Updated India subnational levels to include all available levels: `state_levels: [1,2,3]`, `city_levels: [1,2,3]`.
+   - Switched district filter policy from top-N to population-only: `district_top_n: 0`, `district_population_min: 1_000_000`.
+2. **`scripts/pipeline/import_plfs.py`**:
+   - Added optional per-call overrides: `district_top_n`, `district_population_min` for testing/tuning.
+3. **`tests/test_pipeline.py`**:
+   - Updated India importer tests to disable population filtering on tiny synthetic fixtures.
+4. **Verification**:
+   - Rebuilt India outputs successfully with new level structure and filter.
+   - Confirmed metro/state level-3 exports are generated (`bls-data-in-2024-3-metro.json`).
+
 ## What Was Done (2026-02-24, Session 6)
 
 ### India State + City-Level PLFS Importer

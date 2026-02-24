@@ -49,10 +49,12 @@ COUNTRIES = {
         "district_labels_csv": RAW_DIR / "ind_district_labels.csv",
         "total_workers": 483_000_000,  # PLFS 2023-24 estimate (~48.3 crore)
         "national_levels": [1, 2, 3],
-        "state_levels": [1, 2],
-        "city_levels": [1],
+        "state_levels": [1, 2, 3],
+        "city_levels": [1, 2, 3],
         "min_obs_state": 30,
         "min_obs_city": 30,
+        "district_top_n": 0,
+        "district_population_min": 1_000_000,
     },
     "EGY": {
         "name": "Egypt",
