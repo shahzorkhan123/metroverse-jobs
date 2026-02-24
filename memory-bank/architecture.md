@@ -17,11 +17,25 @@ BLS OES ZIP files (bls.gov)
 ## Pipeline Architecture (`scripts/pipeline/`)
 ```
 run_pipeline.py --year 2024 --country us --fetch --fresh --validate
-  ├── fetch_bls.py     → Download OES ZIP → XLSX
-  ├── import_data.py   → Parse XLSX → SQLite (bls.db)
-  ├── export_json.py   → SQLite → split JSON files
+  ├── fetch_bls.py     → Download OES ZIP → XLSX (US only)
+  ├── import_csv.py    → Parse XLSX → SQLite (bls.db) (US)
+  ├── import_plfs.py   → PLFS CSV → SQLite (India)
+  ├── export_json.py   → SQLite → split JSON files (SOC + NCO dispatch)
   ├── validate.py      → Parent vs child employment checks
-  └── config.py        → Paths, URLs, constants
+  └── config.py        → Paths, URLs, constants, NCO_MAJOR_GROUPS
+```
+
+### India Pipeline
+```
+run_pipeline.py --year 2024 --country ind --fresh
+  → import_plfs.import_all_india()
+    → Reads data/raw/ind_table25_nco_distribution.csv (173 NCO codes, % distribution)
+    → Reads data/raw/ind_table50_nco_wages.csv (9 division wages)
+    → Converts % to employment (× 483M total workers)
+    → Assigns wages (L2-3 inherit parent division wage)
+    → GDP = employment × monthly_wage × 12
+    → Complexity = normalized GDP rank
+  → export_json.export_all() with NCO dispatch functions
 ```
 
 ### Key Pipeline Functions (export_json.py)
@@ -59,25 +73,37 @@ Uses all national+state+metro codes for parent resolution.
 ## Output File Architecture
 ```
 public/data/
-├── bls-data.json              → Meta catalog (datasets, levelFiles, countries, years)
-├── bls-data-us-2024.json      → Main: levels 1+2 (~8MB with synthesis)
-├── bls-data-us-2024-3.json    → Broad: nat+state (~3.7MB)
-├── bls-data-us-2024-3-metro.json → Broad: metro only (~17MB)
-├── bls-data-us-2024-4.json    → Detailed: nat+state (~6MB)
-└── bls-data-us-2024-4-metro.json → Detailed: metro only (~23MB)
+├── bls-data.json                  → Meta catalog (datasets, levelFiles, countries, countryMetadata)
+├── bls-data-us-2024.json          → US Main: levels 1+2 (~8MB with synthesis)
+├── bls-data-us-2024-3.json        → US Broad: nat+state (~3.7MB)
+├── bls-data-us-2024-3-metro.json  → US Broad: metro only (~17MB)
+├── bls-data-us-2024-4.json        → US Detailed: nat+state (~6MB)
+├── bls-data-us-2024-4-metro.json  → US Detailed: metro only (~23MB)
+├── bls-data-in-2024.json          → India Main: levels 1+2 (~27KB, national only)
+└── bls-data-in-2024-3.json        → India L3: national only (~67KB)
 ```
 
 ### Meta Catalog (bls-data.json)
 ```json
 {
-  "datasets": [{"country":"us","year":2024,"file":"bls-data-us-2024.json","levels":[1,2]}],
+  "datasets": [
+    {"country":"us","year":2024,"file":"bls-data-us-2024.json","levels":[1,2]},
+    {"country":"ind","year":2024,"file":"bls-data-in-2024.json","levels":[1,2]}
+  ],
   "levelFiles": {
     "us-2024": {
       "3": "bls-data-us-2024-3.json",
       "4": "bls-data-us-2024-4.json",
       "3-metro": "bls-data-us-2024-3-metro.json",
       "4-metro": "bls-data-us-2024-4-metro.json"
+    },
+    "ind-2024": {
+      "3": "bls-data-in-2024-3.json"
     }
+  },
+  "countryMetadata": {
+    "us": { "classificationSystem": "SOC", "currency": "USD", ... },
+    "ind": { "classificationSystem": "NCO", "currency": "INR", ... }
   }
 }
 ```

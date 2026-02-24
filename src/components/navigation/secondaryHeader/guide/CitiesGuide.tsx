@@ -51,7 +51,7 @@ const steps: Step[] = [
     // tslint:disable-next-line:max-line-length
     content: (
       <Text>
-        Search for a specific city within the visualization by typing its name
+        Search for a specific region within the visualization by typing its name
         here.
       </Text>
     ),
@@ -96,8 +96,8 @@ const steps: Step[] = [
     // tslint:disable-next-line:max-line-length
     content: (
       <Text>
-        Click here to compare the economic composition of your selected city to
-        that of another individual city or peer group.
+        Click here to compare the economic composition of your selected region to
+        that of another individual region or peer group.
       </Text>
     ),
     disableBeacon: true,
@@ -109,7 +109,7 @@ const steps: Step[] = [
     content: (
       <Text>
         Don’t forget to select a benchmark to determine the relative presence of
-        an industry or knowledge cluster in a selected city. Click here to
+        an industry or knowledge cluster in a selected region. Click here to
         re-generate the visualization using a different benchmark.
       </Text>
     ),

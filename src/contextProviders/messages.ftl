@@ -2,8 +2,8 @@ meta-data-title-default = Metroverse-Jobs | BLS Occupation Data
 meta-data-title-default-suffix = Metroverse-Jobs
 
 navigation-pick-a-city = Pick a region
-navigation-city-profiles = City Profiles
-navigation-city-similarity = Similar Cities
+navigation-city-profiles = Region Profiles
+navigation-city-similarity = Similar Regions
 navigation-industry-profiles = Industry Profiles
 navigation-data = Data
 navigation-about = About
@@ -12,12 +12,12 @@ navigation-faq = FAQ
 
 global-app-name = Metroverse-Jobs
 
-global-ui-loading-cities = Loading cities
-global-ui-select-a-city-name = A city
+global-ui-loading-cities = Loading regions
+global-ui-select-a-city-name = A region
 global-ui-select-a-group = Select an existing group
 global-ui-select-peer-group = A Peer Group
 global-ui-select-benchmark-group = Select benchmark peers
-global-ui-select-benchmark-city = City-to-City Benchmarks
+global-ui-select-benchmark-city = Region-to-Region Benchmarks
 global-ui-type-a-city-name = Type a region name
 global-ui-type-an-industry = Type an industry name
 global-ui-selected-industry = Selected industry
@@ -51,15 +51,15 @@ global-ui-add-comparison = Add Comparison
 global-ui-remove-comparison = Remove Comparison
 global-ui-compare-title = Compare { $name } with
 global-ui-benchmark-title = Select a benchmark to generate the visualization
-global-ui-benchmark-about = Whether an industry has a small or large presence in a city is a relative concept.  For example, manufacturing has a relatively large presence in Detroit, when compared to some of its regional peers. But when compared to Hangzhou, China, manufacturing has a relatively small presence in Detroit.  Thus, by selecting a city or peer group as a benchmark, Metroverse can calculate the <strong>relative presence</strong> of an industry in a city, based on the selected benchmark.
-global-ui-benchmark-about-alt-1 = Whether an industry presents an opportunity in a city is a relative concept.  For example, manufacturing is considered a stronger fit in Calgary, when compared to some of its regional peers. Thus, by selecting a city or peer group as a benchmark, Metroverse can calculate whether an industry is an opportunity in a city, based on the selected benchmark.
+global-ui-benchmark-about = Whether an industry has a small or large presence in a region is a relative concept.  For example, manufacturing has a relatively large presence in Detroit, when compared to some of its regional peers. But when compared to Hangzhou, China, manufacturing has a relatively small presence in Detroit.  Thus, by selecting a region or peer group as a benchmark, Metroverse can calculate the <strong>relative presence</strong> of an industry in a region, based on the selected benchmark.
+global-ui-benchmark-about-alt-1 = Whether an industry presents an opportunity in a region is a relative concept.  For example, manufacturing is considered a stronger fit in Calgary, when compared to some of its regional peers. Thus, by selecting a region or peer group as a benchmark, Metroverse can calculate whether an industry is an opportunity in a region, based on the selected benchmark.
 
 global-ui-add-benchmark = Add Benchmark
 global-ui-remove-benchmark = Remove Benchmark
 global-benchmark-selected = Selected Benchmark
 global-benchmarked-by = relative presence benchmarked by
 
-global-ui-city-city-benchmark-warning = City to City Benchmarking is not reliable in this visualization
+global-ui-city-city-benchmark-warning = Region to Region Benchmarking is not reliable in this visualization
 
 global-ui-settings-reset = Default Settings
 global-ui-options-reset = Reset Options
@@ -105,8 +105,8 @@ global-formatted-peer-groups = {
   [regional_pop] Regional peers by similar population
   [regional_income] Regional peers by similar population and income per capita
   [regional_eucdist] Regional peers by similar economic structure
-  [region] All Metroverse Cities - Regional
-  [world] All Metroverse Cities - Global
+  [region] All Metroverse Regions - Regional
+  [world] All Metroverse Regions - Global
 }
 
 global-formatted-peer-groups-short = {
@@ -145,9 +145,9 @@ global-formatted-income-class = {
 }
 
 global-ui-relative-presence = Relative Presence
-global-ui-relative-presence-tooltip = Relative presence shows the factor by which an industry’s employment share in the city exceeds or, for values below 1, falls short of the share observed in the peer group.
+global-ui-relative-presence-tooltip = Relative presence shows the factor by which an industry's employment share in the region exceeds or, for values below 1, falls short of the share observed in the peer group.
 global-ui-absolute-presence = Absolute Presence
-global-ui-absolute-presence-tooltip = Absolute presence shows by how many percentage points an industry’s employment share in the city exceeds or, for negative values, falls short of the share observed in the peer group.
+global-ui-absolute-presence-tooltip = Absolute presence shows by how many percentage points an industry's employment share in the region exceeds or, for negative values, falls short of the share observed in the peer group.
 
 global-ui-change-benchmark = Change Peer Group
 global-ui-change-comparator = Change Peer Group
@@ -164,7 +164,7 @@ global-ui-keep-only = Keep Only
 
 global-ui-basic-data-error = There was an error retrieving the data
 global-ui-error-no-sectors-selected = At least one sector must be selected to view this visualization
-global-ui-error-invalid-city = The selected city is missing data
+global-ui-error-invalid-city = The selected region is missing data
 global-ui-error-industry-not-in-data-set = The selected industry is not in the current data set
 
 global-text-beta = Beta
@@ -173,19 +173,19 @@ global-text-countries = Countries
 global-text-population = Population
 global-text-population-about = Source: worldpop.org
 global-text-gdp-per-capita = GDP per Capita
-global-text-gdp-per-capita-about = The Growth Lab uses samples from the OECD and Brookings GDP per capita data to train a machine learning model.  Our model then predicts city GDP per capita based on its industrial composition, a global GDP grid and country-level information.
+global-text-gdp-per-capita-about = The Growth Lab uses samples from the OECD and Brookings GDP per capita data to train a machine learning model.  Our model then predicts regional GDP per capita based on its industrial composition, a global GDP grid and country-level information.
 global-text-industries = Industries
 global-text-industry-groups = Industry Groups
 
 global-text-world = World
-global-text-similar-cities = Similar Cities
+global-text-similar-cities = Similar Regions
 
 global-text-global-peers = Global Benchmarks
 global-text-regional-peers = Regional Benchmarks
 global-text-similar-population = Peers by similar population
 global-text-similar-income = Peers by similar population and income per capita
 global-text-similar-proximity = Peers by similar economic structure
-global-text-all-regional-peers = All Metroverse Cities
+global-text-all-regional-peers = All Metroverse Regions
 
 global-naics-sector-name-11 = Management
 global-naics-sector-name-13 = Business & Financial
@@ -221,8 +221,8 @@ global-cluster-c1-name-7 = Finance
 global-click-to-expand-industry = Click to expand industry
 
 global-intensity = Relative Presence
-global-intensity-about = Helps you determine whether your city possess a higher presence in an industry versus your chosen benchmarking cities.
-global-intensity-bar-graph-about = Right and left graph bars show the presence of an industry or knowledge cluster in selected city, compared to the selected benchmark.
+global-intensity-about = Helps you determine whether your region possesses a higher presence in an industry versus your chosen benchmarking regions.
+global-intensity-bar-graph-about = Right and left graph bars show the presence of an industry or knowledge cluster in the selected region, compared to the selected benchmark.
 global-intensity-low = Low Relative Presence
 global-intensity-lower = Lower Relative Presence
 global-intensity-high = High Relative Presence
@@ -231,14 +231,14 @@ global-absolute-presence-lower = Lower Absolute Presence
 global-absolute-presence-higher = Higher Absolute Presence
 
 global-specialization-expected = Relative Presence = 1
-global-specialization-expected-about = Presence of industry or knowledge cluster in selected city is equal to that in selected peer(s)
+global-specialization-expected-about = Presence of industry or knowledge cluster in selected region is equal to that in selected peer(s)
 global-specialization-over = High Relative Presence
 global-specialization-under = Low Relative Presence
 global-specialization-scroll = Scroll down to see low relative presence 
 
 global-similarity-low = Less Similar
 global-similarity-high = More Similar
-global-your-city = City, Country
+global-your-city = Region, Country
 
 global-education-low = Low Education
 global-education-high = High Education
@@ -251,18 +251,18 @@ error-message-no-industries = No industries available
 
 data-disclaimer-high-quality-title = high quality
 data-disclaimer-high-quality-topbar-title = high data quality
-data-disclaimer-high-quality-desc = Data for this city are considered of <strong>high quality</strong> and have been compared with official sources. Yet, some discrepancies with these sources may exist due to limited, delayed, or inaccurate reporting, as well as differences in the delineation of the metropolitan area. Our cleaning method accounts for some errors and inconsistencies found in the raw data.  However, please be advised that the data shown for this city reflect best estimates based on large samples of economic establishments.
+data-disclaimer-high-quality-desc = Data for this region are considered of <strong>high quality</strong> and have been compared with official sources. Yet, some discrepancies with these sources may exist due to limited, delayed, or inaccurate reporting, as well as differences in the delineation of the metropolitan area. Our cleaning method accounts for some errors and inconsistencies found in the raw data.  However, please be advised that the data shown for this region reflect best estimates based on large samples of economic establishments.
 
 data-disclaimer-yellow-title = some degree of uncertainty
-data-disclaimer-yellow-desc = Due to limited, delayed, or inaccurate reporting, <strong>data from this city contain a degree of uncertainty</strong>. Our cleaning method accounts for some errors and inconsistencies found in the raw data. However, please be advised that the data shown for this city reflect best estimates based on large samples of economic establishments.
+data-disclaimer-yellow-desc = Due to limited, delayed, or inaccurate reporting, <strong>data from this region contain a degree of uncertainty</strong>. Our cleaning method accounts for some errors and inconsistencies found in the raw data. However, please be advised that the data shown for this region reflect best estimates based on large samples of economic establishments.
 
 data-disclaimer-medium-quality-title = medium quality
 data-disclaimer-medium-quality-topbar-title = medium data quality
-data-disclaimer-medium-quality-desc = Due to limited, delayed, or inaccurate reporting, as well as a limited and potentially biased sample, <strong>data for this city may contain inaccuracies</strong>.  Our cleaning method accounts for some errors and inconsistencies found in the raw data.  However, please be advised that the data shown for this city reflect best estimates, based on large samples of economic establishments, and calls for careful consideration before using.
+data-disclaimer-medium-quality-desc = Due to limited, delayed, or inaccurate reporting, as well as a limited and potentially biased sample, <strong>data for this region may contain inaccuracies</strong>.  Our cleaning method accounts for some errors and inconsistencies found in the raw data.  However, please be advised that the data shown for this region reflect best estimates, based on large samples of economic establishments, and calls for careful consideration before using.
 
 data-disclaimer-low-quality-title = low quality
 data-disclaimer-low-quality-topbar-title = low data quality
-data-disclaimer-low-quality-desc = Due to limited, delayed, or inaccurate reporting, as well as a limited and potentially severely biased sample, <strong>data for this city may contain a significant degree of error</strong>.  Our cleaning method accounts for some errors and inconsistencies found in the raw data.  However, please be advised that the data shown for this city reflect best estimates based on large samples of economic establishments and calls for careful consideration before using.
+data-disclaimer-low-quality-desc = Due to limited, delayed, or inaccurate reporting, as well as a limited and potentially severely biased sample, <strong>data for this region may contain a significant degree of error</strong>.  Our cleaning method accounts for some errors and inconsistencies found in the raw data.  However, please be advised that the data shown for this region reflect best estimates based on large samples of economic establishments and calls for careful consideration before using.
 
 data-disclaimer-data-page-lead-up = More information on Metroverse data can be found on the
 data-disclaimer-data-page-link-text = FAQ page
@@ -278,20 +278,20 @@ landing-page-text-what-is-city-para-2 = Sources: <em><a href="https://www.bls.go
 
 landing-overlay-subtitle = The Growth Lab’s Urban Economy Navigator
 landing-overlay-questions =
-  <em>What is the economic composition of my city?</em><br />
-  <em>How does my city compare to cities around the globe?</em><br />
-  <em>Which cities look most like mine?</em><br />
-  <em>What are the technological capabilities that underpin my city’s current economy?</em><br />
+  <em>What is the economic composition of my region?</em><br />
+  <em>How does my region compare to regions around the globe?</em><br />
+  <em>Which regions look most like mine?</em><br />
+  <em>What are the technological capabilities that underpin my region's current economy?</em><br />
   <em>Which growth and diversification paths does that suggest for the future?</em>
 
-landing-overlay-p1 = Built at the Growth Lab at Harvard University, Metroverse delivers new insights on these questions by placing a city’s technological capabilities and knowhow at the heart of its growth prospects, where the range and nature of existing capabilities strongly influences how future diversification unfolds. Metroverse makes visible what a city is good at today to help understand what it can become tomorrow.
+landing-overlay-p1 = Built at the Growth Lab at Harvard University, Metroverse delivers new insights on these questions by placing a region's technological capabilities and knowhow at the heart of its growth prospects, where the range and nature of existing capabilities strongly influences how future diversification unfolds. Metroverse makes visible what a region is good at today to help understand what it can become tomorrow.
 
-landing-overlay-footnote = <strong>Metroverse is a prototype tool with exciting updates and improvements planned.</strong> We welcome your feedback on our data visualizations, our scientific research, and high-resolution datasets for hundreds of cities worldwide.  Get in touch with us <a href="mailto:growthlabtools@hks.harvard.edu">here</a>.
+landing-overlay-footnote = <strong>Metroverse is a prototype tool with exciting updates and improvements planned.</strong> We welcome your feedback on our data visualizations, our scientific research, and high-resolution datasets for hundreds of regions worldwide.  Get in touch with us <a href="mailto:growthlabtools@hks.harvard.edu">here</a>.
 
-cities-single-page-titles-question-1 = City Overview
-cities-single-page-titles-question-2 = What is my city's\neconomic composition?
-cities-single-page-titles-question-3 = How does my city's\neconomic composition\ncompare to its peer(s)?
-cities-single-page-titles-question-4 = What is my city's position\nin the Industry Space?
+cities-single-page-titles-question-1 = Region Overview
+cities-single-page-titles-question-2 = What is my region's\neconomic composition?
+cities-single-page-titles-question-3 = How does my region's\neconomic composition\ncompare to its peer(s)?
+cities-single-page-titles-question-4 = What is my region's position\nin the Industry Space?
 cities-single-page-titles-question-5 = What are the growth\nopportunities?
 
 tooltip-number-employees = Number of Employees
@@ -321,10 +321,10 @@ glossary-cluster-overlay-disabled = Toggling cluster overlay is disabled for thi
 glossary-cluster-level = Visualize Knowledge Clusters at various levels of detail 
 glossary-cluster-level-disabled = Knowledge Cluster Levels are disabled for this visualization
 glossary-node-sizing = Change the size of industry nodes based on different variables
-glossary-city-node-sizing = Change the size of city nodes based on different variables
+glossary-city-node-sizing = Change the size of region nodes based on different variables
 glossary-color-nodes-by = Change the color of industry nodes based on different variables
 glossary-color-by = Change the color of industries or Knowledge Clusters based on different variables
-glossary-city-color-by = Change the color of city nodes based on different variables
+glossary-city-color-by = Change the color of region nodes based on different variables
 
 
 
@@ -338,17 +338,17 @@ pswot-quadrant-labels-iii = Weakness
 pswot-quadrant-labels-iv = Threat
 pswot-quadrant-labels-v = Possible Entrants
 
-pswot-quadrant-tooltips-i = Industries in this quadrant are larger in the selected city than in their peer(s) and are considered a stronger technological fit with the city’s overall economy than with one of their peer(s).
-pswot-quadrant-tooltips-ii = Industries in this quadrant are smaller in the selected city than in their peer(s) but are considered a stronger technological fit with the city’s overall economy than with their peer(s).
-pswot-quadrant-tooltips-iii = Industries in this quadrant are smaller in the selected city than in their peer(s) and are considered a weaker technological fit with the city’s overall economy than with their peer(s).
-pswot-quadrant-tooltips-iv = Industries in this quadrant are larger in the selected city than in their peer(s) but are considered a weaker technological fit with the city’s overall economy than with their peer(s).
-pswot-quadrant-tooltips-v = Industries in this section are absent in the selected city.
+pswot-quadrant-tooltips-i = Industries in this quadrant are larger in the selected region than in their peer(s) and are considered a stronger technological fit with the region's overall economy than with one of their peer(s).
+pswot-quadrant-tooltips-ii = Industries in this quadrant are smaller in the selected region than in their peer(s) but are considered a stronger technological fit with the region's overall economy than with their peer(s).
+pswot-quadrant-tooltips-iii = Industries in this quadrant are smaller in the selected region than in their peer(s) and are considered a weaker technological fit with the region's overall economy than with their peer(s).
+pswot-quadrant-tooltips-iv = Industries in this quadrant are larger in the selected region than in their peer(s) but are considered a weaker technological fit with the region's overall economy than with their peer(s).
+pswot-quadrant-tooltips-v = Industries in this section are absent in the selected region.
 
-pswot-cluster-quadrant-tooltips-i = Clusters in this quadrant are larger in the selected city than in their peer(s) and are considered a stronger technological fit with the city’s overall economy than with one of their peer(s).
-pswot-cluster-quadrant-tooltips-ii = Clusters in this quadrant are smaller in the selected city than in their peer(s) but are considered a stronger technological fit with the city’s overall economy than with their peer(s).
-pswot-cluster-quadrant-tooltips-iii = Clusters in this quadrant are smaller in the selected city than in their peer(s) and are considered a weaker technological fit with the city’s overall economy than with their peer(s).
-pswot-cluster-quadrant-tooltips-iv = Clusters in this quadrant are larger in the selected city than in their peer(s) but are considered a weaker technological fit with the city’s overall economy than with their peer(s).
-pswot-cluster-quadrant-tooltips-v = Clusters in this section are absent in the selected city.
+pswot-cluster-quadrant-tooltips-i = Clusters in this quadrant are larger in the selected region than in their peer(s) and are considered a stronger technological fit with the region's overall economy than with one of their peer(s).
+pswot-cluster-quadrant-tooltips-ii = Clusters in this quadrant are smaller in the selected region than in their peer(s) but are considered a stronger technological fit with the region's overall economy than with their peer(s).
+pswot-cluster-quadrant-tooltips-iii = Clusters in this quadrant are smaller in the selected region than in their peer(s) and are considered a weaker technological fit with the region's overall economy than with their peer(s).
+pswot-cluster-quadrant-tooltips-iv = Clusters in this quadrant are larger in the selected region than in their peer(s) but are considered a weaker technological fit with the region's overall economy than with their peer(s).
+pswot-cluster-quadrant-tooltips-v = Clusters in this section are absent in the selected region.
 
 pswot-axis-labels-left = Technological Fit
 pswot-axis-labels-left-up = Stronger than peer(s)
@@ -363,8 +363,8 @@ relative-presence-axis-labels-bottom-right = Industries Larger<br />than peer(s)
 pswot-average-line-text = Relative Presence = 1
 pswot-zero-axis-label = Presence = 0
 pswot-y-average-line-text = Technological Fit = 0
-x-axis-average-about = Presence of industry or knowledge cluster in selected city is equal to that in selected peer(s)
-y-axis-average-about = Technological fit of industry or knowledge cluster in selected city is equal to that in selected peer(s)
+x-axis-average-about = Presence of industry or knowledge cluster in selected region is equal to that in selected peer(s)
+y-axis-average-about = Technological fit of industry or knowledge cluster in selected region is equal to that in selected peer(s)
 
 pswot-table-assigned-category = Assigned category
 pswot-table-categories = Categories
@@ -372,12 +372,12 @@ pswot-table-categories = Categories
 global-name = Name
 global-filter-name = Filter name
 
-city-filter-title = Filter Cities
-city-filter-title-open = Open Filter Cities Options
-city-filter-title-close = Close Filter Cities Options
+city-filter-title = Filter Regions
+city-filter-title-open = Open Filter Regions Options
+city-filter-title-close = Close Filter Regions Options
 city-filter-regions = Regions Filter
 city-filter-countries = Countries Filter
-city-filter-update = Update Cities
+city-filter-update = Update Regions
 
 city-overview-ranking-title = Ranking
 city-overview-ranking-pop = { $value } most populated
@@ -385,39 +385,39 @@ city-overview-ranking-gdp = { $value } highest gdp per capita
 city-overview-data-quality = Data Quality
 
 city-overview-top-specialized-industries = Most Intensive Industries
-city-overview-top-specialized-industries-tooltip = The industries with the highest <strong>“relative presence”</strong> in a city or industries where the total employment share in the city exceeds that of the benchmark.
+city-overview-top-specialized-industries-tooltip = The industries with the highest <strong>"relative presence"</strong> in a region or industries where the total employment share in the region exceeds that of the benchmark.
 city-overview-top-knowledge-clusters = Top Knowledge Clusters
-city-overview-top-knowledge-clusters-tooltip = Knowledge Clusters are a set of industries grouped by their technological relatedness and shared productive capabilities.  Knowledge Clusters help reveal the knowledge base of a city.
-city-overview-top-similar-cities = Selected Similar Cities
-city-overview-top-similar-cities-tooltip = The 3 most similar cities - within Metroverse’s coverage - based on whether they are competitive in the same industries.
+city-overview-top-knowledge-clusters-tooltip = Knowledge Clusters are a set of industries grouped by their technological relatedness and shared productive capabilities.  Knowledge Clusters help reveal the knowledge base of a region.
+city-overview-top-similar-cities = Selected Similar Regions
+city-overview-top-similar-cities-tooltip = The 3 most similar regions - within Metroverse's coverage - based on whether they are competitive in the same industries.
 city-overview-top-filtered-results = filtered results
 
 city-overview-benchmark-disclaimer = Based on employment share and recommended benchmark of top global peers by similar population
-city-overview-ranking-disclaimer = Out of the { $city-peer-group-counts-region } cities covered in { $region-name }
+city-overview-ranking-disclaimer = Out of the { $city-peer-group-counts-region } regions covered in { $region-name }
 
 city-overview-metroverse-concepts = Metroverse Concepts
 
 city-overview-relative-presence-title = Relative Presence
-city-overview-relative-presence-desc = A measure of whether an  industry accounts for a larger or a smaller share of overall employment in a selected city.  In Metroverse, the relative presence of an industry depends on the selected benchmark city or set of cities. 
+city-overview-relative-presence-desc = A measure of whether an  industry accounts for a larger or a smaller share of overall employment in a selected region.  In Metroverse, the relative presence of an industry depends on the selected benchmark region or set of regions.
 
 city-overview-knowledge-cluster-title = Knowledge Cluster
-city-overview-knowledge-cluster-desc = A set of industries grouped by their technological relatedness.  Industries in the same Knowledge Cluster typically share similar know-how or productive capabilities.  Knowledge clusters help reveal the knowledge base of a city, as well as its diversification potential.
+city-overview-knowledge-cluster-desc = A set of industries grouped by their technological relatedness.  Industries in the same Knowledge Cluster typically share similar know-how or productive capabilities.  Knowledge clusters help reveal the knowledge base of a region, as well as its diversification potential.
 
 city-overview-industry-space-title = Industry Space
-city-overview-industry-space-desc = A unique data visualization that depicts the technological relatedness between industries and in which of these industries a selected city has an outsized presence. Industries that are near each other in the Industry Space typically require similar know-how and can be grouped into Knowledge Clusters.  The Industry Space also helps to define which diversification paths may be available to a city, as industries close to those that are already well-developed are likely candidates for growth.
+city-overview-industry-space-desc = A unique data visualization that depicts the technological relatedness between industries and in which of these industries a selected region has an outsized presence. Industries that are near each other in the Industry Space typically require similar know-how and can be grouped into Knowledge Clusters.  The Industry Space also helps to define which diversification paths may be available to a region, as industries close to those that are already well-developed are likely candidates for growth.
 
-city-overview-city-similarity-title = City Similarity
-city-overview-city-similarity-desc = A set of Metroverse cities that are similar to the selected city, based on whether they are competitive in the same industries.  In Metroverse, a set of similar cities can be changed by adjusting population, GDP per capita and regional filters.
+city-overview-city-similarity-title = Region Similarity
+city-overview-city-similarity-desc = A set of Metroverse regions that are similar to the selected region, based on whether they are competitive in the same industries.  In Metroverse, a set of similar regions can be changed by adjusting population, GDP per capita and regional filters.
 
 city-overview-map-source = Source: <a href="https://ghsl.jrc.ec.europa.eu/ghs_stat_ucdb2015mt_r2019a.php" target="_blank" rel="noopener noreferrer">GHS Urban Centre Database</a>
-city-overview-more-info = Click to learn how we define city boundaries
+city-overview-more-info = Click to learn how we define region boundaries
 
-city-overview-one-time-tooltip = Check City Overview to see city boundary and quick facts.
+city-overview-one-time-tooltip = Check Region Overview to see region boundary and quick facts.
 city-overview-one-time-tooltip-got-it = Got it
 
 economic-composition-title = What is { $name-plural } economic composition?
 
-economic-composition-para-1 = { $name } has a population of { $population } people ({ $pop-year }) and an estimated GDP per capita of ${ $gdppc }.  Out of the { $region-city-count } cities covered in { $region-name }, { $name } ranks as the { $region-size-rank } most populated, and displays the { $region-wealth-rank } highest GDP per capita. { $name-plural } labor force consists of about { $num-employ } workers.
+economic-composition-para-1 = { $name } has a population of { $population } people ({ $pop-year }) and an estimated GDP per capita of ${ $gdppc }.  Out of the { $region-city-count } regions covered in { $region-name }, { $name } ranks as the { $region-size-rank } most populated, and displays the { $region-wealth-rank } highest GDP per capita. { $name-plural } labor force consists of about { $num-employ } workers.
 
 economic-composition-para-2 = The largest sector in { $name } consists of { $largest-sector } industries, accounting for { $largest-sector-share-percent }% of { $composition-type } in the city. A prime example is { $largest-3-digit-industry-in-sector }, providing { $largest-3-digit-industry-in-sector-share-percent }% of the city’s employment. Similarly, it shows a large presence in { $second-largest-sector } ({ $second-largest-sector-share-percent }%), in industries such as { $second-largest-3-digit-industry-in-sector } ({ $second-largest-3-digit-industry-in-sector-share-percent }%).
 
@@ -472,8 +472,8 @@ absolute-nested-bar-chart-para-1 = This graph shows the { $industrial-knowledge-
 absolute-nested-bar-chart-para-2 = The darker bars show the share of { $city-posessive } workers that are employed in the { $industry-cluster }. The lighter bars show the share of { $peer-group-possessive } workers that are employed in the { $industry-cluster }. 
 absolute-nested-bar-chart-para-3 = By clicking on a bar, you can further explore these comparisons within more detailed { $industry-cluster } categories.
 
-city-similarity-title = Which Cities are Most Similar to { $name }?
-city-similarity-para-1 = Metroverse assesses the similarity between urban economies by calculating whether they are competitive in the same industries. This can reveal ‘sister’ cities that have similar development opportunities and challenges, or may provide a sense of which industries are feasible in a city like yours. <strong>Explore city similarity by world map or focused ring chart below.</strong>
+city-similarity-title = Which Regions are Most Similar to { $name }?
+city-similarity-para-1 = Metroverse assesses the similarity between economies by calculating whether they are competitive in the same industries. This can reveal 'sister' regions that have similar development opportunities and challenges, or may provide a sense of which industries are feasible in a region like yours. <strong>Explore region similarity by world map or focused ring chart below.</strong>
 
 industry-space-title = What is { $name-plural } position in the industry space?
 industry-space-para-1 = The Industry Space showcases the technological relatedness between all industries, shown as dots in this visualization, and groups them into knowledge clusters. Industries that are near each other typically require similar know-how. The size of the dots shows the relative presence in comparison to {
@@ -488,7 +488,7 @@ industry-space-para-1 = The Industry Space showcases the technological relatedne
   [region] all regional peers
   [world] the world
 } of each industry in { $name }. Thereby, we obtain a bird’s eye view of the economic composition of { $name } in terms of the knowledge clusters in which it excels.
-industry-space-para-2 = { $name-plural } position in the Industry Space, helps understand which diversification paths may be available to the city, as industries close to those that are already well-developed in { $name } are likely candidates for growth.
+industry-space-para-2 = { $name-plural } position in the Industry Space, helps understand which diversification paths may be available to the region, as industries close to those that are already well-developed in { $name } are likely candidates for growth.
 
 growth-opportunities-title = What are the growth opportunities in { $name }?
 growth-opportunities-para-1 = Building on all these measures, we can rank industries not only by their relative presence in { $name }, but by their relative technological fit to { $name-plural } productive structure. These measures can help analysts understand how { $name-plural } economic strengths and weakness compare to those of {

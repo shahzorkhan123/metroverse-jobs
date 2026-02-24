@@ -529,10 +529,10 @@ const CompositionTreeMap = (props: Props) => {
       );
       indicator.tooltipContent = getString("glossary-total-shown");
       const fallbackTitle =
-        "Treemap displaying the economic composition of the selected city " +
+        "Treemap displaying the economic composition of the selected region " +
         "based on the number of " +
         compositionType +
-        " found within the city. " +
+        " found within the region. " +
         "The top values are as follows: ";
       output = (
         <TreeMapContainer>
