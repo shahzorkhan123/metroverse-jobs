@@ -1,8 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { usePeerGroupCityCount } from "../../../../../components/navigation/secondaryHeader/comparisons/AddComparisonModal";
 import useFluent from "../../../../../hooks/useFluent";
-import useGlobalLocationData from "../../../../../hooks/useGlobalLocationData";
+import { useStaticData } from "../../../../../dataProvider";
 
 const Root = styled.small`
   text-align: center;
@@ -11,38 +10,18 @@ const Root = styled.small`
   display: block;
 `;
 
-interface Props {
-  cityId: string;
-  regionId: number | null;
-}
-
-const DisclaimerText = ({ cityId, regionId }: Props) => {
+const DisclaimerText = () => {
   const getString = useFluent();
-  const { data } = usePeerGroupCityCount(cityId);
-  const globalLocations = useGlobalLocationData();
-
-  let cityPeerGroupCountsRegion: string | number = "---";
-  let regionName: string = "---";
-  if (globalLocations.data) {
-    const region = globalLocations.data.regions.find(
-      (d) => d.regionId === regionId + "",
-    );
-    regionName = region && region.regionName ? region.regionName : "";
-    if (data && data.cityPeerGroupCounts) {
-      cityPeerGroupCountsRegion = data.cityPeerGroupCounts.region + 1;
-    }
-  }
+  const { loadedLevels, selectedYear } = useStaticData();
 
   return (
     <Root>
       <div>
-        *
-        {getString("city-overview-ranking-disclaimer", {
-          "city-peer-group-counts-region": cityPeerGroupCountsRegion,
-          "region-name": regionName,
-        })}
+        * {getString("city-overview-one-time-tooltip")} ({selectedYear})
       </div>
-      <div>**{getString("city-overview-benchmark-disclaimer")}</div>
+      <div>
+        Loaded levels: {loadedLevels.join(", ")} — values are derived from static occupation records.
+      </div>
     </Root>
   );
 };

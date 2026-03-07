@@ -44,7 +44,17 @@ COUNTRIES = {
         "national_region_name": "India",
         "table25_csv": RAW_DIR / "ind_table25_nco_distribution.csv",
         "table50_csv": RAW_DIR / "ind_table50_nco_wages.csv",
+        "plfs_micro_csv": RAW_DIR / "ind_plfs_microdata.csv",
+        "nco_labels_csv": RAW_DIR / "ind_nco_labels.csv",
+        "district_labels_csv": RAW_DIR / "ind_district_labels.csv",
         "total_workers": 483_000_000,  # PLFS 2023-24 estimate (~48.3 crore)
+        "national_levels": [1, 2, 3],
+        "state_levels": [1, 2, 3],
+        "city_levels": [1, 2, 3],
+        "min_obs_state": 30,
+        "min_obs_city": 30,
+        "district_top_n": 0,
+        "district_population_min": 1_000_000,
     },
     "EGY": {
         "name": "Egypt",
@@ -215,6 +225,47 @@ NCO_MAJOR_GROUP_COLORS = {
     "7": "#DAA520",  # Craft Workers - Goldenrod
     "8": "#CD853F",  # Plant and Machine Operators - Peru
     "9": "#708090",  # Elementary Occupations - Slate Gray
+}
+
+# India state/UT code mapping used by PLFS microdata (State_UT_Code).
+INDIA_STATE_CODE_TO_NAME = {
+    "01": "Jammu and Kashmir",
+    "02": "Himachal Pradesh",
+    "03": "Punjab",
+    "04": "Chandigarh",
+    "05": "Uttarakhand",
+    "06": "Haryana",
+    "07": "Delhi",
+    "08": "Rajasthan",
+    "09": "Uttar Pradesh",
+    "10": "Bihar",
+    "11": "Sikkim",
+    "12": "Arunachal Pradesh",
+    "13": "Nagaland",
+    "14": "Manipur",
+    "15": "Mizoram",
+    "16": "Tripura",
+    "17": "Meghalaya",
+    "18": "Assam",
+    "19": "West Bengal",
+    "20": "Jharkhand",
+    "21": "Odisha",
+    "22": "Chhattisgarh",
+    "23": "Madhya Pradesh",
+    "24": "Gujarat",
+    "25": "Dadra and Nagar Haveli and Daman and Diu",
+    "26": "Dadra and Nagar Haveli and Daman and Diu",
+    "27": "Maharashtra",
+    "28": "Andhra Pradesh",
+    "29": "Karnataka",
+    "30": "Goa",
+    "31": "Lakshadweep",
+    "32": "Kerala",
+    "33": "Tamil Nadu",
+    "34": "Puducherry",
+    "35": "Andaman and Nicobar Islands",
+    "36": "Telangana",
+    "37": "Ladakh",
 }
 
 # State filename stem to display name mapping

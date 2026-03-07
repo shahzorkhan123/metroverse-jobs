@@ -7,7 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from scripts.pipeline import config, db, import_csv, export_csv, export_json, export_jsonp, export_split, validate
+from scripts.pipeline import (
+    config, db, import_csv, import_plfs, export_csv,
+    export_json, export_jsonp, export_split, validate,
+)
 
 
 @pytest.fixture
@@ -577,3 +580,155 @@ class TestValidateCompleteness:
             # Should not include metro regions
             for region in data["regions"]:
                 assert region["regionType"] in ("National", "State")
+
+
+class TestIndiaPlfsImport:
+    """Test India PLFS microdata aggregation importer."""
+
+    def test_import_subnational_from_microdata(self, tmp_db):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            csv_path = Path(tmpdir) / "ind_plfs_micro_sample.csv"
+            csv_path.write_text(
+                "st_name,district_name,ocu_pas,ern_reg,mult\n"
+                "Karnataka,Bengaluru,211,10000,2\n"
+                "Karnataka,Bengaluru,211,20000,1\n"
+                "Karnataka,Bengaluru,221,15000,1\n"
+                "Karnataka,Mysuru,211,12000,1\n"
+                "Tamil Nadu,Chennai,111,8000,3\n",
+                encoding="utf-8",
+            )
+
+            counts = import_plfs.import_india_subnational_from_microdata(
+                tmp_db,
+                year=2024,
+                micro_csv_path=csv_path,
+                state_levels=[1, 2],
+                city_levels=[1],
+                min_obs_state=1,
+                min_obs_city=1,
+                district_top_n=0,
+                district_population_min=0,
+            )
+
+            assert counts["state"] > 0
+            assert counts["city"] > 0
+
+            # State-level code rollup from 3-digit NCO -> 1-digit and 2-digit.
+            row = tmp_db.execute(
+                """
+                SELECT o.employment, o.mean_annual_wage
+                FROM occupations o
+                JOIN regions r ON o.region_id = r.id
+                JOIN countries c ON r.country_id = c.id
+                WHERE c.code = 'IND'
+                  AND r.region_type = 'State'
+                                    AND r.name = 'Karnataka'
+                  AND o.occupation_code = '2'
+                  AND o.year = 2024
+                """
+            ).fetchone()
+            assert row is not None
+            # Weights: 2+1+1+1 = 5 workers.
+            assert row[0] == 5
+            # Weighted mean wage is monthly 13,400, normalized to annual.
+            assert row[1] == 160800
+
+            city_row = tmp_db.execute(
+                """
+                SELECT o.employment
+                FROM occupations o
+                JOIN regions r ON o.region_id = r.id
+                JOIN countries c ON r.country_id = c.id
+                WHERE c.code = 'IND'
+                  AND r.region_type = 'Metro'
+                                    AND r.name = 'Bengaluru, Karnataka'
+                  AND o.occupation_code = '2'
+                  AND o.year = 2024
+                """
+            ).fetchone()
+            assert city_row is not None
+            assert city_row[0] == 4
+
+    def test_subsample_multiplier_is_scaled(self, tmp_db):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            csv_path = Path(tmpdir) / "ind_plfs_micro_sample_scaled.csv"
+            csv_path.write_text(
+                "State_UT_Code,District_Code,Principal_Occupation_Code,CWS_Earnings_Salaried,Subsample_Multiplier\n"
+                "10,01,111,1000,2000\n"
+                "10,01,111,1000,3000\n",
+                encoding="utf-8",
+            )
+
+            import_plfs.import_india_subnational_from_microdata(
+                tmp_db,
+                year=2024,
+                micro_csv_path=csv_path,
+                state_levels=[1],
+                city_levels=[1],
+                national_levels=[1],
+                min_obs_state=1,
+                min_obs_city=1,
+                district_top_n=0,
+                district_population_min=0,
+            )
+
+            row = tmp_db.execute(
+                """
+                SELECT o.employment, o.mean_annual_wage
+                FROM occupations o
+                JOIN regions r ON o.region_id = r.id
+                JOIN countries c ON r.country_id = c.id
+                WHERE c.code = 'IND'
+                  AND r.region_type = 'State'
+                  AND r.name = 'Bihar'
+                  AND o.occupation_code = '1'
+                  AND o.year = 2024
+                """
+            ).fetchone()
+            assert row is not None
+            # 2000 + 3000 subsample multiplier should represent 2 + 3 persons.
+            assert row[0] == 5
+            # CWS earnings are weekly; annualized by x52.
+            assert row[1] == 52000
+
+    def test_city_output_is_limited_to_top_population_districts(
+        self,
+        tmp_db,
+        monkeypatch,
+    ):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            csv_path = Path(tmpdir) / "ind_plfs_micro_sample_topn.csv"
+            csv_path.write_text(
+                "st_name,district_name,Principal_Occupation_Code,CWS_Earnings_Salaried,Subsample_Multiplier\n"
+                "Karnataka,DistrictA,111,1000,4000\n"
+                "Karnataka,DistrictA,111,1000,4000\n"
+                "Karnataka,DistrictB,111,1000,1000\n",
+                encoding="utf-8",
+            )
+
+            monkeypatch.setitem(config.COUNTRIES["IND"], "district_top_n", 1)
+            monkeypatch.setitem(config.COUNTRIES["IND"], "district_population_min", 0)
+
+            import_plfs.import_india_subnational_from_microdata(
+                tmp_db,
+                year=2024,
+                micro_csv_path=csv_path,
+                state_levels=[1],
+                city_levels=[1],
+                national_levels=[1],
+                min_obs_state=1,
+                min_obs_city=1,
+            )
+
+            metro_regions = tmp_db.execute(
+                """
+                SELECT r.name
+                FROM regions r
+                JOIN countries c ON r.country_id = c.id
+                WHERE c.code = 'IND' AND r.region_type = 'Metro'
+                ORDER BY r.name
+                """
+            ).fetchall()
+
+            assert len(metro_regions) == 1
+            assert metro_regions[0][0] == "DistrictA, Karnataka"

@@ -30,9 +30,7 @@ const Row = styled.div`
 
 const Widgets = () => {
   const { city } = useCurrentCity();
-  const disclaimer = city ? (
-    <DisclaimerText cityId={city.cityId} regionId={city.region} />
-  ) : null;
+  const disclaimer = city ? <DisclaimerText /> : null;
   return (
     <Root>
       <Row>

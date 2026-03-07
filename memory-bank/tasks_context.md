@@ -11,6 +11,11 @@
 - India state-level data (PLFS microdata processing)
 
 ## Completed
+### Phase 4: India Subnational Pipeline
+- Added weighted PLFS microdata importer for India state-level and optional city-level aggregates
+- Added configurable suppression thresholds and level rollups (state 1-2 digit, city 1-digit default)
+- Added pipeline/config integration and test coverage (`TestIndiaPlfsImport`)
+
 ### Phase 1: Foundation & Core Viz
 - Fork metroverse-front-end → metroverse-jobs
 - Create scripts/generate-static-data.py → public/data/bls-data.json

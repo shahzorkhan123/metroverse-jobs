@@ -49,6 +49,25 @@ const regionTypeLabels: Record<string, string> = {
   'Metro': 'Metropolitan Areas',
 };
 
+const toTitleCase = (value: string): string => {
+  return value
+    .toLowerCase()
+    .replace(/\b[a-z]/g, (match) => match.toUpperCase());
+};
+
+export const formatRegionDisplayName = (
+  name: string,
+  regionType: string,
+): string => {
+  if (regionType !== 'Metro') {
+    return name;
+  }
+  return name
+    .split(',')
+    .map((part) => toTitleCase(part.trim()))
+    .join(', ');
+};
+
 const useGlobalLocationData = () => {
   const { data: blsData, loading, error } = useStaticData();
 
@@ -68,7 +87,7 @@ const useGlobalLocationData = () => {
   // Map regions to "cities"
   const cities: CityDatum[] = blsData.regions.map((r) => ({
     cityId: r.regionId,
-    name: r.name,
+    name: formatRegionDisplayName(r.name, r.regionType),
     countryId: r.regionType,
     id: r.regionId,
     nameList: null,

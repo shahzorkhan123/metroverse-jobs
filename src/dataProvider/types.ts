@@ -57,6 +57,15 @@ export interface BLSData {
     country?: string;
     maxLevel?: number;
     level?: number;
+    occupationMap?: {
+      [socCode: string]: {
+        name: string;
+        level: number;
+        parentCode: string | null;
+        majorGroupId: string;
+        majorGroupName: string;
+      };
+    };
   };
   regions: BLSRegion[];
   occupations: BLSOccupation[];
