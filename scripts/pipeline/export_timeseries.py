@@ -33,8 +33,8 @@ from scripts.pipeline.fetch_bls import (
 ILOSTAT_API = "https://rplumber.ilo.org/data/indicator"
 
 # ILOSTAT indicator codes
-ILOSTAT_EMP_INDICATOR = "EMP_2EMP_SEX_OCU_NB"   # Employment by occupation
-ILOSTAT_WAGE_INDICATOR = "EAR_4MTH_SEX_OCU_CUR"  # Monthly earnings
+ILOSTAT_EMP_INDICATOR = "EMP_2EMP_SEX_OCU_NB"        # Employment by occupation
+ILOSTAT_EARN_INDICATOR = "EAR_EMTA_SEX_OCU_CUR_NB"  # Mean monthly earnings
 
 # ILOSTAT country codes
 ILOSTAT_COUNTRIES = {
@@ -399,10 +399,12 @@ def _fetch_ilostat_csv(indicator: str, country_iso3: str) -> list[dict]:
     return list(reader)
 
 
-def _parse_ilostat_employment(rows: list[dict]) -> dict:
+def _parse_ilostat_employment(rows: list[dict], merge_6_9: bool = True
+                              ) -> dict:
     """Parse ILOSTAT employment CSV into { year: { groupId: value } }.
 
-    Merges ISCO-08 groups 6 and 9 into combined "96".
+    If merge_6_9=True, merges ISCO-08 groups 6 and 9 into combined "96".
+    If merge_6_9=False, keeps groups 6 and 9 separate.
     """
     data = {}
     for row in rows:
@@ -425,7 +427,7 @@ def _parse_ilostat_employment(rows: list[dict]) -> dict:
             continue
 
         # Merge groups 6 and 9 into "96"
-        if group_code in ("6", "9"):
+        if merge_6_9 and group_code in ("6", "9"):
             group_code = "96"
 
         if year not in data:
@@ -434,6 +436,52 @@ def _parse_ilostat_employment(rows: list[dict]) -> dict:
             data[year][group_code] += value
         else:
             data[year][group_code] = value
+
+    return data
+
+
+def _parse_ilostat_earnings(rows: list[dict], currency: str = "USD") -> dict:
+    """Parse ILOSTAT earnings CSV into { year: { groupId: monthly_value } }.
+
+    Returns earnings per ISCO-08 1-digit group (NOT merged).
+    Groups 6 and 9 kept separate so GDP can be computed correctly
+    before merging into "96".
+    """
+    data = {}
+    for row in rows:
+        year = int(row.get("time", row.get("TIME_PERIOD", "0")))
+        if year < 1990:
+            continue
+
+        classif = row.get("classif1", row.get("CLASSIF1", ""))
+        # Accept both ISCO-08 and ISCO-88 (identical at 1-digit level)
+        group_code = None
+        if "OCU_ISCO08_" in classif:
+            group_code = classif.replace("OCU_ISCO08_", "").strip()
+        elif "OCU_ISCO88_" in classif:
+            group_code = classif.replace("OCU_ISCO88_", "").strip()
+        if not group_code or group_code in ("TOTAL", "X"):
+            continue
+
+        # Filter by currency (LCU, PPP, or USD)
+        # classif2 values: CUR_TYPE_USD, CUR_TYPE_LCU, CUR_TYPE_PPP
+        cur = row.get("classif2", row.get("CLASSIF2", ""))
+        if currency == "USD" and "USD" not in cur:
+            continue
+        elif currency == "LCU" and "LCU" not in cur:
+            continue
+        elif currency == "PPP" and "PPP" not in cur:
+            continue
+
+        value_str = row.get("obs_value", row.get("OBS_VALUE", ""))
+        try:
+            value = float(value_str)
+        except (ValueError, TypeError):
+            continue
+
+        if year not in data:
+            data[year] = {}
+        data[year][group_code] = value
 
     return data
 
@@ -452,9 +500,10 @@ def export_ilostat(country: str = "both") -> None:
         iso3 = ILOSTAT_COUNTRIES[cc]
         print(f"\n  Country: {cc} ({iso3})")
 
-        # Fetch employment data
+        # Fetch employment data (merged 6+9 for display, raw for GDP calc)
         emp_rows = _fetch_ilostat_csv(ILOSTAT_EMP_INDICATOR, iso3)
-        emp_data = _parse_ilostat_employment(emp_rows)
+        emp_data = _parse_ilostat_employment(emp_rows, merge_6_9=True)
+        emp_raw = _parse_ilostat_employment(emp_rows, merge_6_9=False)
 
         if not emp_data:
             print(f"    WARNING: No employment data found for {cc}")
@@ -463,6 +512,16 @@ def export_ilostat(country: str = "both") -> None:
         years = sorted(emp_data.keys())
         print(f"    Employment: {years[0]}-{years[-1]} ({len(years)} years)")
 
+        # Fetch earnings data (USD for cross-country comparability)
+        earn_rows = _fetch_ilostat_csv(ILOSTAT_EARN_INDICATOR, iso3)
+        earn_data = _parse_ilostat_earnings(earn_rows, currency="USD")
+        earn_years = sorted(earn_data.keys()) if earn_data else []
+        if earn_years:
+            print(f"    Earnings: {earn_years[0]}-{earn_years[-1]} "
+                  f"({len(earn_years)} years, USD)")
+        else:
+            print(f"    Earnings: none available")
+
         # Determine the national region ID
         country_name = "United States" if cc == "us" else "India"
         region_id = _make_region_id("National", country_name)
@@ -470,15 +529,53 @@ def export_ilostat(country: str = "both") -> None:
         # Build time series arrays indexed by year position
         ts_data = {}
         valid_groups = set()
+        has_any_gdp = False
         for group in ISCO08_GROUPS:
             gid = group["id"]
             emp_series = []
+            gdp_series = []
             for year in years:
                 val = emp_data.get(year, {}).get(gid)
                 emp_series.append(round(val) if val is not None else None)
                 if val is not None:
                     valid_groups.add(gid)
-            ts_data[gid] = {"emp": emp_series}
+
+                # Compute GDP = emp × monthly_earnings × 12
+                # For merged "96": GDP = emp_6 × earn_6 × 12 + emp_9 × earn_9 × 12
+                year_earnings = earn_data.get(year, {})
+                if gid == "96":
+                    # Use raw (unmerged) employment for accurate GDP
+                    raw_year = emp_raw.get(year, {})
+                    e6 = raw_year.get("6", 0)
+                    e9 = raw_year.get("9", 0)
+                    earn_6 = year_earnings.get("6")
+                    earn_9 = year_earnings.get("9")
+                    gdp_96 = 0
+                    has_earn = False
+                    if e6 > 0 and earn_6 is not None:
+                        gdp_96 += e6 * earn_6 * 12
+                        has_earn = True
+                    if e9 > 0 and earn_9 is not None:
+                        gdp_96 += e9 * earn_9 * 12
+                        has_earn = True
+                    if has_earn:
+                        gdp_series.append(round(gdp_96))
+                        has_any_gdp = True
+                    else:
+                        gdp_series.append(None)
+                else:
+                    earn_val = year_earnings.get(gid)
+                    if val is not None and earn_val is not None:
+                        gdp_val = round(val * earn_val * 12)
+                        gdp_series.append(gdp_val)
+                        has_any_gdp = True
+                    else:
+                        gdp_series.append(None)
+
+            ts_entry = {"emp": emp_series}
+            if any(v is not None for v in gdp_series):
+                ts_entry["gdp"] = gdp_series
+            ts_data[gid] = ts_entry
 
         # Filter to groups that have data
         groups = [
@@ -496,7 +593,7 @@ def export_ilostat(country: str = "both") -> None:
                 "source": "ILOSTAT Modelled Estimates",
                 "country": cc,
                 "years": years,
-                "hasGdp": False,
+                "hasGdp": has_any_gdp,
             },
             "groups": groups,
             "regions": [{

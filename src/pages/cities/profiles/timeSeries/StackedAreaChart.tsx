@@ -73,7 +73,23 @@ const StackedAreaChart = ({ data, regionId, metric, hiddenGroups, enableBrushZoo
     const groupIds = visibleGroups.map(g => g.id);
 
     // Build tabular data: one row per year
-    const rows = years.map((year, idx) => {
+    // For GDP mode, skip years where no group has actual GDP data
+    const rows: any[] = [];
+    const activeYears: number[] = [];
+    years.forEach((year, idx) => {
+      // In GDP mode, first check if ANY group has real GDP data for this year
+      if (metric === "gdp") {
+        let hasGdp = false;
+        visibleGroups.forEach(g => {
+          const gd = regionData[g.id];
+          if (gd && gd.gdp) {
+            const v = gd.gdp[idx];
+            if (v != null && v > 0) hasGdp = true;
+          }
+        });
+        if (!hasGdp) return; // skip year entirely
+      }
+
       const row: any = { year };
       visibleGroups.forEach(g => {
         const gd = regionData[g.id];
@@ -81,7 +97,8 @@ const StackedAreaChart = ({ data, regionId, metric, hiddenGroups, enableBrushZoo
         const series = metric === "gdp" && gd.gdp ? gd.gdp : gd.emp;
         row[g.id] = series[idx] != null ? series[idx] : 0;
       });
-      return row;
+      rows.push(row);
+      activeYears.push(year);
     });
 
     // Dimensions
@@ -105,9 +122,9 @@ const StackedAreaChart = ({ data, regionId, metric, hiddenGroups, enableBrushZoo
 
     const g = svg.append("g").attr("transform", `translate(${MARGIN.left},${MARGIN.top})`);
 
-    // Scales
+    // Scales — use activeYears (which skips gaps in GDP mode)
     const x = d3.scaleLinear()
-      .domain(d3.extent(years) as [number, number])
+      .domain(d3.extent(activeYears) as [number, number])
       .range([0, innerW]);
     const stack = d3.stack().keys(groupIds).order(d3.stackOrderReverse);
     const stacked = stack(rows);
@@ -139,7 +156,7 @@ const StackedAreaChart = ({ data, regionId, metric, hiddenGroups, enableBrushZoo
     // X axis
     const xAxis = g.append("g")
       .attr("transform", `translate(0,${innerH})`)
-      .call(d3.axisBottom(x).ticks(Math.min(years.length, 12)).tickFormat(d => String(d)));
+      .call(d3.axisBottom(x).ticks(Math.min(activeYears.length, 12)).tickFormat(d => String(d)));
 
     // Y axis (starts from 0)
     g.append("g")
@@ -179,27 +196,30 @@ const StackedAreaChart = ({ data, regionId, metric, hiddenGroups, enableBrushZoo
         }
 
         const yearRaw = x.invert(chartX);
-        const yearIdx = d3.bisector((d: number) => d).left(years, yearRaw);
-        const idx = Math.max(0, Math.min(years.length - 1,
-          yearIdx > 0 && yearRaw - years[yearIdx - 1] < years[yearIdx] - yearRaw
+        const yearIdx = d3.bisector((d: number) => d).left(activeYears, yearRaw);
+        const idx = Math.max(0, Math.min(activeYears.length - 1,
+          yearIdx > 0 && yearRaw - activeYears[yearIdx - 1] < activeYears[yearIdx] - yearRaw
             ? yearIdx - 1 : yearIdx));
-        const year = years[idx];
+        const year = activeYears[idx];
 
         const xPos = x(year) as number;
         hoverLine.attr("x1", xPos).attr("x2", xPos).style("display", null);
 
         if (!tooltipNode) return;
 
+        // Map activeYears index back to original years index for raw data access
+        const origIdx = years.indexOf(year);
+
         // Compute totals for percentages
         let totalEmp = 0;
         let totalGdp = 0;
         visibleGroups.forEach(grp => {
           const gd = regionData[grp.id];
-          if (!gd) return;
-          const empVal = gd.emp[idx];
+          if (!gd || origIdx < 0) return;
+          const empVal = gd.emp[origIdx];
           if (empVal != null) totalEmp += empVal;
           if (gd.gdp) {
-            const gdpVal = gd.gdp[idx];
+            const gdpVal = gd.gdp[origIdx];
             if (gdpVal != null) totalGdp += gdpVal;
           }
         });
@@ -223,9 +243,9 @@ const StackedAreaChart = ({ data, regionId, metric, hiddenGroups, enableBrushZoo
 
         visibleGroups.forEach(grp => {
           const gd = regionData[grp.id];
-          if (!gd) return;
-          const empVal = gd.emp[idx] || 0;
-          const gdpVal = gd.gdp ? (gd.gdp[idx] || 0) : 0;
+          if (!gd || origIdx < 0) return;
+          const empVal = gd.emp[origIdx] || 0;
+          const gdpVal = gd.gdp ? (gd.gdp[origIdx] || 0) : 0;
           const empPct = totalEmp > 0 ? (empVal / totalEmp) * 100 : 0;
           const avgIncome = empVal > 0 && gdpVal > 0 ? gdpVal / empVal : 0;
 
@@ -286,7 +306,7 @@ const StackedAreaChart = ({ data, regionId, metric, hiddenGroups, enableBrushZoo
       });
 
     // ── Brush zoom (optional) ─────────────────
-    if (enableBrushZoom && years.length > 10) {
+    if (enableBrushZoom && activeYears.length > 10) {
       const brush = d3.brushX()
         .extent([[0, 0], [innerW, innerH]])
         .on("end", function () {
