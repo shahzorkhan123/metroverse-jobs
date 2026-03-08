@@ -78,6 +78,10 @@ def main():
         help="Run data completeness validation after export",
     )
     parser.add_argument(
+        "--timeseries", action="store_true", default=False,
+        help="Export time-series JSON files (BLS OES + ILOSTAT)",
+    )
+    parser.add_argument(
         "--db-path", type=str, default=None,
         help=f"SQLite database path (default: {config.DB_PATH})",
     )
@@ -262,6 +266,13 @@ def main():
                     print(f"    ... and {len(warnings) - 20} more")
             else:
                 print("  Data completeness validation passed")
+
+        if args.timeseries:
+            print("\n--- TIME SERIES EXPORT ---\n")
+            from scripts.pipeline import export_timeseries
+            if country_long == "USA" or args.country.lower() == "us":
+                export_timeseries.export_oes()
+            export_timeseries.export_ilostat()
 
         print("\nPipeline complete!")
 

@@ -291,6 +291,8 @@ landing-overlay-footnote = <strong>Metroverse is a prototype tool with exciting 
 cities-single-page-titles-question-1 = Region Overview
 cities-single-page-titles-question-2 = What is my region's\neconomic composition?
 cities-single-page-titles-question-3 = How does my region's\neconomic composition\ncompare to its peer(s)?
+cities-single-page-titles-question-6 = Time Series
+
 cities-single-page-titles-question-4 = What is my region's position\nin the Industry Space?
 cities-single-page-titles-question-5 = What are the growth\nopportunities?
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import EconomicComposition from "./economicComposition";
 import Overview from "./overview";
 import GoodAt from "./goodAt";
+import TimeSeries from "./timeSeries";
 import { Switch, useHistory, matchPath, Route } from "react-router-dom";
 import {
   CityRoutes,
@@ -122,6 +123,13 @@ const City = () => {
             url: createRoute.city(CityRoutes.CityGoodAt, cityId),
             removeParams: [] as (keyof GlobalQueryParams)[],
           },
+          {
+            label: getStringWithNewLines(
+              "cities-single-page-titles-question-6",
+            ),
+            url: createRoute.city(CityRoutes.CityTimeSeries, cityId),
+            removeParams: [] as (keyof GlobalQueryParams)[],
+          },
         ]
       : [];
 
@@ -134,6 +142,7 @@ const City = () => {
           component={EconomicComposition}
         />
         <Route path={CityRoutes.CityGoodAt} component={GoodAt} />
+        <Route path={CityRoutes.CityTimeSeries} component={TimeSeries} />
       </Switch>
     </InnerPage>
   );

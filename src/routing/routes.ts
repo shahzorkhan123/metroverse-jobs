@@ -8,6 +8,7 @@ export const CityRoutes = {
   CityOverview: "/city/:cityId/overview",
   CityEconomicComposition: "/city/:cityId/economic-composition",
   CityGoodAt: "/city/:cityId/good-at",
+  CityTimeSeries: "/city/:cityId/time-series",
   CityGoodAtAbsolutePresence: "/city/:cityId/good-at/absolute",
   CityGoodAtAbsolutePresenceComparison:
     "/city/:cityId/good-at/absolute/comparison",

@@ -298,5 +298,14 @@
       }
     }
   },
-  "lastUpdated": "2026-02-24"
+  "timeseriesFiles": {
+    "us": {
+      "oes": { "base": "timeseries-us-oes.json", "metro": "timeseries-us-oes-metro.json" },
+      "ilostat": { "base": "timeseries-ilostat-us.json" }
+    },
+    "in": {
+      "ilostat": { "base": "timeseries-ilostat-in.json" }
+    }
+  },
+  "lastUpdated": "2026-03-07"
 }

@@ -93,6 +93,26 @@ export interface CountryMetadata {
   hierarchyRules: { strategy: string };
 }
 
+/** Time-series data file structure */
+export interface TimeSeriesFile {
+  metadata: {
+    source: string;
+    country: string;
+    years: number[];
+    hasGdp: boolean;
+  };
+  groups: { id: string; name: string; color?: string }[];
+  regions: { regionId: string; name: string; regionType: string }[];
+  data: {
+    [regionId: string]: {
+      [groupId: string]: {
+        emp: (number | null)[];
+        gdp?: (number | null)[];
+      };
+    };
+  };
+}
+
 /** Meta catalog file (bls-data.json) */
 export interface BLSMetaCatalog {
   datasets: {
@@ -109,5 +129,10 @@ export interface BLSMetaCatalog {
   countries: { code: string; name: string; flagEmoji?: string }[];
   yearsByCountry: { [countryCode: string]: number[] };
   countryMetadata: { [countryCode: string]: CountryMetadata };
+  timeseriesFiles?: {
+    [country: string]: {
+      [source: string]: { base: string; metro?: string };
+    };
+  };
   lastUpdated: string;
 }
