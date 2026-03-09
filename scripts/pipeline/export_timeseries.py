@@ -1,12 +1,14 @@
 """Export time-series JSON files for the frontend stacked area chart.
 
-Supports two data sources:
+Supports three data sources:
   1. BLS OES (US): Level 1 (22 major groups) employment + GDP, 2003-2024
   2. ILOSTAT Modelled Estimates (US + India): 8 ISCO-08 groups, 1991-2025
+  3. PLFS Annual Reports (India): 9 NCO divisions, 2018-2024
 
 Usage:
     python -m scripts.pipeline.export_timeseries --country us --source oes
     python -m scripts.pipeline.export_timeseries --source ilostat
+    python -m scripts.pipeline.export_timeseries --source plfs
 """
 
 import argparse
@@ -619,6 +621,383 @@ def export_ilostat(country: str = "both") -> None:
     print(f"\n  Done.")
 
 
+# ─── PLFS India Extraction ───────────────────────────────────────────
+
+# NCO 2015 Division groups (India — same as ISCO-08 at 1-digit)
+NCO_DIVISIONS = [
+    {"id": "1", "name": "Managers"},
+    {"id": "2", "name": "Professionals"},
+    {"id": "3", "name": "Technicians and Associate Professionals"},
+    {"id": "4", "name": "Clerical Support Workers"},
+    {"id": "5", "name": "Service and Sales Workers"},
+    {"id": "6", "name": "Skilled Agricultural, Forestry and Fishery Workers"},
+    {"id": "7", "name": "Craft and Related Trades Workers"},
+    {"id": "8", "name": "Plant and Machine Operators and Assemblers"},
+    {"id": "9", "name": "Elementary Occupations"},
+]
+
+NCO_COLORS = {
+    "1": "#A973BE", "2": "#F1866C", "3": "#488098", "4": "#6A6AAD",
+    "5": "#77C898", "6": "#556B2F", "7": "#DAA520", "8": "#CD853F",
+    "9": "#708090",
+}
+
+# PLFS % distribution of workers by NCO division (MoSPI API, national level)
+# Keys are calendar years (fiscal year end: 2017-18 → 2018)
+PLFS_PERCENTAGES = {
+    2018: {"1": 7.4, "2": 4.1, "3": 4.0, "4": 2.0, "5": 9.2, "6": 31.2, "7": 11.8, "8": 5.8, "9": 24.7},
+    2019: {"1": 8.2, "2": 4.2, "3": 4.1, "4": 2.1, "5": 9.6, "6": 30.9, "7": 11.8, "8": 5.5, "9": 23.6},
+    2020: {"1": 8.7, "2": 4.2, "3": 3.8, "4": 1.9, "5": 8.7, "6": 33.2, "7": 11.3, "8": 5.5, "9": 22.8},
+    2021: {"1": 8.4, "2": 3.8, "3": 3.5, "4": 1.8, "5": 8.1, "6": 35.1, "7": 11.6, "8": 5.3, "9": 22.5},
+    2022: {"1": 7.2, "2": 5.0, "3": 2.2, "4": 2.0, "5": 9.8, "6": 35.4, "7": 9.7, "8": 5.4, "9": 23.3},
+    2023: {"1": 3.7, "2": 5.2, "3": 2.1, "4": 1.9, "5": 11.4, "6": 36.9, "7": 10.8, "8": 5.2, "9": 22.8},
+    2024: {"1": 3.2, "2": 5.3, "3": 2.3, "4": 2.1, "5": 11.5, "6": 38.0, "7": 11.1, "8": 5.3, "9": 21.3},
+}
+
+# PLFS average monthly wage/salary earnings (Rs.) by NCO division
+# From Table 50 / Table 33 / Table 55 in each year's annual report
+# "rural+urban, person" row — regular wage/salaried employees only
+# 2017-18 and 2018-19 reports did not publish wage-by-occupation tables
+PLFS_WAGES: dict[int, dict[str, float] | None] = {
+    2018: None,  # Not published in 2017-18 report
+    2019: None,  # Not published in 2018-19 report
+    2020: {"1": 26426, "2": 20352, "3": 21629, "4": 17210, "5": 11182, "6": 12836, "7": 11971, "8": 11307, "9": 9427},
+    2021: {"1": 29024, "2": 27305, "3": 23597, "4": 19173, "5": 12404, "6": 11316, "7": 11745, "8": 12339, "9": 10160},
+    2022: {"1": 38023, "2": 31158, "3": 23845, "4": 20538, "5": 13220, "6": 13538, "7": 13512, "8": 14127, "9": 9702},
+    2023: {"1": 44903, "2": 32530, "3": 22578, "4": 21373, "5": 13530, "6": 13526, "7": 13901, "8": 15139, "9": 10420},
+    2024: {"1": 42993, "2": 35776, "3": 24199, "4": 23616, "5": 14628, "6": 11319, "7": 15350, "8": 15906, "9": 10667},
+}
+
+# Census 2011 state populations (millions) — used as proportional weights
+# Telangana carved from AP in 2014; PLFS (2017+) treats them separately
+CENSUS_2011_POP = {
+    "Andaman and Nicobar Islands": 0.38,
+    "Andhra Pradesh": 49.39, "Arunachal Pradesh": 1.38, "Assam": 31.21,
+    "Bihar": 104.10, "Chandigarh": 1.06, "Chhattisgarh": 25.54,
+    "Dadra and Nagar Haveli and Daman and Diu": 0.59,
+    "Delhi": 16.79, "Goa": 1.46,
+    "Gujarat": 60.44, "Haryana": 25.35, "Himachal Pradesh": 6.86,
+    "Jammu and Kashmir": 12.55, "Jharkhand": 32.99, "Karnataka": 61.10,
+    "Kerala": 33.39, "Ladakh": 0.27, "Lakshadweep": 0.06,
+    "Madhya Pradesh": 72.63, "Maharashtra": 112.37,
+    "Manipur": 2.86, "Meghalaya": 2.97, "Mizoram": 1.09, "Nagaland": 1.98,
+    "Odisha": 41.97, "Puducherry": 1.25, "Punjab": 27.74,
+    "Rajasthan": 68.55, "Sikkim": 0.61,
+    "Tamil Nadu": 72.15, "Telangana": 35.19, "Tripura": 3.67,
+    "Uttarakhand": 10.09, "Uttar Pradesh": 199.81, "West Bengal": 91.28,
+}
+
+# WPR (Worker Population Ratio, %) by state × year from MoSPI PLFS API
+# Keys: state name → { calendar_year: WPR }; rural+urban, person, PS+SS, all ages
+STATE_WPR = {
+    "Andaman and Nicobar Islands": {2018: 37.4, 2019: 38.3, 2020: 40.6, 2021: 48.3, 2022: 46.4, 2023: 48.8, 2024: 47.0},
+    "Andhra Pradesh":    {2018: 45.0, 2019: 43.0, 2020: 44.2, 2021: 46.5, 2022: 46.2, 2023: 46.6, 2024: 45.6},
+    "Arunachal Pradesh": {2018: 30.7, 2019: 31.6, 2020: 32.9, 2021: 35.3, 2022: 34.4, 2023: 47.4, 2024: 51.1},
+    "Assam":             {2018: 32.9, 2019: 32.5, 2020: 31.9, 2021: 38.1, 2022: 37.8, 2023: 30.2, 2024: 47.2},
+    "Bihar":             {2018: 23.6, 2019: 24.1, 2020: 26.0, 2021: 26.6, 2022: 25.6, 2023: 30.2, 2024: 33.5},
+    "Chandigarh":        {2018: 35.6, 2019: 37.4, 2020: 34.2, 2021: 34.5, 2022: 33.3, 2023: 36.7, 2024: 40.4},
+    "Chhattisgarh":      {2018: 45.7, 2019: 44.7, 2020: 48.7, 2021: 48.4, 2022: 48.5, 2023: 52.6, 2024: 54.2},
+    "Dadra and Nagar Haveli and Daman and Diu": {2018: 47.9, 2019: 46.4, 2020: 53.0, 2021: 43.0, 2022: 51.6, 2023: 47.5, 2024: 51.1},
+    "Delhi":             {2018: 32.8, 2019: 33.6, 2020: 34.0, 2021: 33.7, 2022: 33.0, 2023: 35.0, 2024: 35.2},
+    "Goa":               {2018: 34.7, 2019: 36.6, 2020: 37.6, 2021: 35.5, 2022: 33.8, 2023: 37.0, 2024: 36.5},
+    "Gujarat":           {2018: 36.2, 2019: 38.3, 2020: 42.4, 2021: 43.3, 2022: 44.3, 2023: 47.2, 2024: 49.1},
+    "Haryana":           {2018: 30.5, 2019: 31.1, 2020: 32.1, 2021: 33.1, 2022: 32.3, 2023: 34.1, 2024: 36.1},
+    "Himachal Pradesh":  {2018: 46.4, 2019: 50.1, 2020: 55.6, 2021: 55.4, 2022: 55.8, 2023: 58.6, 2024: 57.2},
+    "Jammu and Kashmir": {2018: 38.6, 2019: 40.7, 2020: 39.2, 2021: 42.0, 2022: 44.0, 2023: 45.1, 2024: 44.9},
+    "Jharkhand":         {2018: 28.8, 2019: 30.7, 2020: 37.6, 2021: 42.2, 2022: 43.2, 2023: 41.9, 2024: 43.9},
+    "Karnataka":         {2018: 38.1, 2019: 38.4, 2020: 41.7, 2021: 43.5, 2022: 41.7, 2023: 43.9, 2024: 44.1},
+    "Kerala":            {2018: 32.4, 2019: 35.9, 2020: 36.5, 2021: 37.6, 2022: 39.7, 2023: 41.2, 2024: 42.1},
+    "Ladakh":            {2020: 45.6, 2021: 53.8, 2022: 43.4, 2023: 43.8, 2024: 47.9},
+    "Lakshadweep":       {2018: 26.0, 2019: 23.9, 2020: 38.0, 2021: 29.7, 2022: 29.1, 2023: 27.1, 2024: 33.8},
+    "Madhya Pradesh":    {2018: 40.0, 2019: 38.4, 2020: 42.8, 2021: 44.9, 2022: 45.1, 2023: 47.6, 2024: 50.6},
+    "Maharashtra":       {2018: 39.2, 2019: 39.8, 2020: 43.6, 2021: 42.6, 2022: 43.6, 2023: 45.3, 2024: 45.3},
+    "Manipur":           {2018: 32.1, 2019: 32.9, 2020: 33.8, 2021: 30.5, 2022: 29.8, 2023: 35.5, 2024: 41.7},
+    "Meghalaya":         {2018: 41.5, 2019: 41.1, 2020: 37.2, 2021: 38.7, 2022: 38.6, 2023: 41.2, 2024: 47.6},
+    "Mizoram":           {2018: 36.0, 2019: 36.7, 2020: 41.4, 2021: 43.4, 2022: 36.8, 2023: 40.7, 2024: 39.5},
+    "Nagaland":          {2018: 25.9, 2019: 28.5, 2020: 35.3, 2021: 38.6, 2022: 40.6, 2023: 45.8, 2024: 45.7},
+    "Odisha":            {2018: 33.8, 2019: 35.7, 2020: 39.5, 2021: 41.7, 2022: 39.5, 2023: 44.4, 2024: 47.9},
+    "Puducherry":        {2018: 30.1, 2019: 39.3, 2020: 37.3, 2021: 38.5, 2022: 40.4, 2023: 40.1, 2024: 41.1},
+    "Punjab":            {2018: 33.8, 2019: 34.6, 2020: 37.8, 2021: 37.0, 2022: 38.6, 2023: 39.7, 2024: 41.3},
+    "Rajasthan":         {2018: 34.2, 2019: 35.8, 2020: 39.4, 2021: 40.3, 2022: 40.6, 2023: 43.4, 2024: 45.3},
+    "Sikkim":            {2018: 47.0, 2019: 49.4, 2020: 55.9, 2021: 60.5, 2022: 57.0, 2023: 60.9, 2024: 60.2},
+    "Tamil Nadu":        {2018: 40.5, 2019: 41.2, 2020: 44.2, 2021: 46.0, 2022: 44.6, 2023: 44.0, 2024: 45.6},
+    "Telangana":         {2018: 39.3, 2019: 40.1, 2020: 44.8, 2021: 46.0, 2022: 45.3, 2023: 45.1, 2024: 45.7},
+    "Tripura":           {2018: 33.8, 2019: 34.1, 2020: 38.9, 2021: 41.9, 2022: 40.2, 2023: 43.9, 2024: 49.2},
+    "Uttarakhand":       {2018: 30.7, 2019: 31.2, 2020: 38.1, 2021: 37.4, 2022: 37.6, 2023: 40.6, 2024: 44.2},
+    "Uttar Pradesh":     {2018: 28.7, 2019: 28.7, 2020: 31.7, 2021: 34.5, 2022: 35.1, 2023: 37.8, 2024: 39.2},
+    "West Bengal":       {2018: 37.3, 2019: 38.6, 2020: 39.2, 2021: 42.4, 2022: 41.7, 2023: 44.1, 2024: 46.4},
+}
+
+# All-India WPR (for normalization)
+ALL_INDIA_WPR = {2018: 34.7, 2019: 35.3, 2020: 38.2, 2021: 39.8, 2022: 39.6, 2023: 41.1, 2024: 43.7}
+
+# State × NCO division wages (Rs./month, rural+urban person, regular wage/salary)
+# Extracted from PLFS Table 55 (PDF pdfplumber extraction)
+# Only 3 years available (2019-20, 2020-21, 2021-22)
+PLFS_STATE_WAGES: dict[int, dict[str, dict[str, float]]] = {}
+
+def _load_state_wages() -> None:
+    """Load extracted state wages from JSON file if available.
+
+    Normalizes state names from PDF-extracted format to match CENSUS_2011_POP keys:
+    - "Jammu & Kashmir" → "Jammu and Kashmir"
+    - "Andaman & Nicobar Islands" → "Andaman and Nicobar Islands"
+    - "Dadra & Nagar Haveli" + "Daman & Diu" → merged into
+      "Dadra and Nagar Haveli and Daman and Diu" (population-weighted average)
+    """
+    global PLFS_STATE_WAGES
+    wage_path = (Path(__file__).resolve().parent.parent.parent
+                 / "data" / "raw" / "plfs_state_wages.json")
+    if not wage_path.exists():
+        return
+
+    import json as _json
+    with open(wage_path) as f:
+        raw = _json.load(f)
+
+    # Convert string year keys to int and normalize state names
+    for year_str, states in raw.items():
+        year = int(year_str)
+        normalized: dict[str, dict[str, float]] = {}
+        dnh_wages = None  # Dadra & Nagar Haveli
+        dd_wages = None   # Daman & Diu
+        for name, wages in states.items():
+            canon = name.replace(" & ", " and ")
+            if canon == "Dadra and Nagar Haveli":
+                dnh_wages = wages
+            elif canon == "Daman and Diu":
+                dd_wages = wages
+            else:
+                normalized[canon] = wages
+        # Merge D&NH + D&D with population-weighted average
+        if dnh_wages or dd_wages:
+            merged = {}
+            dnh_pop, dd_pop = 0.343, 0.243  # Census 2011
+            for did in [str(i) for i in range(1, 10)]:
+                w1 = (dnh_wages or {}).get(did)
+                w2 = (dd_wages or {}).get(did)
+                if w1 is not None and w2 is not None:
+                    merged[did] = (w1 * dnh_pop + w2 * dd_pop) / (dnh_pop + dd_pop)
+                elif w1 is not None:
+                    merged[did] = w1
+                elif w2 is not None:
+                    merged[did] = w2
+            if merged:
+                normalized["Dadra and Nagar Haveli and Daman and Diu"] = merged
+        PLFS_STATE_WAGES[year] = normalized
+
+
+def _compute_state_employment(active_years: list[int],
+                              ilostat_totals: dict[int, float]
+                              ) -> dict[str, dict[int, float]]:
+    """Compute state total employment for each year.
+
+    Uses Census 2011 population × state WPR as proportional weights,
+    then normalizes so state sum equals ILOSTAT total for each year.
+    """
+    state_emp: dict[str, dict[int, float]] = {}
+
+    for year in active_years:
+        total_india = ilostat_totals.get(year)
+        if not total_india:
+            continue
+
+        # Compute raw weights: pop × WPR for each state
+        raw_weights: dict[str, float] = {}
+        for state_name, pop in CENSUS_2011_POP.items():
+            wpr = STATE_WPR.get(state_name, {}).get(year)
+            if wpr is not None:
+                raw_weights[state_name] = pop * wpr / 100.0
+
+        # Normalize to match ILOSTAT total
+        weight_sum = sum(raw_weights.values())
+        if weight_sum <= 0:
+            continue
+
+        for state_name, raw_w in raw_weights.items():
+            state_total = total_india * (raw_w / weight_sum)
+            if state_name not in state_emp:
+                state_emp[state_name] = {}
+            state_emp[state_name][year] = state_total
+
+    return state_emp
+
+
+def export_plfs() -> None:
+    """Export PLFS India time-series JSON file.
+
+    National: uses PLFS % distributions (MoSPI API) scaled by ILOSTAT total.
+    States: uses Census pop × WPR proportional weights, national NCO %,
+            and state-specific wages where available (3 years from PDF Table 55).
+    GDP = employment × monthly_wage × 12 (where wage data available).
+    """
+    print(f"\n=== PLFS India Time Series ===\n")
+
+    # Load state wages from extracted PDF data
+    _load_state_wages()
+    if PLFS_STATE_WAGES:
+        print(f"  Loaded state wages for years: "
+              f"{sorted(PLFS_STATE_WAGES.keys())}")
+
+    # Read ILOSTAT India data to get total employment per year
+    ilostat_path = config.PUBLIC_DATA_DIR / "timeseries-ilostat-in.json"
+    if not ilostat_path.exists():
+        print("  ERROR: Run ILOSTAT export first (need total employment)")
+        return
+
+    with open(ilostat_path) as f:
+        ilostat = json.load(f)
+
+    # Compute total employment per year from ILOSTAT
+    ilostat_years = ilostat["metadata"]["years"]
+    region_data = ilostat["data"]["national-india"]
+    ilostat_totals = {}
+    for yi, year in enumerate(ilostat_years):
+        total = 0
+        for gdata in region_data.values():
+            emp = gdata["emp"][yi]
+            if emp is not None:
+                total += emp
+        if total > 0:
+            ilostat_totals[year] = total
+
+    # Map PLFS fiscal years to calendar years and compute absolute employment
+    plfs_years = sorted(PLFS_PERCENTAGES.keys())
+
+    # --- National data ---
+    national_ts: dict = {}
+    for div in NCO_DIVISIONS:
+        national_ts[div["id"]] = {"emp": [], "gdp": []}
+
+    active_years = []
+    has_any_gdp = False
+    for year in plfs_years:
+        total_emp = ilostat_totals.get(year)
+        if total_emp is None:
+            print(f"  WARNING: No ILOSTAT total for {year}, skipping")
+            continue
+        active_years.append(year)
+        pcts = PLFS_PERCENTAGES[year]
+        wages = PLFS_WAGES.get(year)
+        for div in NCO_DIVISIONS:
+            did = div["id"]
+            pct = pcts.get(did, 0)
+            emp = round(total_emp * pct / 100)
+            national_ts[did]["emp"].append(emp)
+            if wages and did in wages:
+                gdp = round(emp * wages[did] * 12)
+                national_ts[did]["gdp"].append(gdp)
+                has_any_gdp = True
+            else:
+                national_ts[did]["gdp"].append(None)
+        fy = f"{year - 1}-{str(year)[-2:]}"
+        gdp_flag = " (with wages)" if wages else " (no wages)"
+        print(f"  {fy}: total={total_emp:,.0f}{gdp_flag}")
+
+    if not active_years:
+        print("  ERROR: No valid years found")
+        return
+
+    # Strip empty GDP arrays
+    for did in national_ts:
+        if not any(v is not None for v in national_ts[did]["gdp"]):
+            del national_ts[did]["gdp"]
+
+    # --- State data ---
+    print(f"\n  Computing state employment...")
+    state_emp = _compute_state_employment(active_years, ilostat_totals)
+    print(f"  States with data: {len(state_emp)}")
+
+    all_data = {"national-india": national_ts}
+    regions = [{
+        "regionId": "national-india",
+        "name": "India",
+        "regionType": "National",
+    }]
+
+    for state_name in sorted(state_emp.keys()):
+        region_id = _make_region_id("State", state_name)
+        regions.append({
+            "regionId": region_id,
+            "name": state_name,
+            "regionType": "State",
+        })
+
+        state_ts: dict = {}
+        for div in NCO_DIVISIONS:
+            state_ts[div["id"]] = {"emp": [], "gdp": []}
+
+        state_has_gdp = False
+        for yi, year in enumerate(active_years):
+            state_total = state_emp[state_name].get(year)
+            pcts = PLFS_PERCENTAGES[year]
+
+            # If state has no WPR for this year, emit None for all divisions
+            if state_total is None or state_total <= 0:
+                for div in NCO_DIVISIONS:
+                    state_ts[div["id"]]["emp"].append(None)
+                    state_ts[div["id"]]["gdp"].append(None)
+                continue
+
+            # Wages: prefer state-specific, fallback to national
+            state_wages = PLFS_STATE_WAGES.get(year, {}).get(state_name)
+            national_wages = PLFS_WAGES.get(year)
+
+            for div in NCO_DIVISIONS:
+                did = div["id"]
+                pct = pcts.get(did, 0)
+                emp = round(state_total * pct / 100)
+                state_ts[did]["emp"].append(emp)
+
+                # GDP: use state wage if available, else national
+                wage = None
+                if state_wages and did in state_wages:
+                    wage = state_wages[did]
+                elif national_wages and did in national_wages:
+                    wage = national_wages[did]
+
+                if wage is not None and wage > 0:
+                    gdp = round(emp * wage * 12)
+                    state_ts[did]["gdp"].append(gdp)
+                    state_has_gdp = True
+                    has_any_gdp = True
+                else:
+                    state_ts[did]["gdp"].append(None)
+
+        # Strip empty GDP arrays
+        for did in state_ts:
+            if not any(v is not None for v in state_ts[did]["gdp"]):
+                del state_ts[did]["gdp"]
+
+        all_data[region_id] = state_ts
+
+    # Build output
+    groups = [
+        {"id": d["id"], "name": d["name"], "color": NCO_COLORS.get(d["id"], "#999")}
+        for d in NCO_DIVISIONS
+    ]
+
+    output = {
+        "metadata": {
+            "source": "PLFS Annual Reports",
+            "country": "in",
+            "years": active_years,
+            "hasGdp": has_any_gdp,
+        },
+        "groups": groups,
+        "regions": regions,
+        "data": all_data,
+    }
+
+    out_path = config.PUBLIC_DATA_DIR / "timeseries-plfs-in.json"
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(output, f, separators=(",", ":"))
+    print(f"\n  Output: {out_path.name} ({len(groups)} groups, "
+          f"{len(active_years)} years, {len(regions)} regions, "
+          f"GDP={'yes' if has_any_gdp else 'no'})")
+    print(f"  Done.")
+
+
 # ─── CLI ──────────────────────────────────────────────────────────────
 
 def main():
@@ -626,7 +1005,7 @@ def main():
         description="Export time-series JSON for the frontend"
     )
     parser.add_argument(
-        "--source", choices=["oes", "ilostat", "all"], default="all",
+        "--source", choices=["oes", "ilostat", "plfs", "all"], default="all",
         help="Data source to export (default: all)",
     )
     parser.add_argument(
@@ -648,6 +1027,9 @@ def main():
 
     if args.source in ("ilostat", "all"):
         export_ilostat()
+
+    if args.source in ("plfs", "all"):
+        export_plfs()
 
 
 if __name__ == "__main__":

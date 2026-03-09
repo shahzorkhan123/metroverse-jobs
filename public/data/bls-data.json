@@ -304,6 +304,7 @@
       "ilostat": { "base": "timeseries-ilostat-us.json" }
     },
     "in": {
+      "plfs": { "base": "timeseries-plfs-in.json" },
       "ilostat": { "base": "timeseries-ilostat-in.json" }
     }
   },
