@@ -296,6 +296,7 @@ export default (props: Props) => {
     year,
     colorBy,
     effectRan,
+    dynamicColorMap,
   ]);
 
   if (industryResponse.error) {

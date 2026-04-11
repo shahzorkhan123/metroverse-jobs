@@ -12,9 +12,10 @@ interface Props {
   regionName: string;
   data: TimeSeriesFile;
   metric: "emp" | "gdp";
+  selectedOccupationName?: string;
 }
 
-const SideText = ({ regionId, regionName, data, metric }: Props) => {
+const SideText = ({ regionId, regionName, data, metric, selectedOccupationName }: Props) => {
   const { years, source } = data.metadata;
   const regionData = data.data[regionId];
 
@@ -74,10 +75,16 @@ const SideText = ({ regionId, regionName, data, metric }: Props) => {
   const metricLabel = metric === "gdp" ? "GDP" : "employment";
   const yearRange = `${years[firstIdx]}\u2013${years[lastIdx]}`;
 
+  const isStateBreakdown = !!selectedOccupationName;
+  const title = isStateBreakdown
+    ? `${selectedOccupationName}: State Distribution`
+    : `${regionName}: Time Series`;
+  const groupLabel = isStateBreakdown ? "state" : "occupation group";
+
   return (
     <StandardSideTextBlock>
       <ContentTitle>
-        {regionName}: Time Series
+        {title}
       </ContentTitle>
       <ContentParagraph>
         <strong>Source:</strong> {source} ({yearRange})
@@ -89,7 +96,7 @@ const SideText = ({ regionId, regionName, data, metric }: Props) => {
       </ContentParagraph>
       {fastest.length > 0 && (
         <ContentParagraph>
-          <strong>Fastest growing:</strong>{" "}
+          <strong>Fastest growing {groupLabel}:</strong>{" "}
           {fastest.map(g =>
             `${g.name} (+${g.growth.toFixed(1)}%)`
           ).join(", ")}
@@ -97,7 +104,7 @@ const SideText = ({ regionId, regionName, data, metric }: Props) => {
       )}
       {slowest.length > 0 && (
         <ContentParagraph>
-          <strong>Slowest/declining:</strong>{" "}
+          <strong>Slowest/declining {groupLabel}:</strong>{" "}
           {slowest.map(g => {
             const sign = g.growth >= 0 ? "+" : "";
             return `${g.name} (${sign}${g.growth.toFixed(1)}%)`;

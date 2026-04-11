@@ -91,6 +91,7 @@ export interface CountryMetadata {
   regionTypes: { id: string; pluralName: string }[];
   majorGroups: { id: string; name: string; color: string }[];
   hierarchyRules: { strategy: string };
+  stateAbbreviations?: Record<string, string>;
 }
 
 /** Time-series data file structure */

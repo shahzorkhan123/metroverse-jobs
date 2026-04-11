@@ -89,12 +89,13 @@ export enum ClusterLevel {
 export enum AggregationMode {
   cluster = "clusters",
   industries = "industries",
+  stateDistribution = "state_distribution",
 }
 
 export const defaultAggregationMode: AggregationMode =
   AggregationMode.industries;
 
-export const defaultClusterLevel: ClusterLevel = ClusterLevel.C3;
+export const defaultClusterLevel: ClusterLevel = ClusterLevel.C1;
 export const defaultColorBy: ColorBy = ColorBy.sector;
 
 export interface GlobalQueryParams {

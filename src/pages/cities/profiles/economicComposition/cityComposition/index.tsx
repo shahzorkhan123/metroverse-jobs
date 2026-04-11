@@ -6,6 +6,7 @@ import UtilityBar, {
 } from "../../../../../components/navigation/secondaryHeader/UtilityBar";
 import CompositionTreeMap from "../../../../../components/dataViz/treeMap/CompositionTreeMap";
 import ClusterCompositionTreeMap from "../../../../../components/dataViz/treeMap/ClusterCompositionTreeMap";
+import StateDistributionTreeMap from "../../../../../components/dataViz/treeMap/StateDistributionTreeMap";
 import { defaultYear } from "../../../../../Utils";
 import { ContentGrid } from "../../../../../styling/styleUtils";
 import {
@@ -143,6 +144,9 @@ const EconomicComposition = (props: Props) => {
     (!aggregation && defaultAggregationMode === AggregationMode.cluster) ||
     aggregation === AggregationMode.cluster;
 
+  const isStateDistribution = aggregation === AggregationMode.stateDistribution;
+  const isNational = cityId.startsWith('national-');
+
   let download: React.ReactElement<any> | null;
   if (activeDownload === DownloadType.Image && treeMapRef.current) {
     const cellsNode = treeMapRef.current.querySelector(
@@ -202,6 +206,7 @@ const EconomicComposition = (props: Props) => {
         />
       );
     } else {
+      // For both normal mode and state distribution, use sector map
       legend = (
         <CategoryLabels
           categories={sectorMap}
@@ -217,7 +222,14 @@ const EconomicComposition = (props: Props) => {
     }
   }
 
-  const treeMapViz = isClusterTreeMap ? (
+  const treeMapViz = isStateDistribution ? (
+    <StateDistributionTreeMap
+      year={defaultYear}
+      compositionType={compositionType}
+      hiddenSectors={hiddenSectors}
+      setIndicatorContent={setIndicatorContent}
+    />
+  ) : isClusterTreeMap ? (
     <ClusterCompositionTreeMap
       cityId={cityId}
       year={defaultYear}
@@ -277,10 +289,10 @@ const EconomicComposition = (props: Props) => {
             }}
             settingsOptions={{
               compositionType: true,
-              colorBy: true,
-              aggregationMode: true,
+              colorBy: isStateDistribution ? false : true,
+              aggregationMode: isNational ? { stateDistributionEnabled: true } : true,
               clusterLevel: isClusterTreeMap ? true : undefined,
-              digitLevel: isClusterTreeMap ? undefined : true,
+              digitLevel: isStateDistribution ? false : (isClusterTreeMap ? undefined : true),
             }}
           />
           {treeMapViz}

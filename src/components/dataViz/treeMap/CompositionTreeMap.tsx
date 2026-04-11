@@ -600,6 +600,7 @@ const CompositionTreeMap = (props: Props) => {
   }
 
   setIndicatorContent(indicator);
+
   return (
     <>
       <Root ref={rootRef}>

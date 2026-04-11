@@ -41,25 +41,38 @@ Run: `python scripts/pipeline/run_pipeline.py --year 2024 --country us --fetch -
 ```
 src/
 ├── dataProvider/          # Static data context (replaces Apollo)
-│   ├── types.ts           # TypeScript interfaces for BLS data
+│   ├── types.ts           # TypeScript interfaces for BLS data (incl. stateAbbreviations)
 │   └── index.tsx          # React Context: meta catalog → main file → lazy-load levels
 ├── hooks/                 # Adapter hooks (same return shapes as original)
 │   ├── useGlobalLocationData.ts    # Returns BLS regions as "cities"
 │   ├── useGlobalIndustriesData.ts  # Returns SOC occupations as "industries"
-│   ├── useGlobalClusterData.ts     # Returns SOC major groups as "clusters"
+│   ├── useGlobalClusterData.ts     # Returns SOC major groups as "clusters" (level=1, clusterIdTopParent=parseInt(groupId))
 │   ├── useAggregateIndustriesData.ts # Returns wage/complexity min/max
 │   ├── useLevelLoader.ts           # Watches digit_level query param, triggers loadLevel()
+│   ├── useSectorMap.ts             # Metadata-driven color map — ALWAYS use this, never hardcoded maps
+│   ├── useClusterMap.ts            # Re-exports useSectorMap (clusters = SOC major groups)
 │   └── useCurrentBenchmark.ts      # Stub for Phase 1
 ├── components/dataViz/
-│   ├── treeMap/CompositionTreeMap.tsx  # Smart filter, drill-down, residuals, tooltips
-│   └── settings/index.tsx             # VIZ OPTIONS panel (4 digit levels)
+│   ├── treeMap/CompositionTreeMap.tsx       # Smart filter, drill-down, residuals, tooltips
+│   ├── treeMap/ClusterCompositionTreeMap.tsx # Knowledge Clusters view (uses useSectorMap)
+│   ├── treeMap/StateDistributionTreeMap.tsx  # State × Occupation treemap (national only)
+│   └── settings/index.tsx                   # VIZ OPTIONS panel
 ├── pages/
 │   ├── landing/index.tsx    # Region search (no Mapbox map)
-│   └── cities/profiles/     # Region profile (3 tabs: Overview, Composition, Good At)
+│   └── cities/profiles/     # Region profile (4 tabs: Overview, Composition, Good At, Time Series)
+│       ├── timeSeries/TimeSeriesChart.tsx    # Stacked area chart; occupation→state pivot
+│       └── timeSeries/SideText.tsx           # Adapts title when in state breakdown mode
+├── utils/
+│   ├── stateAbbreviations.ts      # getStateAbbreviation(name, countryMetadata) → 2-3 letter code
+│   └── transformTimeSeriesByState.ts  # Pivots TimeSeriesFile: groups = states for one occupation
 ├── types/graphQL/graphQLTypes.ts  # DigitLevel enum (One=1..Four=4)
-├── routing/routes.ts        # /region/:regionId/ routes
-├── styling/styleUtils.ts    # 22-entry SOC major group color map
+├── routing/routes.ts        # /region/:regionId/ routes; AggregationMode enum; defaultClusterLevel=C1
+├── styling/styleUtils.ts    # 22-entry SOC major group color map (legacy; prefer useSectorMap)
 └── contextProviders/        # Fluent i18n strings
+tests/
+├── test_pipeline.py         # 48 Python tests (pipeline + export + validation)
+└── playwright/
+    └── pre-checkin.spec.ts  # Playwright UI smoke tests — run before every git push
 public/data/
 ├── bls-data.json              # Meta catalog (datasets, levelFiles, countries, years)
 ├── bls-data-us-2024.json      # Levels 1+2 (~8MB with synthesis)
@@ -152,6 +165,41 @@ Level 4: Unit group    (~436 categories)     e.g., "Applications Programmers"
 5. mergeExtension() adds occupations + regionData additively
 ```
 
+## Treemap Aggregation Modes
+
+Three modes, controlled by `AggregationMode` enum in `routing/routes.ts` and `?aggregation=` query param:
+
+| Mode | Enum value | Component | Availability |
+|---|---|---|---|
+| Industry Groups | `industries` | `CompositionTreeMap` | All regions |
+| Knowledge Clusters | `clusters` | `ClusterCompositionTreeMap` | All regions |
+| State Distribution | `state_distribution` | `StateDistributionTreeMap` | National only |
+
+### State Distribution Treemap
+- Each cell = one state within one SOC major group; grouped by occupation color
+- Cell ID format: `"${stateId}::${socCode}"`, `topLevelParentId = majorGroupId`
+- State labels use 2-letter abbreviations from `countryMetadata.stateAbbreviations` in `bls-data.json`
+- ~1,122 cells for US (51 states × 22 groups); ~333 for India (37 × 9)
+- Only shown when `cityId.startsWith('national-')` — settings panel hides the button otherwise
+- Uses `prevIndicatorKeyRef` ref-gate to prevent infinite `setIndicatorContent` loops
+
+### Knowledge Clusters
+- Clusters = SOC major groups (same data, different branding)
+- `useGlobalClusterData`: all clusters have `level: 1`; `clusterIdTopParent = parseInt(groupId, 10)` → `"11"`, `"13"`...
+- `defaultClusterLevel = C1` (not C3) — must match `level: 1` in our data
+- `useClusterMap` re-exports `useSectorMap` — both give the same color map with SOC IDs
+- `ClusterCompositionTreeMap` uses `useSectorMap()` NOT the old hardcoded `clusterColorMap`
+
+## Time Series State Breakdown
+
+On Time Series tab, when viewing a national region with a source that has state data (BLS OES, PLFS — not ILOSTAT):
+- "Occupation" dropdown appears; selecting one pivots layers from occupation groups → states
+- "States shown" dropdown: Top 12 (default) / Top 20 / All
+- `transformTimeSeriesByState(data, nationalRegionId, occupationGroupId, topN, countryMetadata)` in `utils/transformTimeSeriesByState.ts`
+- Returns a virtual `TimeSeriesFile` where `groups` = states; StackedAreaChart needs no changes
+- States ranked by latest-year employment for the selected occupation
+- States beyond topN aggregated as `__other__` (grey, "Other (N states)")
+
 ## Smart Treemap Filter
 
 - Shows **leaf nodes only** (finest available per SOC branch in current region)
@@ -197,6 +245,20 @@ pytest tests/test_pipeline.py -v  # 48 tests
 4. Node 16 required for build compatibility with react-scripts 3.4.3
 5. No `for...of` on `Map.entries()` — use `.forEach()` (TS downlevelIteration not enabled)
 6. BLS fetch requires `User-Agent` header or returns 403 Forbidden
+
+### Critical Gotchas
+- **NEVER use hardcoded `sectorColorMap` or `clusterColorMap`** — always use `useSectorMap()`. India has single-digit IDs ("1"–"9"), US has 2-digit ("11"–"53"). `useClusterMap` re-exports `useSectorMap`.
+- **`setIndicatorContent` in render** — calling `useState` setters during render causes "Cannot update while rendering" warning but doesn't freeze. Using `useEffect` with an object in deps DOES freeze (infinite loop). Use a `useRef` gate keyed on a stable string to call it only when the semantic content changes.
+- **`react-canvas-treemap` API** — pass `cells={transformed.treeMapCells}`, `chartContainerWidth`, `chartContainerHeight`, `onMouseOverCell`, `onMouseLeaveChart`. NOT `data=`, `onClick=`, `onMouseMove=`.
+- **`defaultClusterLevel = C1`** — all our cluster data has `level: 1`; the original Metroverse default of C3 would show empty treemap.
+- **`clusterIdTopParent`** — set as `parseInt(groupId, 10)` (number) in `useGlobalClusterData`; toString gives "11" not "11-0000". Must match `useSectorMap()` IDs.
+- **State abbreviations** — stored in `bls-data.json` under `countryMetadata.stateAbbreviations`; fetched via `getStateAbbreviation(name, countryMetadata)`. Do NOT hardcode.
+
+### Playwright Tests (pre-checkin)
+```bash
+npx playwright test tests/playwright/pre-checkin.spec.ts
+```
+Requires dev server running on port 3000. Tests cover: Industry Groups, Knowledge Clusters, State Distribution (US + India national), Income mode, mode switching, Time Series, non-national pages (no State Distribution button).
 
 ## BLS OES Data Format (2024)
 - National ZIP: `oesm24nat.zip` → `national_M2024_dl.xlsx`

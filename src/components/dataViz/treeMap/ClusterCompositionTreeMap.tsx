@@ -8,7 +8,7 @@ import {
 } from "../../../types/graphQL/graphQLTypes";
 import { usePrevious } from "react-use";
 import TreeMap, { transformData, Inputs } from "react-canvas-treemap";
-import { clusterColorMap } from "../../../styling/styleUtils";
+import useSectorMap from "../../../hooks/useSectorMap";
 import { useWindowWidth } from "../../../contextProviders/appContext";
 import styled from "styled-components/macro";
 import noop from "lodash/noop";
@@ -153,6 +153,7 @@ const CompositionTreeMap = (props: Props) => {
     hiddenClusters,
   } = props;
   const clusterMap = useGlobalClusterMap();
+  const clusterColorMap = useSectorMap();
   const getString = useFluent();
   const windowDimensions = useWindowWidth();
   const rootRef = useRef<HTMLDivElement | null>(null);

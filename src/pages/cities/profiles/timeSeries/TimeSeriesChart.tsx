@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import styled from "styled-components/macro";
 import { ContentGrid, primaryFont, backgroundMedium } from "../../../../styling/styleUtils";
 import CategoryLabels from "../../../../components/dataViz/legend/CategoryLabels";
@@ -9,6 +9,8 @@ import { LoadingOverlay } from "../../../../components/transitionStateComponents
 import SimpleError from "../../../../components/transitionStateComponents/SimpleError";
 import SideText from "./SideText";
 import StackedAreaChart from "./StackedAreaChart";
+import { transformTimeSeriesByState } from "../../../../utils/transformTimeSeriesByState";
+import { useStaticData } from "../../../../dataProvider";
 
 const ControlsRow = styled.div`
   grid-column: 1 / -1;
@@ -75,6 +77,7 @@ interface Props {
 
 const TimeSeriesChart = ({ cityId }: Props) => {
   const locations = useGlobalLocationData();
+  const { countryMetadata } = useStaticData();
   const {
     sources,
     selectedSourceId,
@@ -86,6 +89,8 @@ const TimeSeriesChart = ({ cityId }: Props) => {
 
   const [metric, setMetric] = useState<"emp" | "gdp">("emp");
   const [hiddenCategories, setHiddenCategories] = useState<string[]>([]);
+  const [selectedOccupation, setSelectedOccupation] = useState<string | null>(null);
+  const [statesShown, setStatesShown] = useState<number | 'all'>(12);
 
   // Find region name
   const regionName = useMemo(() => {
@@ -95,6 +100,38 @@ const TimeSeriesChart = ({ cityId }: Props) => {
     );
     return region ? region.name || cityId : cityId;
   }, [locations, cityId]);
+
+  // Detect if we're at national level
+  const isNational = useMemo(() => cityId.startsWith('national-'), [cityId]);
+
+  // Detect if source has state data (not just national)
+  const sourceHasStates = useMemo(() => {
+    if (!selectedData) return false;
+    // ILOSTAT is national-only
+    if (selectedData.metadata.source.includes('ILOSTAT')) return false;
+    // Check if there are state regions in the data
+    return selectedData.regions.some(r => r.regionType === 'State');
+  }, [selectedData]);
+
+  // Reset occupation selection when source changes
+  useEffect(() => {
+    setSelectedOccupation(null);
+    setHiddenCategories([]);
+  }, [selectedSourceId]);
+
+  // Transform data for state breakdown when occupation is selected
+  const displayData = useMemo(() => {
+    if (!selectedData || !selectedOccupation || !isNational || !sourceHasStates) {
+      return selectedData;
+    }
+    return transformTimeSeriesByState(
+      selectedData,
+      cityId,
+      selectedOccupation,
+      statesShown,
+      countryMetadata,
+    );
+  }, [selectedData, selectedOccupation, isNational, sourceHasStates, cityId, statesShown, countryMetadata]);
 
   // Toggle/isolate category handlers
   const toggleCategory = useCallback(
@@ -108,11 +145,11 @@ const TimeSeriesChart = ({ cityId }: Props) => {
 
   const isolateCategory = useCallback(
     (id: string) => {
-      if (!selectedData) return;
-      const allIds = selectedData.groups.map((g) => g.id);
+      if (!displayData) return;
+      const allIds = displayData.groups.map((g) => g.id);
       setHiddenCategories(allIds.filter((c) => c !== id));
     },
-    [selectedData],
+    [displayData],
   );
 
   const resetCategories = useCallback(() => {
@@ -121,16 +158,25 @@ const TimeSeriesChart = ({ cityId }: Props) => {
 
   // Build category labels for legend
   const categories = useMemo(() => {
-    if (!selectedData) return [] as CategoryDatum[];
-    return selectedData.groups.map((g) => ({
+    if (!displayData) return [] as CategoryDatum[];
+    return displayData.groups.map((g) => ({
       id: g.id,
       name: g.name,
       color: g.color || "#999",
     })) as CategoryDatum[];
-  }, [selectedData]);
+  }, [displayData]);
 
   // Check if GDP is available
   const hasGdp = selectedData ? selectedData.metadata.hasGdp : false;
+
+  // Build occupation options for dropdown
+  const occupationOptions = useMemo(() => {
+    if (!selectedData || !isNational || !sourceHasStates) return [];
+    return selectedData.groups.map(g => ({
+      id: g.id,
+      name: g.name,
+    }));
+  }, [selectedData, isNational, sourceHasStates]);
 
   // Filter sources based on region type
   const filteredSources = useMemo(() => {
@@ -209,6 +255,42 @@ const TimeSeriesChart = ({ cityId }: Props) => {
             </Select>
           </ControlLabel>
         )}
+        {isNational && sourceHasStates && occupationOptions.length > 0 && (
+          <ControlLabel>
+            Occupation:
+            <Select
+              value={selectedOccupation || ""}
+              onChange={(e) => {
+                setSelectedOccupation(e.target.value || null);
+                setHiddenCategories([]);
+              }}
+            >
+              <option value="">All Groups</option>
+              {occupationOptions.map((occ) => (
+                <option key={occ.id} value={occ.id}>
+                  {occ.name}
+                </option>
+              ))}
+            </Select>
+          </ControlLabel>
+        )}
+        {isNational && sourceHasStates && selectedOccupation && (
+          <ControlLabel>
+            States shown:
+            <Select
+              value={statesShown.toString()}
+              onChange={(e) => {
+                const val = e.target.value;
+                setStatesShown(val === 'all' ? 'all' : parseInt(val, 10));
+                setHiddenCategories([]);
+              }}
+            >
+              <option value="12">Top 12</option>
+              <option value="20">Top 20</option>
+              <option value="all">All</option>
+            </Select>
+          </ControlLabel>
+        )}
         <ControlLabel>
           Metric:
           <ToggleGroup>
@@ -238,7 +320,7 @@ const TimeSeriesChart = ({ cityId }: Props) => {
       </ControlsRow>
       <ChartContainer>
         <StackedAreaChart
-          data={selectedData}
+          data={displayData || selectedData}
           regionId={cityId}
           metric={metric}
           hiddenGroups={hiddenCategories}
@@ -248,8 +330,13 @@ const TimeSeriesChart = ({ cityId }: Props) => {
       <SideText
         regionId={cityId}
         regionName={regionName}
-        data={selectedData}
+        data={displayData || selectedData}
         metric={metric}
+        selectedOccupationName={
+          selectedOccupation
+            ? occupationOptions.find(o => o.id === selectedOccupation)?.name
+            : undefined
+        }
       />
       <CategoryLabels
         categories={categories}

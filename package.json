@@ -76,6 +76,7 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@types/react-csv": "^1.1.1"
   }
 }

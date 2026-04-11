@@ -324,7 +324,7 @@ export interface SettingsOptions {
       };
   cityNodeSizing?: boolean;
   cityColorBy?: boolean;
-  aggregationMode?: boolean;
+  aggregationMode?: boolean | { stateDistributionEnabled: boolean };
   rcaThreshold?: boolean;
 }
 
@@ -486,12 +486,20 @@ const Settings = (props: Props) => {
       params.aggregation === AggregationMode.industries
         ? CompostionButtonHighlight
         : CompostionButtonBase;
+    const StateDistButton =
+      params.aggregation === AggregationMode.stateDistribution
+        ? CompostionButtonHighlight
+        : CompostionButtonBase;
+    const stateDistEnabled =
+      typeof settingsOptions.aggregationMode === "object" &&
+      settingsOptions.aggregationMode.stateDistributionEnabled;
+    const isEnabled = settingsOptions.aggregationMode === true || stateDistEnabled;
     const InputContainer =
-      settingsOptions.aggregationMode === true
+      isEnabled
         ? SettingsInputContainer
         : DisabledSettingsInputContainer;
     const LabelContainer =
-      settingsOptions.aggregationMode === true ? Label : DisabledLabel;
+      isEnabled ? Label : DisabledLabel;
     aggregationMode = (
       <SettingGrid>
         <Tooltip explanation={getString("glossary-cluster-vs-naics")} />
@@ -513,6 +521,15 @@ const Settings = (props: Props) => {
           >
             {getString("global-ui-skill-clusters")}
           </ClusterButton>
+          {stateDistEnabled && (
+            <StateDistButton
+              onClick={() =>
+                updateSetting("aggregation", AggregationMode.stateDistribution)
+              }
+            >
+              State Distribution
+            </StateDistButton>
+          )}
         </InputContainer>
       </SettingGrid>
     );
