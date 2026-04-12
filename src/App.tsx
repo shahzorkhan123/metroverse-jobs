@@ -5,6 +5,7 @@ import { Route, Switch } from "react-router-dom";
 import Landing from "./pages/landing";
 import City from "./pages/cities/profiles";
 import Informational from "./pages/informational";
+import Analysis from "./pages/analysis";
 import { Routes } from "./routing/routes";
 import "./styling/fonts/fonts.css";
 import AppContext, { useWindowWidth } from "./contextProviders/appContext";
@@ -26,6 +27,7 @@ function App() {
         <Switch>
           <Route exact path={Routes.Landing} component={Landing} />
           <Route path={Routes.CityBase} component={City} />
+          <Route path={Routes.AnalysisBase} component={Analysis} />
           <Route path={Routes.AboutBase} component={Informational} />
           <Route path={Routes.ContactBase} component={Informational} />
           <Route path={Routes.FaqBase} component={Informational} />

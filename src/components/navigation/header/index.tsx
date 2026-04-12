@@ -9,7 +9,7 @@ import {
 } from "../../../styling/styleUtils";
 import raw from "raw.macro";
 import { Link, useRouteMatch } from "react-router-dom";
-import { Routes } from "../../../routing/routes";
+import { Routes, AnalysisRoutes } from "../../../routing/routes";
 import { createRoute } from "../../../routing/Utils";
 import useFluent from "../../../hooks/useFluent";
 import useCurrentCityId from "../../../hooks/useCurrentCityId";
@@ -257,6 +257,7 @@ const Header = () => {
   const { width } = useWindowWidth();
   const matchCity = useRouteMatch(Routes.CityBase);
   const matchSimilarCities = useRouteMatch(Routes.CitySimilarCities);
+  const matchAnalysis = useRouteMatch(AnalysisRoutes.AnalysisBase);
   const matchAbout = useRouteMatch(Routes.AboutBase);
   const matchContact = useRouteMatch(Routes.ContactBase);
   const matchFaq = useRouteMatch(Routes.FaqBase);
@@ -306,6 +307,11 @@ const Header = () => {
             <StyledLink onClick={closeMenu} to={similarCitiesRoute}>
               <MobileH2 $active={Boolean(matchSimilarCities)}>
                 {getString("navigation-city-similarity")}
+              </MobileH2>
+            </StyledLink>
+            <StyledLink onClick={closeMenu} to={AnalysisRoutes.AnalysisBase}>
+              <MobileH2 $active={Boolean(matchAnalysis)}>
+                Analysis
               </MobileH2>
             </StyledLink>
             <StyledLink onClick={closeMenu} to={Routes.AboutWhatIs}>
@@ -363,6 +369,11 @@ const Header = () => {
             <H2 $active={Boolean(matchSimilarCities)}>
               {getString("navigation-city-similarity")}
               <BetaLabel>Beta</BetaLabel>
+            </H2>
+          </StyledLink>
+          <StyledLink to={AnalysisRoutes.AnalysisBase}>
+            <H2 $active={Boolean(matchAnalysis)}>
+              Analysis
             </H2>
           </StyledLink>
           <StyledLink to={Routes.AboutWhatIs}>

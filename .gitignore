@@ -39,3 +39,6 @@ data/raw/*
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Notebook figures (generated on execution — do not commit)
+notebooks/.ipynb_checkpoints/

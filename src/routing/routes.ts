@@ -18,6 +18,10 @@ export const CityRoutes = {
   CitySimilarCities: "/city/:cityId/similar-cities",
 } as const;
 
+export const AnalysisRoutes = {
+  AnalysisBase: "/analysis",
+};
+
 export const AboutRoutes = {
   AboutBase: "/about",
   AboutWhatIs: "/about/what-is-metroverse",
@@ -38,6 +42,7 @@ export const FaqRoutes = {
 export const Routes = {
   Landing: "/",
   ...CityRoutes,
+  ...AnalysisRoutes,
   ...AboutRoutes,
   ...ContactRoutes,
   ...FaqRoutes,
