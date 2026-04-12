@@ -33,6 +33,7 @@ build.zip
 
 # Downloaded data files (keep in data/raw/)
 data/raw/*
+.playwright-mcp/*
 
 # Python
 __pycache__/
