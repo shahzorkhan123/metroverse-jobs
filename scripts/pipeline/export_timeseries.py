@@ -827,8 +827,10 @@ def export_plfs() -> None:
     """Export PLFS India time-series JSON file.
 
     National: uses PLFS % distributions (MoSPI API) scaled by ILOSTAT total.
-    States: uses Census pop × WPR proportional weights, national NCO %,
-            and state-specific wages where available (3 years from PDF Table 55).
+    States: OMITTED until real unit-level microdata is available.
+            Previously, state NCO breakdown was synthetic (national % × state
+            total), which is misleading. State data will be added once
+            ind_plfs_microdata.csv is produced from PLFS unit-level TXT files.
     GDP = employment × monthly_wage × 12 (where wage data available).
     """
     print(f"\n=== PLFS India Time Series ===\n")
@@ -903,73 +905,70 @@ def export_plfs() -> None:
         if not any(v is not None for v in national_ts[did]["gdp"]):
             del national_ts[did]["gdp"]
 
-    # --- State data ---
-    print(f"\n  Computing state employment...")
-    state_emp = _compute_state_employment(active_years, ilostat_totals)
-    print(f"  States with data: {len(state_emp)}")
+    # Load real state × NCO data from per-year snapshot JSON files.
+    # Each bls-data-in-{year}.json was produced from PLFS microdata by
+    # import_india_subnational_from_microdata(), giving real state × NCO employment.
+    state_ts: dict[str, dict[str, dict]] = {}  # regionId -> {nco_id -> {emp, gdp}}
+    state_region_meta: dict[str, dict] = {}     # regionId -> {name, regionType}
+    div_ids = {d["id"] for d in NCO_DIVISIONS}
 
-    all_data = {"national-india": national_ts}
+    for yi, year in enumerate(active_years):
+        snapshot_path = config.PUBLIC_DATA_DIR / f"bls-data-in-{year}.json"
+        if not snapshot_path.exists():
+            print(f"  [states] Snapshot not found for {year}, skipping")
+            continue
+        with open(snapshot_path, encoding="utf-8") as f:
+            snapshot = json.load(f)
+
+        for region in snapshot.get("regions", []):
+            if region["regionType"] != "State":
+                continue
+            rid = region["regionId"]
+            # Skip entries where the state name uses "&" — prefer "and" canonical forms
+            if "&" in region.get("name", ""):
+                continue
+
+            if rid not in state_ts:
+                state_ts[rid] = {did: {"emp": [None] * len(active_years), "gdp": [None] * len(active_years)}
+                                 for did in div_ids}
+                state_region_meta[rid] = {"name": region["name"], "regionType": "State"}
+
+            rd = snapshot.get("regionData", {}).get(rid, {})
+            year_occs = rd.get(str(year), [])
+            for occ in year_occs:
+                soc = str(occ.get("socCode", ""))
+                if soc in div_ids:
+                    state_ts[rid][soc]["emp"][yi] = occ.get("totEmp")
+                    gdp_val = occ.get("gdp")
+                    if gdp_val and gdp_val > 0:
+                        state_ts[rid][soc]["gdp"][yi] = gdp_val
+
+    n_states = len(state_ts)
+    print(f"  [states] Loaded {n_states} states from snapshot JSONs")
+
+    # Strip GDP arrays that are entirely null
+    for rid in state_ts:
+        for did in div_ids:
+            if not any(v is not None and v > 0 for v in state_ts[rid][did]["gdp"]):
+                del state_ts[rid][did]["gdp"]
+            if state_ts[rid][did].get("gdp") is not None:
+                has_any_gdp = True
+
+    all_data: dict = {"national-india": national_ts}
+    all_data.update({rid: state_ts[rid] for rid in sorted(state_ts)})
+
     regions = [{
         "regionId": "national-india",
         "name": "India",
         "regionType": "National",
     }]
-
-    for state_name in sorted(state_emp.keys()):
-        region_id = _make_region_id("State", state_name)
+    for rid in sorted(state_ts):
+        meta_entry = state_region_meta[rid]
         regions.append({
-            "regionId": region_id,
-            "name": state_name,
+            "regionId": rid,
+            "name": meta_entry["name"],
             "regionType": "State",
         })
-
-        state_ts: dict = {}
-        for div in NCO_DIVISIONS:
-            state_ts[div["id"]] = {"emp": [], "gdp": []}
-
-        state_has_gdp = False
-        for yi, year in enumerate(active_years):
-            state_total = state_emp[state_name].get(year)
-            pcts = PLFS_PERCENTAGES[year]
-
-            # If state has no WPR for this year, emit None for all divisions
-            if state_total is None or state_total <= 0:
-                for div in NCO_DIVISIONS:
-                    state_ts[div["id"]]["emp"].append(None)
-                    state_ts[div["id"]]["gdp"].append(None)
-                continue
-
-            # Wages: prefer state-specific, fallback to national
-            state_wages = PLFS_STATE_WAGES.get(year, {}).get(state_name)
-            national_wages = PLFS_WAGES.get(year)
-
-            for div in NCO_DIVISIONS:
-                did = div["id"]
-                pct = pcts.get(did, 0)
-                emp = round(state_total * pct / 100)
-                state_ts[did]["emp"].append(emp)
-
-                # GDP: use state wage if available, else national
-                wage = None
-                if state_wages and did in state_wages:
-                    wage = state_wages[did]
-                elif national_wages and did in national_wages:
-                    wage = national_wages[did]
-
-                if wage is not None and wage > 0:
-                    gdp = round(emp * wage * 12)
-                    state_ts[did]["gdp"].append(gdp)
-                    state_has_gdp = True
-                    has_any_gdp = True
-                else:
-                    state_ts[did]["gdp"].append(None)
-
-        # Strip empty GDP arrays
-        for did in state_ts:
-            if not any(v is not None for v in state_ts[did]["gdp"]):
-                del state_ts[did]["gdp"]
-
-        all_data[region_id] = state_ts
 
     # Build output
     groups = [

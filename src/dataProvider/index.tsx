@@ -184,12 +184,42 @@ export const StaticDataProvider: React.FC = ({ children }) => {
         if (cancelled) return;
         setMeta(metaData);
 
-        // Step 2: Determine initial country from URL or first dataset
+        // Step 2: Determine initial country from URL param, regionId, or default to 'us'
         const urlParams = new URLSearchParams(window.location.hash.split('?')[1] || '');
         const urlCountry = urlParams.get('country');
+
+        // Try to detect country from the hash regionId (e.g. /#/city/national-india/)
+        let hashRegionCountry: string | null = null;
+        const regionMatch = window.location.hash.match(/#\/city\/([^/?]+)/);
+        if (regionMatch) {
+          const regionSlug = regionMatch[1];
+          const countriesList: Array<{code: string; name: string}> = (metaData as any).countries || [];
+          // Check national region: national-{name-slug} or national-{code}
+          for (const c of countriesList) {
+            const nameSlug = c.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            if (regionSlug === `national-${nameSlug}` || regionSlug === `national-${c.code}`) {
+              hashRegionCountry = c.code;
+              break;
+            }
+          }
+          // Check state/metro regions via stateAbbreviations
+          if (!hashRegionCountry && (regionSlug.startsWith('state-') || regionSlug.startsWith('metro-'))) {
+            const slug = regionSlug.replace(/^(state|metro)-/, '');
+            for (const [code, cm] of Object.entries(metaData.countryMetadata) as Array<[string, any]>) {
+              const abbrevs: {[name: string]: string} = cm.stateAbbreviations || {};
+              const match = Object.keys(abbrevs).some(
+                name => name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') === slug
+              );
+              if (match) { hashRegionCountry = code; break; }
+            }
+          }
+        }
+
         const initialCountry = (urlCountry && metaData.countryMetadata[urlCountry])
           ? urlCountry
-          : metaData.datasets[0]?.country || 'us';
+          : (hashRegionCountry && metaData.countryMetadata[hashRegionCountry])
+            ? hashRegionCountry
+            : (metaData.countryMetadata['us'] ? 'us' : metaData.datasets[0]?.country || 'us');
 
         // Step 3: Pick the dataset for initial country
         const countryYears = metaData.yearsByCountry[initialCountry] || [];

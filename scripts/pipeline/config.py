@@ -50,7 +50,7 @@ COUNTRIES = {
         "total_workers": 483_000_000,  # PLFS 2023-24 estimate (~48.3 crore)
         "national_levels": [1, 2, 3],
         "state_levels": [1, 2, 3],
-        "city_levels": [1, 2, 3],
+        "city_levels": [1],   # NCO level 1 only for city — statistically reliable across all years
         "min_obs_state": 30,
         "min_obs_city": 30,
         "district_top_n": 0,

@@ -212,13 +212,11 @@ def ingest_timeseries(cur, path, country_code, dataset_id, source, classificatio
         r.get("regionId") for r in regions_list if r.get("regionType") == "State"
     }
 
-    # Ingest stats
+    # Ingest stats — skip state rows for plfs_in (they were synthetic:
+    # national NCO % × state total; now removed from the source JSON)
     for region_id, group_map in ts_data.items():
-        # is_synthetic=1 for India PLFS state rows (sector shares are national %)
-        is_plfs_state = (
-            dataset_id == "plfs_in" and region_id in state_region_ids
-        )
-        is_synthetic = 1 if is_plfs_state else 0
+        if dataset_id == "plfs_in" and region_id in state_region_ids:
+            continue
 
         for gid, metrics in group_map.items():
             occ_key = f"{dataset_id}:{gid}"
@@ -235,8 +233,8 @@ def ingest_timeseries(cur, path, country_code, dataset_id, source, classificatio
                 cur.execute(
                     "INSERT OR REPLACE INTO occupation_year_stats "
                     "(dataset_id, region_id, occupation_key, year, employment, mean_annual_wage, gdp, is_synthetic) "
-                    "VALUES (?,?,?,?,?,NULL,?,?)",
-                    (dataset_id, region_id, occ_key, yr, emp, gdp, is_synthetic),
+                    "VALUES (?,?,?,?,?,NULL,?,0)",
+                    (dataset_id, region_id, occ_key, yr, emp, gdp),
                 )
                 rows_inserted += 1
 
@@ -252,7 +250,13 @@ DATASETS = [
     ("snapshot_us", "us", "snapshot", "SOC_2018",
      "US BLS OES 2024 cross-sectional snapshot (levels 1-4, national + state + metro)"),
     ("snapshot_in", "in", "snapshot", "NCO_2015",
-     "India PLFS 2024 cross-sectional snapshot (levels 1-3, national + state + metro)"),
+     "India PLFS cross-sectional snapshots (2019, 2022, 2024) — real state × NCO data from microdata"),
+    ("snapshot_in_2018", "in", "snapshot", "NCO_2015", "India PLFS 2017-18 microdata — real state × NCO"),
+    ("snapshot_in_2019", "in", "snapshot", "NCO_2015", "India PLFS 2018-19 microdata — real state × NCO"),
+    ("snapshot_in_2020", "in", "snapshot", "NCO_2015", "India PLFS 2019-20 microdata — real state × NCO"),
+    ("snapshot_in_2021", "in", "snapshot", "NCO_2015", "India PLFS 2020-21 microdata — real state × NCO"),
+    ("snapshot_in_2022", "in", "snapshot", "NCO_2015", "India PLFS 2021-22 microdata — real state × NCO"),
+    ("snapshot_in_2023", "in", "snapshot", "NCO_2015", "India PLFS 2022-23 microdata — real state × NCO"),
     ("bls_oes_us", "us", "bls_oes", "SOC_2018",
      "US BLS OES time series (national + state + metro, SOC major groups)"),
     ("plfs_in", "in", "plfs", "NCO_2015",
@@ -265,12 +269,25 @@ DATASETS = [
 ]
 
 SNAPSHOT_FILES = [
-    # (glob pattern, country_code, dataset_id)
+    # (filename, country_code, dataset_id)
     ("bls-data-us-2024.json",       "us", "snapshot_us"),
     ("bls-data-us-2024-3.json",     "us", "snapshot_us"),
     ("bls-data-us-2024-4.json",     "us", "snapshot_us"),
     ("bls-data-in-2024.json",       "in", "snapshot_in"),
     ("bls-data-in-2024-3.json",     "in", "snapshot_in"),
+    # Real microdata snapshots — all years from unit-level PLFS data
+    ("bls-data-in-2018.json",       "in", "snapshot_in_2018"),
+    ("bls-data-in-2018-3.json",     "in", "snapshot_in_2018"),
+    ("bls-data-in-2019.json",       "in", "snapshot_in_2019"),
+    ("bls-data-in-2019-3.json",     "in", "snapshot_in_2019"),
+    ("bls-data-in-2020.json",       "in", "snapshot_in_2020"),
+    ("bls-data-in-2020-3.json",     "in", "snapshot_in_2020"),
+    ("bls-data-in-2021.json",       "in", "snapshot_in_2021"),
+    ("bls-data-in-2021-3.json",     "in", "snapshot_in_2021"),
+    ("bls-data-in-2022.json",       "in", "snapshot_in_2022"),
+    ("bls-data-in-2022-3.json",     "in", "snapshot_in_2022"),
+    ("bls-data-in-2023.json",       "in", "snapshot_in_2023"),
+    ("bls-data-in-2023-3.json",     "in", "snapshot_in_2023"),
 ]
 
 TIMESERIES_FILES = [
@@ -351,30 +368,30 @@ def build(verify=False):
 def run_verify(cur):
     print("\n--- Verification ---")
     checks = [
-        ("datasets >= 6",
-         "SELECT COUNT(*) FROM datasets", lambda n: n >= 6),
-        ("India states = 36",
+        ("datasets >= 12",
+         "SELECT COUNT(*) FROM datasets", lambda n: n >= 12),
+        ("India states >= 36",
          "SELECT COUNT(*) FROM regions WHERE country_code='in' AND region_type='State'",
-         lambda n: n == 36),
+         lambda n: n >= 36),
         ("US states >= 50",
          "SELECT COUNT(*) FROM regions WHERE country_code='us' AND region_type='State'",
          lambda n: n >= 50),
-        ("PLFS rows ~= 37x9x7",
-         "SELECT COUNT(*) FROM occupation_year_stats WHERE dataset_id='plfs_in'",
-         lambda n: n >= 37 * 9 * 7 * 0.9),
-        ("PLFS state rows synthetic",
+        ("PLFS national rows present",
+         "SELECT COUNT(*) FROM occupation_year_stats WHERE dataset_id='plfs_in' AND region_id='national-india'",
+         lambda n: n >= 9 * 7 * 0.9),
+        ("PLFS no synthetic state rows",
          "SELECT COUNT(*) FROM occupation_year_stats "
-         "WHERE dataset_id='plfs_in' AND is_synthetic=1 AND region_id LIKE 'state-%'",
-         lambda n: n > 0),
+         "WHERE dataset_id='plfs_in' AND is_synthetic=1",
+         lambda n: n == 0),
         ("US BLS OES years >= 20",
          "SELECT COUNT(DISTINCT year) FROM occupation_year_stats WHERE dataset_id='bls_oes_us'",
          lambda n: n >= 20),
         ("ILOSTAT India years >= 30",
          "SELECT COUNT(DISTINCT year) FROM occupation_year_stats WHERE dataset_id='ilostat_in'",
          lambda n: n >= 30),
-        ("Bihar employment 2024 > 0",
+        ("Bihar snapshot employment 2024 > 0",
          "SELECT employment FROM occupation_year_stats "
-         "WHERE dataset_id='plfs_in' AND region_id='state-bihar' AND year=2024 LIMIT 1",
+         "WHERE dataset_id='snapshot_in' AND region_id='state-bihar' AND year=2024 LIMIT 1",
          lambda n: n is not None and n > 0),
     ]
 

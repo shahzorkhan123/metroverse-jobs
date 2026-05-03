@@ -133,7 +133,7 @@ const CompositionTreeMap = (props: Props) => {
   const industryMap = useGlobalIndustryMap();
   const getString = useFluent();
   const windowDimensions = useWindowWidth();
-  const { countryMetadata } = useStaticData();
+  const { countryMetadata, selectedCountry } = useStaticData();
   const hierarchyStrategy = getHierarchyStrategy(countryMetadata?.hierarchyRules?.strategy || 'soc2018');
   const dynamicColorMap = useSectorMap();
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -576,7 +576,7 @@ const CompositionTreeMap = (props: Props) => {
             cursor={"default"}
             overrideStyles={true}
           >
-            <ErrorBoundary>
+            <ErrorBoundary key={`${cityId}-${selectedCountry}`}>
               <TreeMap
                 highlighted={highlighted}
                 cells={transformed.treeMapCells}

@@ -708,6 +708,19 @@ def export_meta(country_configs: list[dict],
         key=lambda d: (d["country"], d["year"]),
     )
 
+    # Preserve timeseriesFiles from existing catalog — the pipeline doesn't
+    # regenerate timeseries JSONs on every run, so we must not overwrite this.
+    timeseries_files = existing.get("timeseriesFiles", {
+        "us": {
+            "oes":     {"base": "timeseries-us-oes.json", "metro": "timeseries-us-oes-metro.json"},
+            "ilostat": {"base": "timeseries-ilostat-us.json"},
+        },
+        "in": {
+            "plfs":    {"base": "timeseries-plfs-in.json"},
+            "ilostat": {"base": "timeseries-ilostat-in.json"},
+        },
+    })
+
     meta = {
         "datasets": datasets,
         "levelFiles": level_files,
@@ -717,6 +730,7 @@ def export_meta(country_configs: list[dict],
             c: sorted(list(ys)) for c, ys in sorted(years_by_country.items())
         },
         "countryMetadata": country_metadata,
+        "timeseriesFiles": timeseries_files,
         "lastUpdated": date.today().isoformat(),
     }
 

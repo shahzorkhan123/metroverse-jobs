@@ -15,12 +15,17 @@ from pathlib import Path
 from . import config, db
 
 STATE_NAME_CANDIDATES = [
+    # Numeric code columns first — _state_code_from_row can extract code from digits,
+    # and _state_name_from_row maps codes to names via INDIA_STATE_CODE_TO_NAME.
+    "state_ut_code", "state_code",
+    # Named columns as fallback
     "st_name", "state_name", "state", "state_ut", "state_ut_name", "st",
-    "state_ut_code",
 ]
 CITY_NAME_CANDIDATES = [
     "city_name", "city", "district_name", "district", "district_code",
     "town_name", "town",
+    # DTA microdata district columns (added for Nesstar/Stata exports)
+    "distcode_perv1", "distcode_per_fv",
 ]
 WEIGHT_CANDIDATES = [
     "mult", "weight", "wt", "survey_weight", "subsample_multiplier",
