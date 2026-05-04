@@ -364,7 +364,7 @@ def export_oes(raw_dir: Path | None = None,
     }
     base_path = config.PUBLIC_DATA_DIR / "timeseries-us-oes.json"
     with open(base_path, "w", encoding="utf-8") as f:
-        json.dump(base_json, f, separators=(",", ":"))
+        json.dump(base_json, f, indent=2)
     print(f"\n  Base: {base_path.name} ({len(base_regions)} regions, "
           f"{len(base_data)} with data)")
 
@@ -378,7 +378,7 @@ def export_oes(raw_dir: Path | None = None,
         }
         metro_path = config.PUBLIC_DATA_DIR / "timeseries-us-oes-metro.json"
         with open(metro_path, "w", encoding="utf-8") as f:
-            json.dump(metro_json, f, separators=(",", ":"))
+            json.dump(metro_json, f, indent=2)
         print(f"  Metro: {metro_path.name} ({len(metro_regions)} regions)")
 
     print(f"\n  Done: {len(years)} years, {len(groups)} groups")
@@ -614,7 +614,7 @@ def export_ilostat(country: str = "both") -> None:
 
         out_path = config.PUBLIC_DATA_DIR / f"timeseries-ilostat-{cc}.json"
         with open(out_path, "w", encoding="utf-8") as f:
-            json.dump(output, f, separators=(",", ":"))
+            json.dump(output, f, indent=2)
         print(f"    Output: {out_path.name} ({len(groups)} groups, "
               f"{len(years)} years)")
 
@@ -990,7 +990,7 @@ def export_plfs() -> None:
 
     out_path = config.PUBLIC_DATA_DIR / "timeseries-plfs-in.json"
     with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(output, f, separators=(",", ":"))
+        json.dump(output, f, indent=2)
     print(f"\n  Output: {out_path.name} ({len(groups)} groups, "
           f"{len(active_years)} years, {len(regions)} regions, "
           f"GDP={'yes' if has_any_gdp else 'no'})")
