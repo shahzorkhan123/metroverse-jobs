@@ -264,11 +264,14 @@ DATASETS = [
      "ILOSTAT India national time series 1991-2025 (ISCO-08 major groups)"),
 ]
 
+SNAPSHOT_FILES_FULL = [
+    # (filename, country_code, dataset_id)
+    ("bls-data-us-2024-3.json",     "us", "snapshot_us"),
+    ("bls-data-us-2024-4.json",     "us", "snapshot_us"),
+]
 SNAPSHOT_FILES = [
     # (filename, country_code, dataset_id)
     ("bls-data-us-2024.json",       "us", "snapshot_us"),
-    ("bls-data-us-2024-3.json",     "us", "snapshot_us"),
-    ("bls-data-us-2024-4.json",     "us", "snapshot_us"),
     ("bls-data-in-2024.json",       "in", "snapshot_in"),
     ("bls-data-in-2024-3.json",     "in", "snapshot_in"),
     # Real microdata snapshots — all years from unit-level PLFS data
@@ -286,18 +289,27 @@ SNAPSHOT_FILES = [
     ("bls-data-in-2023-3.json",     "in", "snapshot_in_2023"),
 ]
 
+TIMESERIES_FILES_FULL = [
+    ("timeseries-us-oes-metro.json","us", "bls_oes_us", "bls_oes", "SOC_2018"),
+]
 TIMESERIES_FILES = [
     # (filename, country_code, dataset_id, source, classification)
     ("timeseries-us-oes.json",      "us", "bls_oes_us", "bls_oes", "SOC_2018"),
-    ("timeseries-us-oes-metro.json","us", "bls_oes_us", "bls_oes", "SOC_2018"),
     ("timeseries-plfs-in.json",     "in", "plfs_in",   "plfs",    "NCO_2015"),
     ("timeseries-ilostat-us.json",  "us", "ilostat_us","ilostat", "ISCO_08"),
     ("timeseries-ilostat-in.json",  "in", "ilostat_in","ilostat", "ISCO_08"),
 ]
 
 
-def build(verify=False):
-    print(f"Building {DB_PATH} ...")
+def build(verify=False, lite=False):
+    """Build analysis.db.
+
+    lite=True  → omit US OES metro timeseries + US snapshot level 3/4
+                 (~30MB vs ~137MB full). Sufficient for India-focused notebooks.
+    lite=False → full dataset including US metro and detailed levels.
+    """
+    label = " (lite)" if lite else ""
+    print(f"Building {DB_PATH}{label} ...")
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     conn = sqlite3.connect(DB_PATH)
@@ -323,8 +335,11 @@ def build(verify=False):
 
     total_rows = 0
 
+    snap_files = SNAPSHOT_FILES if lite else SNAPSHOT_FILES + SNAPSHOT_FILES_FULL
+    ts_files   = TIMESERIES_FILES if lite else TIMESERIES_FILES + TIMESERIES_FILES_FULL
+
     # Ingest snapshots
-    for fname, country, ds_id in SNAPSHOT_FILES:
+    for fname, country, ds_id in snap_files:
         fpath = DATA_DIR / fname
         if not fpath.exists():
             print(f"  [skip] {fname} not found")
@@ -335,7 +350,7 @@ def build(verify=False):
         conn.commit()
 
     # Ingest time series
-    for fname, country, ds_id, source, cls in TIMESERIES_FILES:
+    for fname, country, ds_id, source, cls in ts_files:
         fpath = DATA_DIR / fname
         if not fpath.exists():
             print(f"  [skip] {fname} not found")
@@ -357,8 +372,20 @@ def build(verify=False):
     if verify:
         run_verify(cur)
 
+    # Compact the DB — recovers free pages from dropped tables/deleted rows
+    conn.execute("VACUUM")
     conn.close()
-    print(f"\nDone. DB written to {DB_PATH}")
+
+    size_mb = DB_PATH.stat().st_size / 1e6
+    print(f"\nDone. DB written to {DB_PATH} ({size_mb:.1f} MB)")
+
+    # Always write a compressed copy for git (analysis.db is gitignored)
+    gz_path = DB_PATH.with_suffix(".db.gz")
+    import gzip as _gzip, shutil as _shutil
+    with open(DB_PATH, "rb") as f_in, _gzip.open(gz_path, "wb", compresslevel=6) as f_out:
+        _shutil.copyfileobj(f_in, f_out)
+    gz_mb = gz_path.stat().st_size / 1e6
+    print(f"Compressed: {gz_path.name} ({gz_mb:.1f} MB) — commit this file")
 
 
 def run_verify(cur):
@@ -412,5 +439,7 @@ def run_verify(cur):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Rebuild data/analysis.db from public/data JSONs")
     parser.add_argument("--verify", action="store_true", help="Run sanity checks after build")
+    parser.add_argument("--lite", action="store_true",
+                        help="Lite build: skip US OES metro + US snapshot level 3/4 (~30MB vs ~137MB)")
     args = parser.parse_args()
-    build(verify=args.verify)
+    build(verify=args.verify, lite=args.lite)

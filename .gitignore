@@ -35,6 +35,11 @@ build.zip
 data/raw/*
 .playwright-mcp/*
 
+# Generated SQLite databases — rebuilt by pipeline, not committed directly.
+# Commit the compressed .gz instead (see scripts/rebuild_analysis_db.py).
+data/*.db
+!data/*.db.gz
+
 # Python
 __pycache__/
 *.pyc

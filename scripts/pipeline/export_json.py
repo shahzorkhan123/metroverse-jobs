@@ -700,7 +700,14 @@ def export_meta(country_configs: list[dict],
 
         long_code = cfg.get("country_code") or short_to_long.get(short)
         if long_code:
-            country_metadata[short] = default_country_metadata(long_code)
+            new_meta = default_country_metadata(long_code)
+            # Preserve manually maintained fields that the pipeline doesn't generate
+            # (e.g. stateAbbreviations added outside the pipeline)
+            existing_meta = existing.get("countryMetadata", {}).get(short, {})
+            for field in ("stateAbbreviations", "flagEmoji"):
+                if field in existing_meta and field not in new_meta:
+                    new_meta[field] = existing_meta[field]
+            country_metadata[short] = new_meta
 
     years_seen = sorted({d["year"] for d in datasets_by_key.values()})
     datasets = sorted(

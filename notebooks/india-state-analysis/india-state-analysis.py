@@ -93,16 +93,25 @@ else:
     REPO_ROOT = os.path.dirname(os.path.dirname(HERE))
 
 DB_PATH = os.path.join(REPO_ROOT, "data", "analysis.db")
+DB_GZ   = DB_PATH + ".gz"
 FIGURES_DIR = os.path.join(HERE if not IN_COLAB else
               "/content/metroverse-jobs/notebooks/india-state-analysis",
               "figures")
 os.makedirs(FIGURES_DIR, exist_ok=True)
 
+# Auto-decompress analysis.db.gz if the plain DB is missing
 if not os.path.exists(DB_PATH):
-    raise FileNotFoundError(
-        f"analysis.db not found at {DB_PATH}\n"
-        "Run: python scripts/rebuild_analysis_db.py"
-    )
+    if os.path.exists(DB_GZ):
+        print(f"Decompressing {os.path.basename(DB_GZ)} ...")
+        import gzip as _gzip, shutil as _shutil
+        with _gzip.open(DB_GZ, "rb") as f_in, open(DB_PATH, "wb") as f_out:
+            _shutil.copyfileobj(f_in, f_out)
+        print(f"  Done ({os.path.getsize(DB_PATH)/1e6:.1f} MB)")
+    else:
+        raise FileNotFoundError(
+            f"analysis.db not found at {DB_PATH}\n"
+            "Run: python scripts/rebuild_analysis_db.py"
+        )
 
 print(f"DB : {DB_PATH}  ({os.path.getsize(DB_PATH)/1e6:.1f} MB)")
 print(f"Figures → {FIGURES_DIR}")
