@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "e765f1b5589e560a63908ce3ebfaa749",
+    "revision": "83b469f780ec911febd42e64065feae5",
     "url": "/metroverse-jobs/index.html"
   },
   {
-    "revision": "4c6c0e65f801bd8a50f0",
+    "revision": "8c4f7b6dad6cb4fa0fe8",
     "url": "/metroverse-jobs/static/css/main.59adfc21.chunk.css"
   },
   {
-    "revision": "da30a7cc8fa715915fa6",
-    "url": "/metroverse-jobs/static/js/2.74d7443b.chunk.js"
+    "revision": "f087f931e3931fcc78fc",
+    "url": "/metroverse-jobs/static/js/2.b3172c92.chunk.js"
   },
   {
     "revision": "5bf5cb2d449a7ec73b5adda375787a97",
-    "url": "/metroverse-jobs/static/js/2.74d7443b.chunk.js.LICENSE.txt"
+    "url": "/metroverse-jobs/static/js/2.b3172c92.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "4c6c0e65f801bd8a50f0",
-    "url": "/metroverse-jobs/static/js/main.4e09d524.chunk.js"
+    "revision": "8c4f7b6dad6cb4fa0fe8",
+    "url": "/metroverse-jobs/static/js/main.7190addb.chunk.js"
   },
   {
     "revision": "9ef1fca039632cc865c0",
