@@ -539,9 +539,25 @@ def import_india_subnational_from_microdata(
     city_count = 0
     region_cache: dict[tuple[str, str], int] = {}
 
+    # State-level filter: compute total unweighted obs per state.
+    # Include ALL NCO cells for states that have sufficient total coverage.
+    # Exclude entire states with too few total observations (sparse UTs like Lakshadweep).
+    state_total_obs: dict[str, int] = {}
+    for (rtype, rname, _occ), s in accum.items():
+        if rtype == "State":
+            state_total_obs[rname] = state_total_obs.get(rname, 0) + int(s["obs_n"])
+    # Threshold: ~200 total obs per state (≈20 per NCO group on average across 9 divisions)
+    min_state_total_obs = min_obs_state * 7 if min_obs_state else 200
+    allowed_states = {name for name, n in state_total_obs.items() if n >= min_state_total_obs}
+    excluded = sorted(set(state_total_obs) - allowed_states)
+    if excluded:
+        import logging
+        logging.getLogger(__name__).info(
+            f"Excluded {len(excluded)} states with <{min_state_total_obs} total obs: {excluded}"
+        )
+
     for (region_type, region_name, occ_code), stats in accum.items():
-        obs_n = int(stats["obs_n"])
-        if region_type == "State" and obs_n < min_obs_state:
+        if region_type == "State" and region_name not in allowed_states:
             continue
         if region_type == city_region_type and region_name not in allowed_city_names:
             continue

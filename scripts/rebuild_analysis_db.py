@@ -212,11 +212,8 @@ def ingest_timeseries(cur, path, country_code, dataset_id, source, classificatio
         r.get("regionId") for r in regions_list if r.get("regionType") == "State"
     }
 
-    # Ingest stats — skip state rows for plfs_in (they were synthetic:
-    # national NCO % × state total; now removed from the source JSON)
+    # Ingest stats — state rows for plfs_in are now REAL (from PLFS microdata per year)
     for region_id, group_map in ts_data.items():
-        if dataset_id == "plfs_in" and region_id in state_region_ids:
-            continue
 
         for gid, metrics in group_map.items():
             occ_key = f"{dataset_id}:{gid}"
@@ -260,8 +257,7 @@ DATASETS = [
     ("bls_oes_us", "us", "bls_oes", "SOC_2018",
      "US BLS OES time series (national + state + metro, SOC major groups)"),
     ("plfs_in", "in", "plfs", "NCO_2015",
-     "India PLFS time series 2018-2024 (national + state, NCO divisions). "
-     "NOTE: state-level sector shares are synthetic (national % × state total)."),
+     "India PLFS time series 2018-2024 (national + 36 states, NCO divisions, REAL microdata)."),
     ("ilostat_us", "us", "ilostat", "ISCO_08",
      "ILOSTAT US national time series 1991-2025 (ISCO-08 major groups)"),
     ("ilostat_in", "in", "ilostat", "ISCO_08",
@@ -379,10 +375,10 @@ def run_verify(cur):
         ("PLFS national rows present",
          "SELECT COUNT(*) FROM occupation_year_stats WHERE dataset_id='plfs_in' AND region_id='national-india'",
          lambda n: n >= 9 * 7 * 0.9),
-        ("PLFS no synthetic state rows",
-         "SELECT COUNT(*) FROM occupation_year_stats "
-         "WHERE dataset_id='plfs_in' AND is_synthetic=1",
-         lambda n: n == 0),
+        ("PLFS real state rows present",
+         "SELECT COUNT(DISTINCT region_id) FROM occupation_year_stats "
+         "WHERE dataset_id='plfs_in' AND region_id LIKE 'state-%'",
+         lambda n: n >= 30),
         ("US BLS OES years >= 20",
          "SELECT COUNT(DISTINCT year) FROM occupation_year_stats WHERE dataset_id='bls_oes_us'",
          lambda n: n >= 20),

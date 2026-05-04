@@ -22,7 +22,8 @@ Regenerate HTML:
 #
 # ---
 #
-# ## Reproducibility
+# <details>
+# <summary><strong>Reproducibility</strong> — click to expand</summary>
 #
 # ### Run on Google Colab (no setup needed)
 # Click the badge above. The notebook will automatically:
@@ -42,6 +43,8 @@ Regenerate HTML:
 # cd notebooks/india-state-analysis
 # python -m nbconvert --to html india-state-analysis.ipynb --no-input --output india-state-analysis.html
 # ```
+#
+# </details>
 #
 # ---
 #
@@ -378,8 +381,10 @@ save_fig('04_state_gdp_growth.png',
          'State GDP growth 2020–2024 and correlation with employment growth')
 
 # %% [markdown]
-# ## 4. Who's Who in 2024 — Occupational Structure by State
-# *This section uses the 2024 snapshot where state × NCO variation is FULLY REAL.*
+# ## 4. Occupational Structure by State — 2018 vs 2024
+# *Both panels use REAL state × NCO data from PLFS microdata.
+# 2024 uses the cross-sectional snapshot (highest resolution: all NCO levels).
+# 2018 uses the PLFS time-series (1-digit NCO only, from microdata for that year).*
 
 # %%
 snap = pd.read_sql("""
@@ -397,32 +402,85 @@ totals = snap.groupby('state')[['employment', 'gdp']].sum().rename(
 snap = snap.merge(totals, on='state')
 snap['emp_share'] = snap['employment'] / snap['total_emp']
 
-pivot_share = snap.pivot_table(index='state', columns='sector', values='emp_share').fillna(0)
-pivot_share.columns = [NCO_SHORT.get(c, c) for c in pivot_share.columns]
+# 2018 from PLFS time-series (real microdata, 1-digit NCO)
+snap18 = pd.read_sql("""
+    SELECT r.name as state, o.major_group_name as sector, o.code, s.employment
+    FROM occupation_year_stats s
+    JOIN regions r ON s.region_id = r.region_id
+    JOIN occupations o ON s.occupation_key = o.occupation_key
+    WHERE s.dataset_id = 'plfs_in' AND r.region_type = 'State'
+      AND o.level = 1 AND s.year = 2018
+    ORDER BY r.name, o.code
+""", conn)
+# Drop states with fewer than 4 NCO codes reported — sparse sample causes misleading shares
+# (e.g. Lakshadweep: only 1,444 workers sampled in 2018, only agriculture cell reported)
+codes_per_state = snap18.groupby('state')['code'].count()
+sufficient = codes_per_state[codes_per_state >= 4].index
+dropped = sorted(set(snap18['state'].unique()) - set(sufficient))
+if dropped:
+    print(f"  [2018] Dropped due to sparse coverage (<4 NCO codes): {dropped}")
+snap18 = snap18[snap18['state'].isin(sufficient)]
+tot18 = snap18.groupby('state')['employment'].sum().rename('total_emp')
+snap18 = snap18.merge(tot18, on='state')
+snap18['emp_share'] = snap18['employment'] / snap18['total_emp']
+
+def make_pivot(df):
+    pv = df.pivot_table(index='state', columns='sector', values='emp_share').fillna(0)
+    pv.columns = [NCO_SHORT.get(c, c) for c in pv.columns]
+    return pv
+
+pivot24 = make_pivot(snap)
+pivot18 = make_pivot(snap18)
 cmap_short = {NCO_SHORT.get(k, k): v for k, v in NCO_COLORS.items()}
 
-# Sort by agriculture share
-agri_order = pivot_share['Agriculture'].sort_values(ascending=False).index
+# Sort both by 2024 agriculture share (same order for easy comparison)
+agri_order = pivot24['Agriculture'].sort_values(ascending=False).index
+# States missing from 2018 (sparse sample) get NaN → shown as blank bar
+pivot18 = pivot18.reindex(agri_order)
 
-fig, ax = plt.subplots(figsize=(14, 11))
-left = np.zeros(len(agri_order))
-for col in pivot_share.columns:
-    c = cmap_short.get(col, '#aaa')
-    vals = pivot_share.loc[agri_order, col].values
-    bars = ax.barh(range(len(agri_order)), vals * 100, left=left * 100,
-                   color=c, label=col, height=0.85)
-    left += vals
+def draw_composition(ax, pivot, order, title, show_yticks=True):
+    left = np.zeros(len(order))
+    for col in pivot.columns:
+        c = cmap_short.get(col, '#aaa')
+        vals = pivot.loc[order, col].fillna(0).values
+        ax.barh(range(len(order)), vals * 100, left=left * 100,
+                color=c, label=col, height=0.85)
+        left += pivot.loc[order, col].fillna(0).values
+    # Mark rows where ALL columns are NaN (no data) with a grey "no data" bar
+    for i, state in enumerate(order):
+        if pivot.loc[state].isna().all():
+            ax.barh(i, 100, left=0, color='#ddd', height=0.85, zorder=0)
+            ax.text(50, i, 'no data', ha='center', va='center', fontsize=6, color='#888')
+    ax.set_yticks(range(len(order)))
+    if show_yticks:
+        ax.set_yticklabels(order, fontsize=7.5)
+    else:
+        ax.set_yticklabels([])
+    ax.set_xlabel("Share of employment (%)")
+    ax.set_title(title, fontsize=10)
+    ax.set_xlim(0, 100)
 
-ax.set_yticks(range(len(agri_order)))
-ax.set_yticklabels(agri_order, fontsize=8)
-ax.set_xlabel("Share of employment (%)")
-ax.set_title("India 2024: Occupational Structure by State (sorted by agriculture share)")
-ax.legend(loc='lower right', fontsize=8, ncol=3)
+fig, axes = plt.subplots(1, 2, figsize=(22, 13), sharey=False)
+
+draw_composition(axes[0], pivot18, agri_order,
+                 "2018 — Occupational Structure by State\n(✅ real PLFS microdata, 1-digit NCO)",
+                 show_yticks=True)
+draw_composition(axes[1], pivot24, agri_order,
+                 "2024 — Occupational Structure by State\n(✅ real state × NCO variation from snapshot)",
+                 show_yticks=True)
+
+# Shared legend on the right
+handles, labels = axes[0].get_legend_handles_labels()
+fig.legend(handles, labels, loc='lower center', fontsize=8, ncol=5,
+           bbox_to_anchor=(0.5, -0.02), frameon=True)
+
+plt.suptitle("India: Occupational Structure by State (sorted by 2024 agriculture share)",
+             fontsize=12, fontweight='bold', y=1.01)
 plt.tight_layout()
-save_fig('05_state_composition_2024.png',
-         'Employment composition by NCO division for all Indian states, 2024 (real data)')
+save_fig('05_state_composition_2018_vs_2024.png',
+         'Employment composition by NCO division for all Indian states — 2018 vs 2024 (sorted by 2024 agriculture share)')
 
-# Tier classification
+# Tier classification (from 2024 real data)
 agri_share = snap[snap['sector'].str.contains('Agricultural')].groupby('state')['emp_share'].sum()
 know_cols = ['Managers', 'Professionals', 'Technicians and Associate Professionals']
 know_share = snap[snap['sector'].isin(know_cols)].groupby('state')['emp_share'].sum()

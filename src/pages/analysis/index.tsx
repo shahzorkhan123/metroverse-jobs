@@ -98,7 +98,7 @@ const ReadLink = styled.span`
 const ARTICLES = [
   {
     title: "India State Labour Market Analysis",
-    date: "April 2026",
+    date: "May 2026",
     description:
       "How have India's 36 states fared in employment and GDP growth since 2018? This analysis combines PLFS time-series data with the 2024 cross-sectional snapshot to explore structural archetypes, wage gaps, and the knowledge-economy dividend.",
     href: "analysis/india-state-analysis/india-state-analysis.html",
