@@ -92,6 +92,8 @@ export interface CountryMetadata {
   majorGroups: { id: string; name: string; color: string }[];
   hierarchyRules: { strategy: string };
   stateAbbreviations?: Record<string, string>;
+  /** Local currency units per 1 USD, keyed by dataset year (for USD equivalents) */
+  usdExchangeRates?: Record<string, number>;
 }
 
 /** Time-series data file structure */

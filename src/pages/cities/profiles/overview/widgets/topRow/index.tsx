@@ -58,9 +58,26 @@ const LegendRow = styled.div`
   align-items: center;
 `;
 
+const UsdEquivalent = styled.span`
+  margin-left: 0.4rem;
+  font-size: 0.6em;
+  opacity: 0.7;
+  white-space: nowrap;
+`;
+
 const TopRow = () => {
   const cityId = useCurrentCityId();
-  const { data: blsData, loading, selectedYear } = useStaticData();
+  const { data: blsData, loading, selectedYear, countryMetadata } = useStaticData();
+  const currSymbol = countryMetadata?.currencySymbol || "$";
+  // Non-USD countries also show a USD equivalent at that year's exchange rate
+  const usdRate =
+    countryMetadata && countryMetadata.currency !== "USD" && countryMetadata.usdExchangeRates
+      ? countryMetadata.usdExchangeRates[String(selectedYear)]
+      : undefined;
+  const usdNote = (formatted: string) => <UsdEquivalent>(≈ ${formatted} USD)</UsdEquivalent>;
+  // formatNumberLong keeps 1 decimal, so $1.04T would read "$1 trillion"
+  const usdLong = (n: number) =>
+    n >= 1e12 && n < 1e13 ? `${(n / 1e12).toFixed(2)} trillion` : formatNumberLong(n);
   const terminology = useTerminology();
 
   let workersElement: React.ReactElement<any> | null;
@@ -171,8 +188,18 @@ const TopRow = () => {
       );
 
       workersElement = <>{formatNumberLong(totalWorkers)}</>;
-      wageElement = <>${numberWithCommas(avgWage)}</>;
-      incomeElement = <>{formatNumberLong(totalIncome)}</>;
+      wageElement = (
+        <>
+          {currSymbol}{numberWithCommas(avgWage)}
+          {usdRate ? usdNote(numberWithCommas(Math.round(avgWage / usdRate))) : null}
+        </>
+      );
+      incomeElement = (
+        <>
+          {currSymbol}{formatNumberLong(totalIncome)}
+          {usdRate ? usdNote(usdLong(Math.round(totalIncome / usdRate))) : null}
+        </>
+      );
       coverageElement = (
         <>
           <ListItem>{records.length} occupations</ListItem>
@@ -211,8 +238,11 @@ const TopRow = () => {
       <div>
         <TitleBase>
           <Icon src={RankingSVG} />
-          Estimated Income
-          <YearText>{selectedYear}</YearText>
+          Estimated Labour Income
+          <YearText>
+            {selectedYear}
+            <Tooltip explanation="Workers × average annual earnings, summed over occupations. Labour earnings only — not GDP (excludes profits, rent, taxes)." />
+          </YearText>
         </TitleBase>
         <ValueBase>{incomeElement}</ValueBase>
       </div>
