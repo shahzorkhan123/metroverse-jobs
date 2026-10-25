@@ -7,7 +7,7 @@ export default defineConfig({
     baseURL: "http://localhost:3001",
   },
   webServer: {
-    command: "npx serve build -l 3001 --no-clipboard",
+    command: "node tests/playwright/serve-build.js 3001",
     url: "http://localhost:3001/metroverse-jobs/",
     reuseExistingServer: true,
     timeout: 30_000,

@@ -215,6 +215,23 @@ test.describe("India National — treemap loads", () => {
   });
 });
 
+test.describe("Overview — currency display", () => {
+  test("India shows ₹ wage/income with USD equivalent", async ({ page }) => {
+    await page.goto(`${BASE}/#/city/national-india`);
+    await expect(page.getByText("Estimated Labour Income")).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/₹[\d,]+/).first()).toBeVisible();
+    await expect(page.getByText(/≈ \$[\d,.]+.*USD/).first()).toBeVisible();
+    await expect(page.getByText(/^\$[\d,]+$/)).toHaveCount(0);
+  });
+
+  test("US shows $ without a USD equivalent", async ({ page }) => {
+    await page.goto(`${BASE}/#/city/national-united-states`);
+    await expect(page.getByText("Estimated Labour Income")).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/\$[\d,]+/).first()).toBeVisible();
+    await expect(page.getByText(/USD\)/)).toHaveCount(0);
+  });
+});
+
 test.describe("US National — Time Series", () => {
   test("BLS OES time series chart renders", async ({ page }) => {
     await page.goto(

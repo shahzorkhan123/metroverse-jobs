@@ -203,7 +203,9 @@ def _synthesize_missing_levels(records: list[dict],
 
 def _make_region_id(region_type: str, region_name: str) -> str:
     """Create a URL-safe region ID from type and name."""
-    slug = re.sub(r"[^a-z0-9]+", "-", region_name.lower()).strip("-")
+    # Normalise before slugifying so "&" → "and" (not "-")
+    normalised = region_name.replace("&", "and")
+    slug = re.sub(r"[^a-z0-9]+", "-", normalised.lower()).strip("-")
     return f"{region_type.lower()}-{slug}"
 
 
@@ -679,8 +681,9 @@ def export_meta(country_configs: list[dict],
         }
 
         key = f"{short}-{year}"
-        if key not in level_files:
-            level_files[key] = {}
+        # Rebuild this country-year's entry so level files no longer produced
+        # (e.g. India "3-metro" after city_levels=[1]) drop out of the catalog.
+        level_files[key] = {}
         for lvl in levels:
             if lvl > 2:
                 level_files[key][str(lvl)] = f"bls-data-{short}-{year}-{lvl}.json"

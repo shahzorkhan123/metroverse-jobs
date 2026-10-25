@@ -81,6 +81,28 @@ def load_json(path):
         return json.load(f)
 
 
+# Canonical region ID aliases — consolidates legacy "&" slugs and pre-merger UTs
+_REGION_ID_ALIASES: dict[str, str] = {
+    "state-andaman-nicobar-islands":  "state-andaman-and-nicobar-islands",
+    "state-jammu-kashmir":            "state-jammu-and-kashmir",
+    # Dadra & Nagar Haveli and Daman & Diu merged into one UT in Jan 2020
+    "state-dadra-nagar-haveli":       "state-dadra-and-nagar-haveli-and-daman-and-diu",
+    "state-daman-diu":                "state-dadra-and-nagar-haveli-and-daman-and-diu",
+}
+_REGION_NAME_CANONICAL: dict[str, str] = {
+    "Andaman & Nicobar Islands":  "Andaman and Nicobar Islands",
+    "Jammu & Kashmir":            "Jammu and Kashmir",
+    "Dadra & Nagar Haveli":       "Dadra and Nagar Haveli and Daman and Diu",
+    "Daman & Diu":                "Dadra and Nagar Haveli and Daman and Diu",
+}
+
+
+def normalise_region(region_id: str, name: str) -> tuple[str, str]:
+    canonical_id   = _REGION_ID_ALIASES.get(region_id, region_id)
+    canonical_name = _REGION_NAME_CANONICAL.get(name, name)
+    return canonical_id, canonical_name
+
+
 def upsert_region(cur, region_id, country_code, name, region_type, state_abbr=None):
     cur.execute(
         "INSERT OR IGNORE INTO regions VALUES (?,?,?,?,?)",
@@ -130,12 +152,14 @@ def ingest_snapshot(cur, path, country_code, dataset_id):
         rid = reg.get("regionId", "")
         name = reg.get("name", "")
         rtype = reg.get("regionType", "")
+        rid, name = normalise_region(rid, name)
         abbr = state_abbrs.get(name)
         upsert_region(cur, rid, country_code, name, rtype, abbr)
 
     # Ingest occupation_year_stats
     region_data = data.get("regionData", {})
-    for region_id, year_map in region_data.items():
+    for raw_region_id, year_map in region_data.items():
+        region_id, _ = normalise_region(raw_region_id, "")
         for yr_key, occ_list in year_map.items():
             try:
                 yr = int(yr_key)
@@ -204,16 +228,19 @@ def ingest_timeseries(cur, path, country_code, dataset_id, source, classificatio
         rid = reg.get("regionId", "")
         name = reg.get("name", "")
         rtype = reg.get("regionType", "")
+        rid, name = normalise_region(rid, name)
         abbr = state_abbrs.get(name)
         upsert_region(cur, rid, country_code, name, rtype, abbr)
 
     # Determine which region_ids are states (for synthetic flagging)
     state_region_ids = {
-        r.get("regionId") for r in regions_list if r.get("regionType") == "State"
+        normalise_region(r.get("regionId", ""), "")[0]
+        for r in regions_list if r.get("regionType") == "State"
     }
 
     # Ingest stats — state rows for plfs_in are now REAL (from PLFS microdata per year)
-    for region_id, group_map in ts_data.items():
+    for raw_region_id, group_map in ts_data.items():
+        region_id, _ = normalise_region(raw_region_id, "")
 
         for gid, metrics in group_map.items():
             occ_key = f"{dataset_id}:{gid}"

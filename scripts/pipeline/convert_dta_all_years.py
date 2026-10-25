@@ -11,14 +11,17 @@ Usage:
 """
 
 import argparse
-import csv
+import re
 import subprocess
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(ROOT))
+from scripts.pipeline.config import INDIA_STATE_CODE_TO_NAME  # noqa: E402
 RAW_DIR = ROOT / "data" / "raw"
 MICRO_DIR = RAW_DIR / "plfs_microdata"
 OUT_CSV = RAW_DIR / "ind_plfs_microdata.csv"
@@ -38,20 +41,14 @@ CSV_ZIPS = {
     2019: "PLFS_2018_19_CSV.zip",
 }
 
-STATE_CODES = {
-    "01": "Jammu & Kashmir", "02": "Himachal Pradesh", "03": "Punjab",
-    "04": "Chandigarh", "05": "Uttarakhand", "06": "Haryana", "07": "Delhi",
-    "08": "Rajasthan", "09": "Uttar Pradesh", "10": "Bihar", "11": "Sikkim",
-    "12": "Arunachal Pradesh", "13": "Nagaland", "14": "Manipur",
-    "15": "Mizoram", "16": "Tripura", "17": "Meghalaya", "18": "Assam",
-    "19": "West Bengal", "20": "Jharkhand", "21": "Odisha",
-    "22": "Chhattisgarh", "23": "Madhya Pradesh", "24": "Gujarat",
-    "25": "Daman & Diu", "26": "Dadra & Nagar Haveli", "27": "Maharashtra",
-    "28": "Andhra Pradesh", "29": "Karnataka", "30": "Goa",
-    "31": "Lakshadweep", "32": "Kerala", "33": "Tamil Nadu",
-    "34": "Puducherry", "35": "Andaman & Nicobar Islands",
-    "36": "Telangana", "37": "Ladakh",
-}
+# Canonical "and" names (codes 25/26 both map to the merged DNH & DD UT)
+STATE_CODES = INDIA_STATE_CODE_TO_NAME
+
+# Daily casual wage columns for the 7 CWS days x 2 activities; naming varies by
+# year (b6q9_3pt1_Act1_per_fv, b6q9_act2_3pt1_perv1, b6q9_Act2_3pt7, ...)
+CASUAL_WAGE_RX = re.compile(r"^b6q9_.*3pt[1-7]", re.IGNORECASE)
+WORKER_STATUS = (11, 51)  # usual status codes 11-51 = employed
+DAYS_PER_MONTH = 365.0 / 12.0
 
 
 def _find_col(df_cols: list[str], patterns: list[str]) -> str | None:
@@ -67,82 +64,89 @@ def _find_col(df_cols: list[str], patterns: list[str]) -> str | None:
     return None
 
 
+def _num(df: pd.DataFrame, col: str | None) -> pd.Series:
+    if not col:
+        return pd.Series(np.nan, index=df.index)
+    return pd.to_numeric(df[col], errors="coerce").astype("float64")
+
+
+def frame_to_csv(df: pd.DataFrame, source_name: str) -> int:
+    """Normalize a PLFS first-visit person frame and write ind_plfs_microdata.csv.
+
+    - Weight: official PLFS annual rule, MULT / (No_qtr x 100) when NSS == NSC,
+      else MULT / (No_qtr x 200). Reproduces the published 2023-24 WPR (43.7%).
+    - Workers: usual status (principal + subsidiary). Occupation is the principal
+      NCO for principal-status workers, else the subsidiary NCO.
+    - Earnings (monthly INR, CWS): regular salaried (b6q9) if > 0, else
+      self-employed gross (b6q10), else 7-day casual wages scaled to a month.
+    """
+    cols = list(df.columns)
+    state_col = _find_col(cols, ["state_per_fv", "state_perv1", "state_"])
+    ps_status = _find_col(cols, ["b5pt1q3_per_fv", "b5pt1q3_perv1", "b5pt1q3"])
+    ps_nco    = _find_col(cols, ["b5pt1q6_per_fv", "b5pt1q6_perv1", "b5pt1q6"])
+    ss_status = _find_col(cols, ["b5pt2q3_per_fv", "b5pt2q3_perv1", "b5pt2q3"])
+    ss_nco    = _find_col(cols, ["b5pt2q6_per_fv", "b5pt2q6_perv1", "b5pt2q6"])
+    mult_col  = _find_col(cols, ["MULT_per_fv", "mult_perv1", "mult_"])
+    nss_col   = _find_col(cols, ["NSS_per_fv", "NSS_perv1"])
+    nsc_col   = _find_col(cols, ["NSC_per_fv", "NSC_perv1"])
+    qtr_col   = _find_col(cols, ["No_qtr_per_fv", "no_qtr_perv1", "no_qtr"])
+    reg_col   = _find_col(cols, ["b6q9_per_fv", "b6q9_perv1"])
+    se_col    = _find_col(cols, ["b6q10_per_fv", "b6q10_perv1"])
+    dist_col  = _find_col(cols, ["b1q4_per_fv", "distcode_per_fv", "distcode_perv1", "dist_"])
+    casual_cols = [c for c in cols if CASUAL_WAGE_RX.match(c)]
+
+    print(f"    state={state_col} ps={ps_status}/{ps_nco} ss={ss_status}/{ss_nco} "
+          f"mult={mult_col} nss/nsc/qtr={nss_col}/{nsc_col}/{qtr_col} "
+          f"reg={reg_col} se={se_col} casual_cols={len(casual_cols)} dist={dist_col}")
+    required = [state_col, ps_status, ps_nco, mult_col, nss_col, nsc_col, qtr_col]
+    if not all(required):
+        raise ValueError(f"Required columns missing in {source_name}")
+
+    mult = _num(df, mult_col)
+    no_qtr = _num(df, qtr_col)
+    divisor = np.where(_num(df, nss_col) == _num(df, nsc_col), 100.0, 200.0) * no_qtr
+    weight = mult / divisor
+
+    lo, hi = WORKER_STATUS
+    ps_worker = _num(df, ps_status).between(lo, hi)
+    ss_worker = ~ps_worker & _num(df, ss_status).between(lo, hi)
+    nco = _num(df, ps_nco).where(ps_worker)
+    nco = nco.fillna(_num(df, ss_nco).where(ss_worker))
+
+    reg = _num(df, reg_col)
+    se = _num(df, se_col)
+    casual_week = df[casual_cols].apply(pd.to_numeric, errors="coerce").sum(axis=1, min_count=1)
+    earnings = reg.where(reg > 0)
+    earnings = earnings.fillna(se.where(se > 0))
+    earnings = earnings.fillna((casual_week * DAYS_PER_MONTH / 7.0).where(casual_week > 0))
+
+    state_code = _num(df, state_col)
+    out = pd.DataFrame({
+        "state_ut_code": state_code.map(lambda v: f"{int(v):02d}" if pd.notna(v) else ""),
+        "district_code": _num(df, dist_col).map(lambda v: f"{int(v):02d}" if pd.notna(v) else ""),
+        "ocu_pas": nco.map(lambda v: str(int(v)) if pd.notna(v) else ""),
+        "mult": weight,
+        "ern_reg": earnings.round().map(lambda v: str(int(v)) if pd.notna(v) else ""),
+    })
+    out.insert(0, "st", out["state_ut_code"].map(STATE_CODES).fillna(""))
+
+    # Workers only: the importer's district filter (>= 1M) then counts workers,
+    # which intentionally keeps metro output small.
+    keep = (out["st"] != "") & (out["ocu_pas"] != "") & (out["mult"] > 0)
+    out = out[keep]
+    out.to_csv(OUT_CSV, index=False, encoding="utf-8")
+
+    pop = weight[weight > 0].sum()
+    print(f"    Population {pop / 1e6:,.1f}M  Workers (PS+SS) {out['mult'].sum() / 1e6:,.1f}M  "
+          f"Written: {len(out):,}  Skipped: {len(df) - len(out):,}")
+    return len(out)
+
+
 def dta_to_csv(dta_path: Path, year: int) -> int:
     """Read a Stata .dta person file and write to ind_plfs_microdata.csv."""
     print(f"  Reading {dta_path.name}...")
     df = pd.read_stata(str(dta_path), convert_categoricals=False)
-    cols = list(df.columns)
-
-    state_col = _find_col(cols, ["state_per_fv", "state_"])
-    ocu_col   = _find_col(cols, ["b5pt1q6_per_fv", "b5pt1q6_"])
-    mult_col  = _find_col(cols, ["MULT_per_fv", "mult_per_fv", "mult_"])
-    ern_col   = _find_col(cols, ["b6q10_per_fv", "b6q10_"])
-    dist_col  = _find_col(cols, ["b1q4_per_fv", "distcode_per_fv", "dist_"])
-
-    print(f"    state={state_col} ocu={ocu_col} mult={mult_col} ern={ern_col} dist={dist_col}")
-    if not state_col or not ocu_col or not mult_col:
-        raise ValueError(f"Required columns missing in {dta_path.name}")
-
-    rows_written = skipped = 0
-    with open(OUT_CSV, "w", newline="", encoding="utf-8") as fout:
-        writer = csv.DictWriter(
-            fout,
-            fieldnames=["st", "state_ut_code", "district_code", "ocu_pas", "mult", "ern_reg"],
-        )
-        writer.writeheader()
-        for _, row in df.iterrows():
-            try:
-                raw_state_v = row[state_col]
-                raw_state = str(int(float(raw_state_v))).zfill(2) if pd.notna(raw_state_v) and str(raw_state_v).strip() else ""
-            except (ValueError, TypeError):
-                skipped += 1; continue
-            st_name = STATE_CODES.get(raw_state, "")
-
-            try:
-                ocu_v = row[ocu_col]
-                ocu = str(int(float(ocu_v))) if pd.notna(ocu_v) and str(ocu_v).strip() else ""
-            except (ValueError, TypeError):
-                skipped += 1; continue
-
-            mult_val = row[mult_col] if pd.notna(row[mult_col]) else None
-            if not st_name or not ocu or not mult_val:
-                skipped += 1
-                continue
-
-            # DTA multipliers use the same 1000x scale as the CSV export format
-            # (same as convert_plfs_csv.py which always divides raw CSV values by 1000)
-            mult_f = float(mult_val) / 1000.0
-
-            ern = ""
-            if ern_col:
-                try:
-                    ev = row[ern_col]
-                    if pd.notna(ev) and str(ev).strip():
-                        ern = str(int(float(ev)))
-                except (ValueError, TypeError):
-                    pass
-
-            dist_code = ""
-            if dist_col:
-                try:
-                    dv = row[dist_col]
-                    if pd.notna(dv) and str(dv).strip():
-                        dist_code = str(int(float(dv))).zfill(2)
-                except (ValueError, TypeError):
-                    pass
-
-            writer.writerow({
-                "st": st_name,
-                "state_ut_code": raw_state,
-                "district_code": dist_code,
-                "ocu_pas": ocu,
-                "mult": str(mult_f),
-                "ern_reg": ern,
-            })
-            rows_written += 1
-
-    print(f"    Written: {rows_written:,}  Skipped: {skipped:,}")
-    return rows_written
+    return frame_to_csv(df, dta_path.name)
 
 
 def run_pipeline(year: int) -> None:
@@ -176,7 +180,6 @@ def main():
                 print(f"  SKIP: {dta_path.name} not found")
                 continue
             # Also write district labels for this year
-            sys.path.insert(0, str(ROOT))
             from scripts.pipeline.plfs_district_labels import write_for_year
             write_for_year(year)
             dta_to_csv(dta_path, year)
@@ -187,22 +190,18 @@ def main():
             if not zip_path.exists():
                 print(f"  SKIP: {zip_name} not found")
                 continue
-            # Use existing convert_plfs_csv.py
-            from scripts.pipeline.convert_plfs_csv import convert_csv, find_perv1_in_zip
+            from scripts.pipeline.convert_plfs_csv import find_perv1_in_zip
             import zipfile
             with zipfile.ZipFile(zip_path) as z:
                 csv_entry = find_perv1_in_zip(z)
                 if not csv_entry:
                     print(f"  SKIP: no person CSV found in {zip_name}")
                     continue
-                tmp = MICRO_DIR / f"_tmp_{year}.csv"
-                with z.open(csv_entry) as src, open(tmp, "wb") as dst:
-                    dst.write(src.read())
-            try:
-                convert_csv(tmp, year, OUT_CSV)
-            finally:
-                tmp.unlink(missing_ok=True)
-            sys.path.insert(0, str(ROOT))
+                print(f"  Reading {csv_entry}...")
+                with z.open(csv_entry) as src:
+                    df = pd.read_csv(src, dtype=str, low_memory=False)
+            df.columns = [c.strip() for c in df.columns]
+            frame_to_csv(df, csv_entry)
             from scripts.pipeline.plfs_district_labels import write_for_year
             write_for_year(year)
 

@@ -618,6 +618,18 @@ def import_all_india(conn: sqlite3.Connection, year: int = 2024) -> int:
     """
     print(f"Importing India PLFS data for year {year}...")
 
+    # Replace this year's India rows: stale rows from earlier runs (e.g. legacy
+    # "Jammu & Kashmir" names) would otherwise merge with canonical names at
+    # export (same region slug) and double-count employment.
+    deleted = conn.execute(
+        "DELETE FROM occupations WHERE year = ? AND region_id IN ("
+        "SELECT r.id FROM regions r JOIN countries c ON r.country_id = c.id "
+        "WHERE c.code = 'IND')",
+        (year,),
+    ).rowcount
+    if deleted:
+        print(f"  Cleared {deleted} existing India records for {year}")
+
     count = 0
 
     ind_config = config.COUNTRIES["IND"]

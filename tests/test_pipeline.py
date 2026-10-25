@@ -655,7 +655,9 @@ class TestIndiaPlfsImport:
             csv_path.write_text(
                 "State_UT_Code,District_Code,Principal_Occupation_Code,CWS_Earnings_Salaried,Subsample_Multiplier\n"
                 "10,01,111,1000,2000\n"
-                "10,01,111,1000,3000\n",
+                "10,01,111,1000,3000\n"
+                # padding: state filter needs >= min_obs_state x 7 observations
+                + "10,01,111,1000,1000\n" * 5,
                 encoding="utf-8",
             )
 
@@ -686,8 +688,8 @@ class TestIndiaPlfsImport:
                 """
             ).fetchone()
             assert row is not None
-            # 2000 + 3000 subsample multiplier should represent 2 + 3 persons.
-            assert row[0] == 5
+            # 2000 + 3000 + 5x1000 subsample multiplier should represent 2 + 3 + 5 persons.
+            assert row[0] == 10
             # CWS earnings are weekly; annualized by x52.
             assert row[1] == 52000
 
@@ -732,3 +734,45 @@ class TestIndiaPlfsImport:
 
             assert len(metro_regions) == 1
             assert metro_regions[0][0] == "DistrictA, Karnataka"
+
+
+class TestPlfsMicrodataConversion:
+    """convert_dta_all_years.frame_to_csv: PLFS weights, workers, earnings."""
+
+    def test_weights_workers_and_earnings(self, monkeypatch):
+        pd = pytest.importorskip("pandas")
+        from scripts.pipeline import convert_dta_all_years as conv
+
+        df = pd.DataFrame({
+            "state_perv1":    [10, 10, 10, 10, 10],
+            "b5pt1q3_perv1":  [31, 11, 51, 91, 91],   # regular, self-emp, casual, non-worker x2
+            "b5pt1q6_perv1":  [2111, 6111, 9311, None, None],
+            "b5pt2q3_perv1":  [None, None, None, 21, None],  # 4th person: subsidiary worker
+            "b5pt2q6_perv1":  [None, None, None, 7111, None],
+            "mult_perv1":     [40000, 40000, 40000, 40000, 40000],
+            "NSS_perv1":      [2, 2, 2, 2, 1],
+            "NSC_perv1":      [2, 2, 2, 2, 2],
+            "no_qtr_perv1":   [4, 4, 4, 4, 4],
+            "b6q9_perv1":     [20000, None, None, None, None],
+            "b6q10_perv1":    [None, 12000, None, None, None],
+            "b6q9_3pt1_perv1":      [None, None, 500, None, None],
+            "b6q9_act2_3pt1_perv1": [None, None, 200, None, None],
+        })
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_csv = Path(tmpdir) / "micro.csv"
+            monkeypatch.setattr(conv, "OUT_CSV", out_csv)
+            written = conv.frame_to_csv(df, "fixture")
+            out = pd.read_csv(out_csv, dtype=str)
+
+        # Non-worker rows are dropped; subsidiary-only worker uses subsidiary NCO
+        assert written == 4
+        assert list(out["ocu_pas"]) == ["2111", "6111", "9311", "7111"]
+        # NSS == NSC -> mult / (no_qtr x 100) = 40000 / 400
+        assert float(out["mult"].iloc[0]) == pytest.approx(100.0)
+        # Canonical state name
+        assert out["st"].iloc[0] == "Bihar"
+        # Monthly earnings: regular, else self-employed, else casual week x 30.4/7
+        assert out["ern_reg"].iloc[0] == "20000"
+        assert out["ern_reg"].iloc[1] == "12000"
+        assert out["ern_reg"].iloc[2] == str(round(700 * (365 / 12) / 7))
+        assert pd.isna(out["ern_reg"].iloc[3])
