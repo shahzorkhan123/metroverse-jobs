@@ -47,3 +47,6 @@ __pycache__/
 
 # Notebook figures (generated on execution — do not commit)
 notebooks/.ipynb_checkpoints/
+# Local dev / test output
+dev-server.log
+test-results/
