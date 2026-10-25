@@ -1,6 +1,100 @@
 # Active Context
 
-## Current Focus
+## Current Focus (2026-10-25)
+Resuming after a ~6-month gap. Past session transcripts were deleted by Claude Code's auto-cleanup
+(`cleanupPeriodDays`, ran 2026-10-24); only prompt history survives in `~/.claude/history.jsonl`.
+Recovery attempt via `winfr` pending (user to run as admin). Context below reconstructed from that
+history + git.
+
+## Session History Reconstructed (2026-03-08 → 2026-05-04)
+- **03-08**: Time series (BLS OES / ILOSTAT / PLFS), GDP spot-check of Management vs PDF.
+- **04-03 → 04-11**: State Distribution treemap (national only); state abbreviations moved into
+  `bls-data.json` countryMetadata; fixed freeze when switching away from State Distribution
+  (ref-gate on `setIndicatorContent`); Playwright MCP installed; `tests/playwright/pre-checkin.spec.ts` added.
+- **04-11 → 04-12**: India state comparative analysis — `data/analysis.db` + Jupyter notebook in
+  `notebooks/india-state-analysis/` (Colab-editable, collapsible Reproducibility section);
+  Analysis tab added before About, linking `public/analysis/india-state-analysis/`.
+  2018 vs 2024 state composition chart; ILOSTAT absolute employment chart.
+- **04-12 → 04-26**: Removed synthetic state data. User downloaded PLFS microdata (Stata .dta,
+  2017-18 → 2023-24) into `data/raw/plfs_microdata/`; per-year district code files added.
+  City/district time series discussed (population-threshold districts).
+- **04-29 → 05-03**: Fixed timeseries metadata regression (empty India time series);
+  real PLFS state time series; JSON pretty-print step in export; notebook rerun.
+  Lakshadweep "all agriculture in 2018" issue → changed to filtering at state/city level
+  (honor all NCO values if the region has enough sample) + data-quality disclaimer.
+  Fixed Analysis "Read article" link rendering root. Committed + pushed (`bb3c97c`, deployed 05-04).
+- **05-04 (uncommitted)**: 3rd chart = % change per NCO 2018→2024 (red/green, labels top+bottom);
+  merge "&" duplicates (Andaman & Nicobar, Jammu & Kashmir) and fold Daman & Diu / Dadra & Nagar
+  Haveli into "Dadra and Nagar Haveli and Daman and Diu"; also needed in region dropdown JSON.
+
+## Uncommitted Work (git, as of 2026-10-25)
+- Staged: `scripts/rebuild_analysis_db.py` (`normalise_region()` alias maps), notebook `.py/.ipynb/.html`,
+  figures, `data/analysis.db.gz`, `public/analysis/...html`.
+- Unstaged: `scripts/pipeline/export_json.py` (`_make_region_id` turns "&" → "and" before slugging),
+  regenerated `public/data/bls-data-in-{2018..2024}{,-3}.json` (duplicate "&" regions removed),
+  further notebook/figure edits.
+- ⚠️ **Confirmed bug — do not commit the regenerated JSON as-is**: merging "&"/"and" aliases SUMS the
+  duplicate regions instead of keeping one. 2024 L1 employment HEAD → working tree:
+  J&K 3,277,772 → 6,555,544 (exactly 2×); Andaman 131,064 (+126,838 "&" copy) → 257,902;
+  DNH&DD 260,971 (+236,381 "Daman & Diu") → 497,352. National unchanged (372.4M) so state totals
+  no longer reconcile. Fix: on alias collision keep the canonical record (drop the alias), don't add.
+- Untracked junk: `nul`, `dev-server.log`, `test-results/`.
+
+## Overview Wage Currency Bug (fixed 2026-10-25, not yet deployed)
+- Hosted site showed India "Annual Mean Wage **$165,302**". The value is correct in INR
+  (₹1.65 lakh/yr = national GDP ÷ workers, same in HEAD and hosted JSON); only the symbol was wrong.
+- Cause: `overview/widgets/topRow/index.tsx` hardcoded `$` (since `83f2d4e`, 2026-02-24).
+- Fix: use `countryMetadata.currencySymbol` (same pattern as treemap tooltips) for wage + Estimated Income.
+- Remaining nuance: avg wage = Σgdp / Σemp includes occupations with `aMean = 0` (suppressed wages)
+  in the denominator → understates wage in small states (e.g. Andaman occ 4). Consider excluding them.
+
+## PLFS Weight/Earnings Fix (2026-10-25, IN PROGRESS — uncommitted)
+Spot-check vs PLFS showed labour income ₹61.6T ≈ 21% of GDP (too low). Root causes found in
+`scripts/pipeline/convert_dta_all_years.py`:
+1. Weight was `mult/1000` → official annual rule `mult/(no_qtr×100)` if NSS==NSC else `/(no_qtr×200)`.
+   Now reproduces published WPR (PS+SS) every year (2017-18 34.7% … 2023-24 43.7%).
+2. Earnings used `b6q10` = **self-employed only**. Now: regular `b6q9` → self-employed `b6q10`
+   → casual 7-day wages (`^b6q9_.*3pt[1-7]`, 14 cols) × 30.4/7. All monthly; importer ×12.
+3. Workers were principal-status only → now PS+SS (subsidiary NCO `b5pt2q6` for SS-only workers).
+   2024: 372M → 526M workers.
+4. District col `distcode_perv1` (2021-24) was never matched → added. District filter stays
+   **workers-only ≥1M** (user: small metro output is intentional; 2018 ~100 metros OK).
+5. 2018-19 CSV now goes through the same `frame_to_csv()` (pandas) as the .dta files.
+6. `import_plfs.import_all_india()` now DELETEs that year's IND rows first → fixes "&"/"and"
+   duplicate regions being summed at export (J&K 2×, Andaman, DNH&DD).
+Frontend (`overview/widgets/topRow/index.tsx`, `dataProvider/types.ts`):
+- Currency symbol from `countryMetadata.currencySymbol` (was hardcoded `$`).
+- "Estimated Income" → "Estimated Labour Income" + tooltip (not GDP).
+- USD equivalent shown when `countryMetadata.usdExchangeRates[year]` exists (type added).
+
+### Pending (resume here)
+- [x] Re-run of all years completed + verified (2026-10-25). No "&" regions; states sum = national (1.000).
+      | yr | workers | wage/mo | labour income | metros |
+      | 2018 | 372.6M | ₹10,059 | ₹45.0T | 100 |  | 2019 | 380.5M | ₹10,763 | ₹49.1T | 104 |
+      | 2020 | 423.2M | ₹11,004 | ₹55.9T | 120 |  | 2021 | 437.5M | ₹11,154 | ₹58.6T | 128 |
+      | 2022 | 459.1M | ₹12,284 | ₹67.7T | 141 |  | 2023 | 502.7M | ₹13,339 | ₹80.5T | 160 |
+      | 2024 | 525.8M | ₹13,762 | ₹86.8T | 168 |  (was 372.4M / ₹13,775 / ₹61.6T)
+      2024 per-division wages now ≈ Table 50 (e.g. Technicians 24,185 vs 24,199; Clerical 23,339 vs 23,616);
+      Managers 35,477 vs 42,993 and Crafts 12,419 vs 15,350 still low — minor follow-up.
+- [x] `usdExchangeRates` in `bls-data.json` → `countryMetadata.in`: RBI Handbook Table 132 calendar-year
+      averages, PLFS year Y = mean(CY Y-1, CY Y): 2018 66.76 … 2024 83.13. Overview: ₹165,141 (≈ $1,987),
+      ₹86.8T (≈ $1.04T).
+- [x] PLFS time series rebuilt. Note: national line = ILOSTAT total (583M 2024) × MoSPI %, states sum to
+      PLFS 526M — pre-existing design mismatch, not fixed.
+- [x] analysis.db rebuilt with **`--lite`** (4.5MB gz; full build is 17MB — May-4 commit used lite).
+      Notebook executed in place (.ipynb, not regenerated from .py), HTML + figures copied to public/analysis.
+- [x] Stale `bls-data-in-2024-3-metro.json` removed (city_levels=[1] since 4f450a2) + catalog entry;
+      `export_meta` now rebuilds each exported country-year's `levelFiles` entry.
+- [x] pytest 52/52 (fixed pre-existing failing `test_subsample_multiplier_is_scaled` fixture; added
+      `TestPlfsMicrodataConversion`). Build OK. Playwright 17/17 (+2 overview currency tests).
+- Playwright webServer: `npx serve` + `public/serve.json` rewrites never worked (`/$1` literal, `:path*`
+      encodes `/`); May-3 passes reused a dev server. Replaced with `tests/playwright/serve-build.js`.
+      `public/serve.json` is now unused.
+- [ ] Commit (ready).
+- Caveat: unpaid helpers (status 21) get the occupation avg wage in gdp = emp × aMean → slight overstatement.
+- Backup of pre-fix data: scratchpad `backup/` (bls-data*.json, bls.db) — session temp, may vanish.
+
+## Previous Focus
 India PLFS data pipeline complete. Frontend fully working for both US and India.
 
 ## What Was Done (2026-02-24, Session 8)

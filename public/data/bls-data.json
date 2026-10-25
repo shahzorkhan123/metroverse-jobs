@@ -81,8 +81,7 @@
       "4-metro": "bls-data-us-2024-4-metro.json"
     },
     "in-2024": {
-      "3": "bls-data-in-2024-3.json",
-      "3-metro": "bls-data-in-2024-3-metro.json"
+      "3": "bls-data-in-2024-3.json"
     },
     "in-2019": {
       "3": "bls-data-in-2019-3.json"
@@ -476,6 +475,15 @@
         "Uttar Pradesh": "UP",
         "Uttarakhand": "UK",
         "West Bengal": "WB"
+      },
+      "usdExchangeRates": {
+        "2018": 66.76,
+        "2019": 69.4,
+        "2020": 72.26,
+        "2021": 74.01,
+        "2022": 76.26,
+        "2023": 80.6,
+        "2024": 83.13
       }
     }
   },
@@ -498,5 +506,5 @@
       }
     }
   },
-  "lastUpdated": "2026-05-03"
+  "lastUpdated": "2026-10-25"
 }

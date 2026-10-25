@@ -469,7 +469,7 @@ def draw_composition(ax, pivot, order, title, show_yticks=True):
     ax.set_title(title, fontsize=10)
     ax.set_xlim(0, 100)
 
-fig, axes = plt.subplots(1, 2, figsize=(22, 13), sharey=False)
+fig, axes = plt.subplots(1, 3, figsize=(33, 13), sharey=False)
 
 draw_composition(axes[0], pivot18, agri_order,
                  "2018 — Occupational Structure by State\n(✅ real PLFS microdata, 1-digit NCO)",
@@ -478,16 +478,81 @@ draw_composition(axes[1], pivot24, agri_order,
                  "2024 — Occupational Structure by State\n(✅ real state × NCO variation from snapshot)",
                  show_yticks=True)
 
-# Shared legend on the right
+# 3rd panel: percentage point change (2024 - 2018)
+# pivot values are 0-1 fractions; multiply by 100 → percentage points
+delta = (pivot24 - pivot18) * 100
+nco_cols = list(pivot24.columns)
+ax3 = axes[2]
+states_list = list(agri_order)
+n_states = len(states_list)
+n_cols = len(nco_cols)
+
+for yi, state in enumerate(states_list):
+    for xi, col in enumerate(nco_cols):
+        try:
+            val = delta.loc[state, col] if (state in delta.index and col in delta.columns) else float('nan')
+        except Exception:
+            val = float('nan')
+        if pd.isna(val):
+            color = '#cccccc'
+            txt = ''
+        elif val >= 0:
+            # Light green (#a8e6a3) → dark green (#1a7a1a) as value grows
+            intensity = min(val / 15.0, 1.0)
+            r = int(168 - 140 * intensity)   # 168 → 28
+            g = int(230 - 108 * intensity)   # 230 → 122
+            b = int(163 - 150 * intensity)   # 163 → 13
+            color = f'#{r:02x}{g:02x}{b:02x}'
+            txt = f'+{val:.1f}'
+        else:
+            # Light red (#f4a0a0) → dark red (#8b0000) as magnitude grows
+            intensity = min(abs(val) / 15.0, 1.0)
+            r = int(244 - 105 * intensity)   # 244 → 139
+            g = int(160 - 160 * intensity)   # 160 → 0
+            b = int(160 - 160 * intensity)   # 160 → 0
+            color = f'#{r:02x}{g:02x}{b:02x}'
+            txt = f'{val:.1f}'
+        ax3.add_patch(plt.Rectangle((xi, yi - 0.45), 1, 0.9, color=color, zorder=1))
+        if txt:
+            fontsize = 5.5 if n_cols > 8 else 6.5
+            # Use dark text on light colors, white on dark
+            text_color = 'black' if (pd.isna(val) or abs(val) < 5) else 'white'
+            ax3.text(xi + 0.5, yi, txt, ha='center', va='center',
+                     fontsize=fontsize, color=text_color, fontweight='bold', zorder=2)
+
+ax3.set_xlim(0, n_cols)
+ax3.set_ylim(-0.5, n_states - 0.5)
+# X-axis labels at bottom
+ax3.set_xticks([x + 0.5 for x in range(n_cols)])
+ax3.set_xticklabels([c[:10] for c in nco_cols], rotation=45, ha='right', fontsize=7)
+# X-axis labels also at top
+ax3_top = ax3.twiny()
+ax3_top.set_xlim(ax3.get_xlim())
+ax3_top.set_xticks([x + 0.5 for x in range(n_cols)])
+ax3_top.set_xticklabels([c[:10] for c in nco_cols], rotation=45, ha='left', fontsize=7)
+ax3_top.tick_params(axis='x', which='both', top=True, length=0)
+ax3.set_yticks(range(n_states))
+ax3.set_yticklabels(states_list, fontsize=7.5)
+ax3.invert_yaxis()
+ax3.set_title("Change 2018→2024 (percentage points)\nGreen = grew, Red = shrank, Grey = no 2018 data",
+              fontsize=10, pad=40)
+ax3.tick_params(axis='x', which='both', bottom=False, length=0)
+ax3.tick_params(axis='y', which='both', left=False)
+for spine in ax3.spines.values():
+    spine.set_visible(False)
+for spine in ax3_top.spines.values():
+    spine.set_visible(False)
+
+# Shared legend (from first panel)
 handles, labels = axes[0].get_legend_handles_labels()
 fig.legend(handles, labels, loc='lower center', fontsize=8, ncol=5,
-           bbox_to_anchor=(0.5, -0.02), frameon=True)
+           bbox_to_anchor=(0.35, -0.02), frameon=True)
 
 plt.suptitle("India: Occupational Structure by State (sorted by 2024 agriculture share)",
              fontsize=12, fontweight='bold', y=1.01)
 plt.tight_layout()
 save_fig('05_state_composition_2018_vs_2024.png',
-         'Employment composition by NCO division for all Indian states — 2018 vs 2024 (sorted by 2024 agriculture share)')
+         'Employment composition by NCO division for all Indian states — 2018 vs 2024 with change heatmap (sorted by 2024 agriculture share)')
 
 # Tier classification (from 2024 real data)
 agri_share = snap[snap['sector'].str.contains('Agricultural')].groupby('state')['emp_share'].sum()
