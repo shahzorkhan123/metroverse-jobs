@@ -67,7 +67,9 @@
 | Proximity | φ = co-occurrence / max(ubiquity) (Hidalgo et al. 2007) | same formula on shared DWAs |
 | Complexity | PCI/ECI, eigenvector of U⁻¹MᵀD⁻¹M (matches py-ecomplexity, r>0.999) | JCI/TCI: wage-seeded reflections, 20 iterations (this project's own exploratory construction; ported from user's unpublished JobsAndTasks Final.Rmd §4.1.3 — never cite it as a publication) |
 
-Layout: MST + top-k (avg degree 4–5) → Kamada-Kawai on MST → spring refine → clip 1–99th pct. Louvain at 2 levels (continents < 20 nodes merged). Positions shipped as fixed x/y.
+Layout (v1, commit 8c7da69): MST + top-k (avg degree 4–5) → Kamada-Kawai on MST → spring refine → clip 1–99th pct. Louvain at 2 levels. Positions shipped as fixed x/y.
+
+**v2 (2026-10-27) — divisions from the BLS classification.** User asked that divisions come from BLS data, as the Atlas colours products by HS sector. Hulls are now the SOC 2018 hierarchy (5 high-level → 12 intermediate → 22 major → 93 minor; BLS SOC User Guide tables 5–6), selectable via Viz Options → Divisions (`?division=1|2|3`). Hub-attraction in a force layout was tried and failed (58–82% of nodes still inside another group's hull), so the layout is nested: phi Kamada-Kawai inside each minor group, discs packed by mean inter-group phi, recursively — zero overlap at all levels. Cost: phi fidelity (Spearman of map distance vs phi on backbone links) −0.25 → −0.19 for Occupation Space; Job Space −0.43. Louvain communities kept in analysis only (Occupation Space communities are ~21% one SOC group, unnameable). Each hull carries a `profile` (top metros by group RCA among metros ≥100k jobs, largest occupations, emp share, mean PCI).
 **Rationale**: Atlas/Metroverse practice (fixed layouts, MST backbone); faithful port of the user's 2022 research (JobsAndTasks).
 **Findings / trade-offs**:
 - JCI@20 is strongly smoothed (CV 0.64 → 0.09): it ranks *task families* (healthcare ≈$100k top, production ≈$72k bottom), not individual jobs. Rank stable from n≈10.

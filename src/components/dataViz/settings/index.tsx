@@ -28,6 +28,8 @@ import {
   ColorBy,
   ClusterLevel,
   defaultClusterLevel,
+  DivisionLevel,
+  defaultDivisionLevel,
   CityNodeSizing,
   CityColorBy,
   defaultCityNodeSizing,
@@ -326,6 +328,8 @@ export interface SettingsOptions {
       };
   cityNodeSizing?: boolean;
   cityColorBy?: boolean;
+  // Occupation Space: SOC level drawn as the outer division hulls
+  divisionLevel?: boolean;
   aggregationMode?: boolean | { stateDistributionEnabled: boolean };
   rcaThreshold?: boolean;
 }
@@ -363,6 +367,7 @@ const Settings = (props: Props) => {
       city_node_sizing: _unusedCitySizeBy,
       aggregation: _unusedAggregation,
       rca_threshold: _rcaThreshold,
+      division: _unusedDivision,
       ...rest
     } = params;
     const query = queryString.stringify({ ...rest });
@@ -708,6 +713,33 @@ const Settings = (props: Props) => {
     );
   } else {
     clusterLevelOptions = null;
+  }
+
+  let divisionLevelOptions: React.ReactElement<any> | null = null;
+  if (settingsOptions.divisionLevel) {
+    const current = params.division ? params.division : defaultDivisionLevel;
+    const levels: [DivisionLevel, string][] = [
+      [DivisionLevel.high, "global-ui-division-level-high"],
+      [DivisionLevel.intermediate, "global-ui-division-level-intermediate"],
+      [DivisionLevel.major, "global-ui-division-level-major"],
+    ];
+    divisionLevelOptions = (
+      <SettingGrid>
+        <Tooltip explanation={getString("glossary-division-level")} />
+        <Label>{getString("global-ui-division-level")}</Label>
+        <SettingsInputContainer>
+          {levels.map(([level, label]) => (
+            <DigitLevelButton
+              key={level}
+              onClick={() => updateSetting("division", level)}
+              $selected={current === level}
+            >
+              {getString(label)}
+            </DigitLevelButton>
+          ))}
+        </SettingsInputContainer>
+      </SettingGrid>
+    );
   }
 
   let clusterOverlayToggle: React.ReactElement<any> | null;
@@ -1100,6 +1132,7 @@ const Settings = (props: Props) => {
           {aggregationMode}
           {digitLevelOptions}
           {clusterLevelOptions}
+          {divisionLevelOptions}
           {clusterOverlayToggle}
           {nodeSizingOptions}
           {colorByOptions}

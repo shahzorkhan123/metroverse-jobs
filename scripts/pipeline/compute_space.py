@@ -467,83 +467,263 @@ SHORT_GROUP_NAMES = {
 }
 
 
-def _cluster_names(labels, codes, occupations, nat_emp):
-    """Return {label: (group label, largest occupation name)}.
+# SOC 2018 User Guide, tables 5 and 6: official aggregations above the major
+# groups (military group 55 omitted -- OES has no military occupations).
+SOC_INTERMEDIATE = {
+    "1": ("Management, Business & Financial", ["11", "13"]),
+    "2": ("Computer, Engineering & Science", ["15", "17", "19"]),
+    "3": ("Education, Legal, Community Service, Arts & Media", ["21", "23", "25", "27"]),
+    "4": ("Healthcare Practitioners & Technical", ["29"]),
+    "5": ("Service", ["31", "33", "35", "37", "39"]),
+    "6": ("Sales", ["41"]),
+    "7": ("Office & Administrative Support", ["43"]),
+    "8": ("Farming, Fishing & Forestry", ["45"]),
+    "9": ("Construction & Extraction", ["47"]),
+    "10": ("Installation, Maintenance & Repair", ["49"]),
+    "11": ("Production", ["51"]),
+    "12": ("Transportation & Material Moving", ["53"]),
+}
+SOC_HIGH = {
+    "1": ("Management, Business, Science & Arts", ["1", "2", "3", "4"]),
+    "2": ("Service", ["5"]),
+    "3": ("Sales & Office", ["6", "7"]),
+    "4": ("Natural Resources, Construction & Maintenance", ["8", "9", "10"]),
+    "5": ("Production, Transportation & Material Moving", ["11", "12"]),
+}
+SOC_LEVELS = ["high", "intermediate", "major", "minor"]
+_PREFIX = {"high": "h", "intermediate": "i", "major": "m", "minor": "n"}
 
-    The group label is the most common SOC major group among the cluster's
-    occupations (short form), or the top two joined with "&" when no
-    group holds a majority -- Occupation Space clusters often mix families.
+
+def load_soc_hierarchy(data_dir: Path, country: str = "us", year: int = 2024):
+    """SOC group ids and names for every detailed occupation.
+
+    Returns (groups, names): groups[code] = {level: group id} for the four
+    levels in SOC_LEVELS; names[group id] = title.  Ids are prefixed by level
+    ("h1", "i5", "m29", "n29-1100") so they are unique across levels.
+    Minor groups come from the level-3 parent chain in the published JSON.
     """
-    names = {}
-    for lab in sorted(set(labels.tolist())):
-        idx = [i for i, l in enumerate(labels) if l == lab]
-        by_group: dict = {}
-        for i in idx:
-            g = occupations[codes[i]]["majorGroupName"]
-            by_group[g] = by_group.get(g, 0) + 1
-        ranked = sorted(by_group, key=lambda g: -by_group[g])
-        short = [SHORT_GROUP_NAMES.get(g, g) for g in ranked]
-        if by_group[ranked[0]] / len(idx) >= 0.5 or len(ranked) == 1:
-            group_label = short[0]
-        else:
-            group_label = f"{short[0]} / {short[1]}"
-        top_occ = max(idx, key=lambda i: nat_emp.get(codes[i], 0))
-        occ_name = occupations[codes[top_occ]]["name"]
-        names[lab] = (group_label, occ_name)
-    return names
+    def read(suffix):
+        with open(data_dir / f"bls-data-{country}-{year}{suffix}.json", encoding="utf-8") as f:
+            return json.load(f)["occupations"]
+
+    occ = {o["socCode"]: o for o in read("") + read("-3") + read("-4")}
+    inter_of = {mg: i for i, (_, mgs) in SOC_INTERMEDIATE.items() for mg in mgs}
+    high_of = {i: h for h, (_, ints) in SOC_HIGH.items() for i in ints}
+    names = {f"h{h}": t for h, (t, _) in SOC_HIGH.items()}
+    names.update({f"i{i}": t for i, (t, _) in SOC_INTERMEDIATE.items()})
+    groups = {}
+    for code, o in occ.items():
+        if o["level"] != 4 or o["majorGroupId"] not in inter_of:
+            continue
+        broad = occ.get(o["parentCode"] or "")
+        # Published parentCodes miss the renumbered minor groups (15-1200,
+        # 31-1100, 51-5100: broad 15-1250 points at a non-existent 15-1000),
+        # so fall back to the XX-XX00 and XX-X000 patterns that do exist.
+        candidates = [broad.get("parentCode") if broad else None,
+                      code[:5] + "00", code[:4] + "000"]
+        minor = next((m for m in candidates if m and m in occ and occ[m]["level"] == 2),
+                     code[:4] + "000")
+        mg = o["majorGroupId"]
+        inter = inter_of[mg]
+        groups[code] = {"high": f"h{high_of[inter]}", "intermediate": f"i{inter}",
+                        "major": f"m{mg}", "minor": f"n{minor}"}
+        names[f"m{mg}"] = SHORT_GROUP_NAMES.get(o["majorGroupName"], o["majorGroupName"])
+        if minor in occ:
+            names[f"n{minor}"] = occ[minor]["name"]
+    return groups, names
 
 
-def space_to_layout_json(space: dict, oes: dict, kind: str,
-                         n_neighbors: int = 10, target_avg_degree: float = 4.0,
-                         seed: int = 42):
-    """Build the renderer JSON (nodes with x/y + clusters with polygons)."""
-    codes = space["codes"]
-    phi = space["phi"]
+def _leaf_layout(phi_sub: np.ndarray) -> np.ndarray:
+    """Kamada-Kawai positions (unit disc) for a small group, distance 1 - phi."""
+    import networkx as nx
+
+    m = phi_sub.shape[0]
+    if m == 1:
+        return np.zeros((1, 2))
+    G = nx.Graph()
+    G.add_nodes_from(range(m))
+    for a in range(m):
+        for b in range(a + 1, m):
+            G.add_edge(a, b, d=1.05 - phi_sub[a, b])
+    pos = nx.kamada_kawai_layout(G, weight="d")
+    xy = np.array([pos[a] for a in range(m)])
+    xy -= xy.mean(axis=0)
+    r = np.linalg.norm(xy, axis=1).max()
+    return xy / r if r > 0 else xy
+
+
+def _pack_discs(radii, affinity: np.ndarray, seed: int) -> np.ndarray:
+    """Centres for non-overlapping discs, related discs placed close together.
+
+    Start from a spring layout of the groups weighted by affinity, then
+    push overlapping discs apart while a weak pull keeps the pack compact.
+    """
+    import networkx as nx
+
+    r = np.asarray(radii, dtype=float)
+    c = len(r)
+    if c == 1:
+        return np.zeros((1, 2))
+    G = nx.Graph()
+    G.add_nodes_from(range(c))
+    for a in range(c):
+        for b in range(a + 1, c):
+            if affinity[a, b] > 0:
+                G.add_edge(a, b, weight=affinity[a, b])
+    pos = nx.spring_layout(G, weight="weight", seed=seed, iterations=200)
+    p = np.array([pos[a] for a in range(c)]) * r.sum()
+    gap = 0.02 * r.mean()
+
+    def separate(pull: float) -> bool:
+        moved = False
+        for a in range(c):
+            for b in range(a + 1, c):
+                d = p[b] - p[a]
+                dist = np.linalg.norm(d) + 1e-9
+                need = r[a] + r[b] + gap
+                if dist < need:
+                    push = (need - dist) / 2 * d / dist
+                    p[a] -= push
+                    p[b] += push
+                    moved = True
+        if pull:
+            p[:] += pull * ((p * r[:, None] ** 2).sum(0) / (r ** 2).sum() - p)
+        return moved
+
+    for it in range(400):
+        if not separate(0.02) and it > 50:
+            break
+    for _ in range(2000):          # strict pass: no pull, no overlap left
+        if not separate(0.0):
+            break
+    return p - (p * r[:, None] ** 2).sum(0) / (r ** 2).sum()
+
+
+def nested_layout(phi: np.ndarray, labels: list, seed: int = 42) -> np.ndarray:
+    """Group-in-a-disc layout following a label hierarchy.
+
+    labels[i] is a tuple of group ids from the coarsest to the finest level.
+    Occupations are laid out by phi inside their finest group; each group is a
+    disc, and sibling discs are packed so that groups with higher mean phi
+    sit closer.  Every group at every level is therefore one contiguous
+    region and hulls never overlap.  Returns (n, 2) scaled to 1000 x 750.
+    """
+    depth_max = len(labels[0])
+
+    def place(idx, depth):
+        if depth == depth_max:
+            rad = max(np.sqrt(len(idx)), 0.6)
+            return _leaf_layout(phi[np.ix_(idx, idx)]) * rad, rad
+        keys = sorted({labels[i][depth] for i in idx})
+        parts = [[i for i in idx if labels[i][depth] == k] for k in keys]
+        subs = [place(part, depth + 1) for part in parts]
+        aff = np.zeros((len(parts), len(parts)))
+        for a in range(len(parts)):
+            for b in range(a + 1, len(parts)):
+                aff[a, b] = aff[b, a] = phi[np.ix_(parts[a], parts[b])].mean()
+        centres = _pack_discs([s[1] for s in subs], aff, seed)
+        pos = {}
+        for part, (xy, _), cen in zip(parts, subs, centres):
+            for i, v in zip(part, xy):
+                pos[i] = v + cen
+        radius = max(np.linalg.norm(cen) + s[1] for cen, s in zip(centres, subs))
+        return np.array([pos[i] for i in idx]), radius
+
+    xy, _ = place(list(range(len(labels))), 0)
+    xy -= xy.min(axis=0)
+    span = xy.max(axis=0)
+    span[span == 0] = 1
+    xy = xy / span
+    return np.column_stack([xy[:, 0] * 1000, xy[:, 1] * 750])
+
+
+def _phi_fidelity(xy: np.ndarray, edges) -> float:
+    """Spearman correlation of map distance with phi on backbone links (< 0 is good)."""
+    from scipy.stats import spearmanr
+
+    d = [float(np.linalg.norm(xy[i] - xy[j])) for i, j, _ in edges]
+    return float(spearmanr(d, [w for _, _, w in edges]).correlation)
+
+
+def _cluster_profiles(members: dict, oes: dict, pci: dict | None,
+                      min_metro_emp: int = 100_000, top: int = 5):
+    """Per-group summary: where it concentrates and what it is made of.
+
+    members[group id] = list of SOC codes.  topRegions ranks metros with at
+    least min_metro_emp jobs by the group's RCA (share of the metro's jobs
+    in the group / national share).
+    """
+    nat = oes["emp"][oes["national_id"]]
+    nat_total = sum(nat.values())
+    metros = [rid for rid, r in oes["regions"].items()
+              if r["regionType"] == "Metro"
+              and sum(oes["emp"].get(rid, {}).values()) >= min_metro_emp]
+    metro_total = {rid: sum(oes["emp"][rid].values()) for rid in metros}
+    out = {}
+    for gid, codes in members.items():
+        g_nat = sum(nat.get(c, 0) for c in codes)
+        share_nat = g_nat / nat_total if nat_total else 0
+        rca = []
+        if share_nat > 0:
+            for rid in metros:
+                e = oes["emp"][rid]
+                rca.append((sum(e.get(c, 0) for c in codes) / metro_total[rid] / share_nat, rid))
+        rca.sort(reverse=True)
+        largest = sorted(codes, key=lambda c: -nat.get(c, 0))[:top]
+        pcis = [pci[c] for c in codes if pci and c in pci]
+        out[gid] = {
+            "empShare": round(100 * share_nat, 2),
+            "meanPci": round(float(np.mean(pcis)), 3) if pcis else None,
+            "topRegions": [{"id": rid, "name": oes["regions"][rid]["name"], "rca": round(v, 2)}
+                           for v, rid in rca[:top]],
+            "topOccupations": [{"id": c, "name": oes["occupations"][c]["name"]} for c in largest],
+        }
+    return out
+
+
+def space_to_layout_json(space: dict, oes: dict, kind: str, hierarchy: tuple,
+                         pci: dict | None = None, n_neighbors: int = 10,
+                         target_avg_degree: float = 4.0, seed: int = 42):
+    """Build the renderer JSON: nodes with x/y, backbone links, SOC group hulls.
+
+    hierarchy = load_soc_hierarchy(...).  Groups (hulls) are the official
+    SOC 2018 levels -- high-level, intermediate, major, minor -- as the
+    Atlas colours products by HS sector; phi only decides the arrangement
+    (nested_layout).  The frontend shows one level as "continents" and the
+    next as "countries" (Division level setting).
+    """
+    soc_groups, soc_names = hierarchy
+    codes = [c for c in space["codes"] if c in soc_groups]
+    keep = [i for i, c in enumerate(space["codes"]) if c in soc_groups]
+    phi = space["phi"][np.ix_(keep, keep)]
     n = len(codes)
-    edges, k, cutoff, mst_edges = backbone(phi, target_avg_degree)
-    xy = layout(n, edges, mst_edges, seed=seed)
-    cont_of, country_of = clusters(n, edges, seed=seed)
-    nat_emp = oes["emp"][oes["national_id"]]
-    occ = oes["occupations"]
+    edges, k, cutoff, _ = backbone(phi, target_avg_degree)
+    labels = [tuple(soc_groups[c][lvl] for lvl in SOC_LEVELS) for c in codes]
+    xy = nested_layout(phi, labels, seed=seed)
 
-    cont_names = _cluster_names(cont_of, codes, occ, nat_emp)
-    country_names = _cluster_names(country_of, codes, occ, nat_emp)
-
-    # Short continent names; number them when a major group repeats
-    group_counts: dict = {}
-    for g, _ in cont_names.values():
-        group_counts[g] = group_counts.get(g, 0) + 1
-    group_seen: dict = {}
-    continents = []
-    for lab in sorted(cont_names):
-        g, top = cont_names[lab]
-        group_seen[g] = group_seen.get(g, 0) + 1
-        name = g if group_counts[g] == 1 else f"{g} ({group_seen[g]})"
-        idx = np.where(cont_of == lab)[0]
-        continents.append({
-            "clusterId": str(lab + 1),
-            "clusterCode": int(lab),
-            "name": name,
-            "center": [round(float(v), 1) for v in xy[idx].mean(axis=0)],
-            "polygon": hull(xy[idx], pad=10.0),
-            "color": "#dfdfdf",
-            "size": int(len(idx)),
-        })
-    countries = []
-    for lab in sorted(country_names):
-        _, top = country_names[lab]
-        idx = np.where(country_of == lab)[0]
-        countries.append({
-            "clusterId": str(101 + lab),
-            "clusterCode": int(lab),
-            # Named after its largest occupation, trimmed for map labels
-            "name": top.split(",")[0][:40],
-            "continent": str(int(cont_of[idx[0]]) + 1),
-            "center": [round(float(v), 1) for v in xy[idx].mean(axis=0)],
-            "polygon": hull(xy[idx], pad=5.0),
-            "color": "#cfcfcf",
-            "size": int(len(idx)),
-        })
+    levels = {}
+    for d, lvl in enumerate(SOC_LEVELS):
+        members: dict = {}
+        for c, lab in zip(codes, labels):
+            members.setdefault(lab[d], []).append(c)
+        profiles = _cluster_profiles(members, oes, pci)
+        idx_of = {c: i for i, c in enumerate(codes)}
+        out = []
+        for gid in sorted(members, key=lambda g: (len(g), g)):
+            idx = [idx_of[c] for c in members[gid]]
+            parent = labels[idx[0]][d - 1] if d > 0 else None
+            out.append({
+                "clusterId": gid,
+                "clusterCode": len(out),
+                "name": soc_names.get(gid, gid),
+                "parentId": parent,
+                "center": [round(float(v), 1) for v in xy[idx].mean(axis=0)],
+                "polygon": hull(xy[idx], pad=(14.0, 10.0, 7.0, 5.0)[d]),
+                "color": "#dfdfdf" if d % 2 == 0 else "#cfcfcf",
+                "size": len(idx),
+                "profile": profiles[gid],
+            })
+        levels[lvl] = out
 
     order = np.argsort(-phi, axis=1)
     links = [[codes[i], codes[j], round(w, 4)] for i, j, w in edges]
@@ -554,26 +734,25 @@ def space_to_layout_json(space: dict, oes: dict, kind: str,
             "id": c,
             "x": round(float(xy[i, 0]), 2),
             "y": round(float(xy[i, 1]), 2),
-            "continent": str(int(cont_of[i]) + 1),
-            "country": str(101 + int(country_of[i])),
+            "groups": dict(zip(SOC_LEVELS, labels[i])),
             "edges": [{"trg": codes[j], "proximity": round(float(phi[i, j]), 4)}
                       for j in nbrs],
         })
 
-    degrees = 2 * len(edges) / n
     return {
         "kind": kind,
         "nodes": nodes,
         "links": links,
-        "clusters": {"continents": continents, "countries": countries},
+        "clusters": {"levels": levels},
         "stats": {
             "nNodes": n,
             "nLinks": len(edges),
-            "avgDegree": round(degrees, 2),
+            "avgDegree": round(2 * len(edges) / n, 2),
             "topK": int(k),
             "phiCutoff": round(cutoff, 4),
-            "nContinents": len(continents),
-            "nCountries": len(countries),
+            "layout": "soc_nested",
+            "phiFidelity": round(_phi_fidelity(xy, edges), 3),
+            "nGroups": {lvl: len(v) for lvl, v in levels.items()},
         },
     }
 
@@ -696,10 +875,12 @@ def compute_all(data_dir: Path, onet_zip: Path, country: str = "us",
     print(f"    {len(job_space['codes'])} jobs x "
           f"{len(job_space['tasks'])} DWAs")
 
+    hierarchy = load_soc_hierarchy(data_dir, country, year)
     summary = {}
     for kind, space in (("occupation", occ_space), ("job", job_space)):
-        print(f"  Layout + clusters: {kind} space...")
-        lay = space_to_layout_json(space, oes, kind, seed=seed)
+        print(f"  Layout + SOC groups: {kind} space...")
+        lay = space_to_layout_json(space, oes, kind, hierarchy,
+                                   pci=occ_space["pci"], seed=seed)
         path = out_dir / f"space-{country}-{year}-{kind}.json"
         with open(path, "w", encoding="utf-8") as f:
             json.dump(lay, f, indent=2)

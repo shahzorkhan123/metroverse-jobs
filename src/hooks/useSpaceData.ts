@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react';
 import { useStaticData } from '../dataProvider';
 import { SpaceFile, ComplexityFile } from '../dataProvider/types';
 import useQueryParams from './useQueryParams';
-import { SpaceType, defaultSpaceType } from '../routing/routes';
+import {
+  SpaceType,
+  defaultSpaceType,
+  DivisionLevel,
+  defaultDivisionLevel,
+} from '../routing/routes';
 
 const BASE_URL = process.env.PUBLIC_URL + '/data';
 
@@ -55,7 +60,15 @@ export const useCurrentSpaceType = (): SpaceType => {
   return space === SpaceType.job ? SpaceType.job : defaultSpaceType;
 };
 
-const useJsonFile = <T>(file: string | undefined): Output<T> => {
+/** SOC level drawn as the outer division hulls (?division=1|2|3). */
+export const useCurrentDivisionLevel = (): DivisionLevel => {
+  const { division } = useQueryParams();
+  return division === DivisionLevel.intermediate || division === DivisionLevel.major
+    ? division
+    : defaultDivisionLevel;
+};
+
+const useJsonFile =<T>(file: string | undefined): Output<T> => {
   const url = file ? `${BASE_URL}/${file}` : undefined;
   const [output, setOutput] = useState<Output<T>>(() =>
     url && fileCache[url]

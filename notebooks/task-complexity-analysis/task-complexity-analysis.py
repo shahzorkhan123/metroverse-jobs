@@ -515,15 +515,37 @@ proximity_diagram()
 # 1. Build a *maximum spanning tree* on φ, so every occupation is connected through its strongest links.
 # 2. Add each node's top-k links, with k chosen so the average degree is about 4–5.
 # 3. Lay out the nodes with Kamada-Kawai on the tree, then refine with a force layout on the full backbone.
-# 4. Group nodes into **knowledge clusters** with Louvain community detection at two resolutions.
 #
-# Positions are computed once offline and shipped to the website as fixed x/y coordinates.
+# **Divisions come from the official classification, not from the data.** The Atlas colours products by HS-based sector and Metroverse colours industries by NAICS sector; the data decides only where they sit. We do the same with the **SOC 2018 hierarchy** (BLS SOC User Guide, tables 5–6): 5 high-level aggregations → 12 intermediate aggregations → 22 major groups → ~93 minor groups.
+#
+# A pure force layout scatters every SOC family across the Occupation Space (see the comparison below), so outlines drawn around SOC groups would overlap everywhere. The website therefore uses a **nested layout**, similar in spirit to the 2025 Atlas redesign, which groups products by cluster:
+#
+# 4. Inside each minor group, occupations are placed by φ (Kamada-Kawai on distance $1-\phi$).
+# 5. Each group becomes a disc; sibling discs are packed without overlap, with groups of higher mean φ placed closer together; this repeats up the hierarchy.
+#
+# Every SOC group at every level is then one contiguous region, and the user can choose which level to outline (*Viz Options → Divisions*). The cost is that distance *between* groups only reflects group-level relatedness. Positions are computed once offline and shipped to the website as fixed x/y coordinates.
 
 # %%
-def draw(space, title, ax, color_values=None, cmap="viridis"):
+SOC_GROUPS, SOC_NAMES = cs.load_soc_hierarchy(DATA_DIR, "us", 2024)
+
+def draw(space, title, ax, color_values=None, cmap="viridis", nested=True, hull_level="intermediate"):
+    """Space map: SOC-nested layout with group outlines (website), or the pure phi layout."""
     codes = space["codes"]; n = len(codes)
     edges, k, cutoff, mst = cs.backbone(space["phi"], 4.0)
-    xy = cs.layout(n, edges, mst, seed=42)
+    if nested:
+        labels = [tuple(SOC_GROUPS[c][l] for l in cs.SOC_LEVELS) for c in codes]
+        xy = cs.nested_layout(space["phi"], labels, seed=42)
+        d = cs.SOC_LEVELS.index(hull_level)
+        for g in sorted({lab[d] for lab in labels}):
+            idx = [i for i, lab in enumerate(labels) if lab[d] == g]
+            poly = np.array(cs.hull(xy[idx], pad=10))
+            ax.fill(*poly.T, color="#000", alpha=0.035, zorder=0)
+            ax.plot(*np.r_[poly, poly[:1]].T, color="#bbb", lw=0.6, zorder=0)
+            if len(idx) >= 12:
+                ax.text(*xy[idx].mean(0), SOC_NAMES[g], fontsize=6.5, ha="center", va="center",
+                        zorder=3, bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.6))
+    else:
+        xy = cs.layout(n, edges, mst, seed=42)
     for i, j, w in edges:
         ax.plot(*xy[[i, j]].T, color="#d0d0d0", lw=0.35, zorder=1)
     if color_values is None:
@@ -535,6 +557,8 @@ def draw(space, title, ax, color_values=None, cmap="viridis"):
         plt.colorbar(sc, ax=ax, shrink=0.6)
     ax.set_title(f"{title}\n{n} occupations · {len(edges)} links · top-{k} + MST · φ ≥ {cutoff:.2f}", fontsize=10)
     ax.set_aspect("equal"); ax.axis("off")
+    if nested:
+        ax.invert_yaxis()
 
 def pipeline_diagram(space):
     """Explanatory figure: dense phi network -> MST + top-k backbone -> laid-out map."""
@@ -568,6 +592,14 @@ def pipeline_diagram(space):
     plt.savefig(FIG_DIR / "00e_pipeline.png", bbox_inches="tight", dpi=110); plt.show()
 
 pipeline_diagram(job_space)
+
+# %%
+fig, ax = plt.subplots(1, 2, figsize=(15, 6.2))
+draw(occ_space, "Occupation Space, pure φ layout: SOC families are scattered", ax[0], nested=False)
+draw(occ_space, "Occupation Space, SOC-nested layout (website), 12 intermediate groups", ax[1])
+plt.tight_layout()
+mg_legend(fig, occ.majorGroupId.unique(), ncol=8)
+plt.savefig(FIG_DIR / "06_occupation_space_layouts.png", bbox_inches="tight", dpi=130); plt.show()
 
 # %%
 fig, ax = plt.subplots(1, 2, figsize=(15, 6.2))
@@ -612,6 +644,8 @@ display(tab_o.style.hide(axis="index"))
 #
 # - **The Job Space is organised by occupational family.** Occupations in a family share tasks, so each cluster is dominated by one SOC major group: healthcare, education, construction trades, production and so on.
 # - **The Occupation Space mixes families.** Metros specialise in *combinations* of occupations, so each knowledge cluster draws on several SOC major groups, as the composition table above shows. The relatedness that matters for regional diversification therefore cuts across the official occupational hierarchy. This is the same pattern Muneepeerakul et al. (2013) found for US metros.
+#
+# This is why the website outlines **SOC groups** rather than these data-driven communities: Louvain communities in the Occupation Space have no natural names (their largest SOC group is typically under a quarter of members), while SOC groups are the categories BLS publishes and users already know. The data-driven structure is still visible in *where* the groups sit and in the links that run between them.
 #
 # **Propensity.** For a region, the relatedness density of an occupation it lacks is
 # $$\omega_{cp} = \frac{\sum_{p'} M_{cp'}\,\phi_{pp'}}{\sum_{p'} \phi_{pp'}}$$

@@ -116,16 +116,33 @@ export interface TimeSeriesFile {
   };
 }
 
-/** Knowledge-cluster hull in an Occupation/Job Space layout */
+/** SOC 2018 levels used as divisions, coarsest first */
+export type SocLevel = 'high' | 'intermediate' | 'major' | 'minor';
+export const socLevels: SocLevel[] = ['high', 'intermediate', 'major', 'minor'];
+
+/** Where a SOC group concentrates and what it is made of */
+export interface SpaceClusterProfile {
+  /** Share of national employment, % */
+  empShare: number;
+  meanPci: number | null;
+  /** Metros (>= 100k jobs) with the highest RCA in the group */
+  topRegions: { id: string; name: string; rca: number }[];
+  /** Largest occupations by national employment */
+  topOccupations: { id: string; name: string }[];
+}
+
+/** SOC group hull in an Occupation/Job Space layout */
 export interface SpaceCluster {
   clusterId: string;
   clusterCode: number;
   name: string;
+  /** Group id one SOC level up (null for high-level groups) */
+  parentId: string | null;
   center: number[];
   polygon: number[][];
   color: string;
   size: number;
-  continent?: string;
+  profile: SpaceClusterProfile;
 }
 
 /** Occupation Space / Job Space layout (space-{country}-{year}-{kind}.json) */
@@ -135,22 +152,23 @@ export interface SpaceFile {
     id: string;
     x: number;
     y: number;
-    continent: string;
-    country: string;
+    /** SOC group id at each level, e.g. {high: "h1", ..., minor: "n11-1000"} */
+    groups: { [level in SocLevel]: string };
     /** Top-10 most proximate occupations (phi) */
     edges: { trg: string; proximity: number }[];
   }[];
   /** Drawn backbone: maximum spanning tree + top-k links, [source, target, phi] */
   links: [string, string, number][];
-  clusters: { continents: SpaceCluster[]; countries: SpaceCluster[] };
+  clusters: { levels: { [level in SocLevel]: SpaceCluster[] } };
   stats: {
     nNodes: number;
     nLinks: number;
     avgDegree: number;
     topK: number;
     phiCutoff: number;
-    nContinents: number;
-    nCountries: number;
+    layout: string;
+    phiFidelity: number;
+    nGroups: { [level in SocLevel]: number };
   };
 }
 

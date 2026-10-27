@@ -9,8 +9,13 @@ import { useStaticData } from "../../../../dataProvider";
 import {
   useSpaceLayout,
   useComplexityData,
+  useCurrentDivisionLevel,
 } from "../../../../hooks/useSpaceData";
 import { SpaceType } from "../../../../routing/routes";
+import {
+  SpaceClusterProfile,
+  socLevels,
+} from "../../../../dataProvider/types";
 import { defaultYear } from "../../../../Utils";
 
 interface ContinentCluster {
@@ -22,6 +27,8 @@ interface ContinentCluster {
   polygon: number[][];
   numEmploy?: number;
   shareEmploy?: number;
+  size?: number;
+  profile?: SpaceClusterProfile;
 }
 
 interface CountryCluster extends ContinentCluster {
@@ -116,6 +123,7 @@ const useLayoutData = (kind?: SpaceType): Output => {
   } = useStaticData();
   const space = useSpaceLayout(kind);
   const complexity = useComplexityData();
+  const division = useCurrentDivisionLevel();
 
   useEffect(() => {
     for (let lvl = 3; lvl <= Math.min(4, maxDigitLevel); lvl++) {
@@ -176,6 +184,10 @@ const useLayoutData = (kind?: SpaceType): Output => {
       .domain([Math.min(...gdps), Math.max(...gdps)])
       .range([3, 15]) as (val: number) => number;
 
+    // Division level d: SOC level d-1 is drawn as continents, level d as countries
+    const outerLevel = socLevels[parseInt(division, 10) - 1];
+    const innerLevel = socLevels[parseInt(division, 10)];
+
     const nodes: Node[] = space.data.nodes.map((n) => {
       const occ = occupations[n.id];
       const majorGroupId = occ ? occ.majorGroupId : n.id.substring(0, 2);
@@ -185,7 +197,12 @@ const useLayoutData = (kind?: SpaceType): Output => {
       const nodePci = pci[n.id] !== undefined ? pci[n.id] : null;
       const nodeJci = jci[n.id] !== undefined ? jci[n.id] : null;
       return {
-        ...n,
+        id: n.id,
+        x: n.x,
+        y: n.y,
+        edges: n.edges,
+        continent: n.groups[outerLevel],
+        country: n.groups[innerLevel],
         name: occ ? occ.name : n.id,
         code: n.id,
         industryColor: sectorColor,
@@ -211,10 +228,12 @@ const useLayoutData = (kind?: SpaceType): Output => {
     return {
       kind: space.data.kind as SpaceType,
       clusters: {
-        continents: space.data.clusters.continents.map((c) => ({ ...c })),
-        countries: space.data.clusters.countries.map((c) => ({
+        continents: space.data.clusters.levels[outerLevel].map((c) => ({
           ...c,
-          continent: c.continent as string,
+        })),
+        countries: space.data.clusters.levels[innerLevel].map((c) => ({
+          ...c,
+          continent: c.parentId as string,
         })),
       },
       nodes,
@@ -223,7 +242,7 @@ const useLayoutData = (kind?: SpaceType): Output => {
     };
     // sectorKey stands in for sectorMap, which is a new array every render
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [space.data, complexity.data, blsData, levelFourLoaded, sectorKey]);
+  }, [space.data, complexity.data, blsData, levelFourLoaded, sectorKey, division]);
 
   const error = space.error || complexity.error;
   return {

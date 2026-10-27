@@ -373,6 +373,22 @@ test.describe("Occupation Space", () => {
       .not.toBe(before);
   });
 
+  test("divisions follow the SOC hierarchy at each division level", async ({ page }) => {
+    const hulls = (p: Page) => p.locator("polygon.industry-continents");
+    for (const [division, count, label] of [
+      ["1", 5, "Service"],
+      ["2", 12, "Construction & Extraction"],
+      ["3", 22, "Health Care"],
+    ] as [string, number, string][]) {
+      await goToSpace(page, "national-united-states", `?division=${division}`);
+      await expect.poll(() => spaceNodes(page).count(), { timeout: 60000 }).toBeGreaterThan(500);
+      await expect(hulls(page)).toHaveCount(count);
+      await expect(
+        page.locator(".industry-continents-label", { hasText: new RegExp(`^${label}$`) }),
+      ).toHaveCount(1);
+    }
+  });
+
   test("colours nodes by PCI and JCI", async ({ page }) => {
     for (const colorBy of ["pci", "jci"]) {
       await goToSpace(page, "national-united-states", `?color_by=${colorBy}`);

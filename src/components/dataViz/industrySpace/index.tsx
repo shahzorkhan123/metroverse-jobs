@@ -19,6 +19,7 @@ import useFluent from "../../../hooks/useFluent";
 import { Mode } from "../../general/searchIndustryInGraphDropdown";
 import PresenceToggle from "../legend/PresenceToggle";
 import BenchmarkLegend from "../legend/BenchmarkLegend";
+import { useCurrentDivisionLevel } from "../../../hooks/useSpaceData";
 
 const Root = styled.div`
   width: 100%;
@@ -101,10 +102,13 @@ const ClusteredIndustrySpace = (props: Props) => {
   const [dimensions, setDimensions] = useState<
     { width: number; height: number } | undefined
   >(undefined);
-  // The space type is part of the key so switching spaces rebuilds the chart
+  const division = useCurrentDivisionLevel();
+  // Space type and division level are part of the key so switching either
+  // rebuilds the chart (hulls are drawn once, at creation)
   const chartKey = dimensions
     ? "industry-space-sized-to-container-key" +
       spaceType +
+      division +
       dimensions.width.toString() +
       dimensions.height.toString()
     : "industry-space-sized-to-container-key-0-0";
@@ -136,6 +140,7 @@ const ClusteredIndustrySpace = (props: Props) => {
           clusterOverlayMode: true,
           nodeSizing: { rca: true },
           colorBy: { nodes: true, complexity: true },
+          divisionLevel: true,
           digitLevel: {
             sixDigitOnlyMessage: getString(
               "glossary-digit-level-disabled-industry-space",

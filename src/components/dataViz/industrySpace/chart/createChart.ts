@@ -373,11 +373,26 @@ const createChart = (input: Input) => {
       );
       const rows = [
         ["Year:", defaultYear.toString()],
-        [
-          "High Aggregation<br />Knowledge Cluster:",
-          continent ? continent.name : "",
-        ],
+        ["Part of:", continent ? continent.name : ""],
+        ["Occupations:", d.size !== undefined ? d.size.toString() : ""],
       ];
+      if (d.profile) {
+        rows.push(["Share of US jobs:", d.profile.empShare + "%"]);
+        rows.push([
+          "Concentrated in:",
+          d.profile.topRegions
+            .slice(0, 3)
+            .map((r) => r.name.split(",")[0].split("-")[0])
+            .join(", "),
+        ]);
+        rows.push([
+          "Largest occupations:",
+          d.profile.topOccupations
+            .slice(0, 3)
+            .map((o) => o.name.split(",")[0])
+            .join("<br />"),
+        ]);
+      }
       if (d.numEmploy !== undefined) {
         rows.push([
           "Number of Employees:",
@@ -388,13 +403,13 @@ const createChart = (input: Input) => {
         rows.push(["Share of Employees:", d.shareEmploy + "%"]);
       }
       tooltipEl.innerHTML = getStandardTooltip({
-        title: "Knowledge Cluster: " + (d.name ? d.name : ""),
+        title: "SOC group: " + (d.name ? d.name : ""),
         color: "gray",
         rows,
         boldColumns: [1],
         simple: true,
         additionalHTML: `<div style="padding: 0.35rem; font-style: italic; font-size: 0.7rem; text-align: center;">
-              Click to zoom into knowledge cluster
+              Click to zoom into this group
             </div>`,
       });
       tooltipEl.style.display = "block";
@@ -587,7 +602,8 @@ const createChart = (input: Input) => {
         (yScale(d.center[1]) as number) + margin.top + textAndSpacingSize * 9.5,
     )
     .style("font-size", textAndSpacingSize * 9.5 + "px")
-    .text("Cluster");
+    // Divisions are SOC groups, whose names need no "Cluster" suffix
+    .text("");
 
   const continentValueLabels = g
     .selectAll(".industry-continents-value-label")
@@ -599,7 +615,7 @@ const createChart = (input: Input) => {
     .attr(
       "y",
       (d) =>
-        (yScale(d.center[1]) as number) + margin.top + textAndSpacingSize * 20,
+        (yScale(d.center[1]) as number) + margin.top + textAndSpacingSize * 11,
     )
     .style("font-size", textAndSpacingSize * 7.5 + "px")
     .text("0% of employees");

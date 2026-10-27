@@ -24,6 +24,14 @@ import { DigitLevel } from "../../../../types/graphQL/graphQLTypes";
 import { useAggregateIndustryMap } from "../../../../hooks/useAggregateIndustriesData";
 import { defaultYear } from "../../../../Utils";
 import { useStaticData } from "../../../../dataProvider";
+import { useCurrentDivisionLevel } from "../../../../hooks/useSpaceData";
+
+const divisionNames = [
+  "Broad SOC Groups",
+  "Intermediate SOC Groups",
+  "SOC Major Groups",
+  "SOC Minor Groups",
+];
 
 const clusterOverlayClassNames = {
   [ClusterMode.outline]: "industry-space-clusters-outlines-class",
@@ -330,6 +338,8 @@ const Chart = (props: Props) => {
   const [chart, setChart] = useState<Chart>({ initialized: false });
 
   const layout = useLayoutData();
+  // Breadcrumb names for the SOC levels shown as continents / countries
+  const outer = parseInt(useCurrentDivisionLevel(), 10) - 1;
   const { loading, data } = useRCAData(
     DigitLevel.Six,
     layout.data ? { nodes: layout.data.nodes } : undefined,
@@ -469,7 +479,7 @@ const Chart = (props: Props) => {
                 : undefined
             }
           >
-            High&nbsp;Aggregation Knowledge&nbsp;Clusters
+            {divisionNames[outer]}
           </span>
           <Arrow>{"→"}</Arrow>
         </BreadCrumb>
@@ -481,7 +491,7 @@ const Chart = (props: Props) => {
                 : undefined
             }
           >
-            Low&nbsp;Aggregation Knowledge&nbsp;Clusters
+            {divisionNames[outer + 1]}
           </span>
           <Arrow>{"→"}</Arrow>
         </BreadCrumb>

@@ -83,6 +83,19 @@ export enum SpaceType {
 
 export const defaultSpaceType: SpaceType = SpaceType.occupation;
 
+/**
+ * Occupation Space divisions: which SOC 2018 level is drawn as the outer
+ * hulls (the next level down appears when zooming into one).
+ * high = 5 high-level aggregations, intermediate = 12, major = 22.
+ */
+export enum DivisionLevel {
+  high = "1",
+  intermediate = "2",
+  major = "3",
+}
+
+export const defaultDivisionLevel: DivisionLevel = DivisionLevel.high;
+
 export enum CityNodeSizing {
   uniform = "uniform",
   population = "population",
@@ -128,4 +141,5 @@ export interface GlobalQueryParams {
   cluster_level: ClusterLevel | undefined;
   rca_threshold: string | undefined;
   space: SpaceType | undefined;
+  division: DivisionLevel | undefined;
 }

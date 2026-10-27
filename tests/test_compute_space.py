@@ -125,3 +125,41 @@ def test_hull_contains_points():
     poly = cs.hull(pts, pad=2)
     path = MPath(np.array(poly))
     assert all(path.contains_point(p) for p in pts)
+
+
+def test_soc_aggregations_cover_all_major_groups():
+    majors = [mg for _, mgs in cs.SOC_INTERMEDIATE.values() for mg in mgs]
+    assert len(majors) == len(set(majors)) == 22
+    inters = [i for _, ints in cs.SOC_HIGH.values() for i in ints]
+    assert sorted(inters, key=int) == sorted(cs.SOC_INTERMEDIATE, key=int)
+    assert len(cs.SOC_HIGH) == 5 and len(cs.SOC_INTERMEDIATE) == 12
+
+
+def test_nested_layout_groups_do_not_overlap():
+    from matplotlib.path import Path as MPath
+    from scipy.spatial import ConvexHull
+    rng = np.random.default_rng(3)
+    M = (rng.random((60, 40)) > 0.5).astype(float)
+    phi = cs.min_cond_proximity(M)
+    labels = [(f"h{i % 2}", f"i{i % 4}", f"m{i % 8}") for i in range(40)]
+    xy = cs.nested_layout(phi, labels, seed=1)
+    assert np.allclose(xy, cs.nested_layout(phi, labels, seed=1))
+    for depth in range(3):
+        groups = sorted({lab[depth] for lab in labels})
+        hulls = {}
+        for g in groups:
+            pts = xy[[i for i, lab in enumerate(labels) if lab[depth] == g]]
+            hulls[g] = MPath(pts[ConvexHull(pts).vertices])
+        for i, lab in enumerate(labels):
+            assert not any(h.contains_point(xy[i]) for g, h in hulls.items() if g != lab[depth])
+
+
+def test_soc_hierarchy_from_published_data():
+    data_dir = Path(__file__).resolve().parent.parent / "public" / "data"
+    if not (data_dir / "bls-data-us-2024-4.json").exists():
+        pytest.skip("published data not available")
+    groups, names = cs.load_soc_hierarchy(data_dir, "us", 2024)
+    g = groups["15-1252"]          # software developers
+    assert g == {"high": "h1", "intermediate": "i2", "major": "m15", "minor": "n15-1200"}
+    assert names["i2"].startswith("Computer")
+    assert len({v["minor"] for v in groups.values()}) > 80

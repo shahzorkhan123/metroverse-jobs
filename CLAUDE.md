@@ -194,7 +194,11 @@ Three modes, controlled by `AggregationMode` enum in `routing/routes.ts` and `?a
 
 - Tab "Occupation Space" → `CityRoutes.CityIndustrySpacePosition` (`/city/:cityId/occupation-space`), `?space=occupation|job`
 - Shown only when `meta.spaceFiles[country]` exists (`useSpaceFiles()` in `src/hooks/useSpaceData.ts`)
-- Data: `space-us-2024-{occupation,job}.json` (nodes x/y, top-10 `edges`, backbone `links`, cluster hulls) + `complexity-us-2024.json` (pci, jci, eci, tciTop)
+- Data: `space-us-2024-{occupation,job}.json` (nodes x/y + `groups` per SOC level, top-10 `edges`, backbone `links`, `clusters.levels.{high,intermediate,major,minor}` hulls with `parentId` + `profile`) + `complexity-us-2024.json` (pci, jci, eci, tciTop)
+- **Divisions = official SOC 2018 hierarchy** (User Guide tables 5–6): 5 high-level → 12 intermediate → 22 major → ~93 minor. NOT Louvain (Louvain kept only in `clusters()` for analysis). `?division=1|2|3` (Viz Options → Divisions) picks the outer level; `useLayoutData` maps level d-1 → continents, d → countries.
+- Layout = `nested_layout()`: phi-based Kamada-Kawai inside each minor group, groups packed as discs (closer = higher mean phi), recursively → zero hull overlap. Pure `layout()` kept for comparison (article fig 06).
+- Published `parentCode` for broad codes under renumbered minors (15-1200, 31-1100, 51-5100) points to non-existent XX-X000; `load_soc_hierarchy` falls back to XX-XX00.
+- Service worker caches old bundles on :3001 — unregister it in the browser after rebuilding.
 - Built by `scripts/pipeline/compute_space.py`: `python scripts/pipeline/run_pipeline.py --year 2024 --country us --space-only`
   - Occupation Space: metro RCA ≥ 1 co-location φ; PCI/ECI (method of reflections)
   - Job Space: shared O*NET DWAs φ; wage-seeded JCI/TCI (20 iterations)

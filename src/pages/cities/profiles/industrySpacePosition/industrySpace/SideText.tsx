@@ -144,12 +144,19 @@ const SideText = ({ children }: { children: React.ReactNode }) => {
           </ToggleButton>
         </Toggle>
         <ContentParagraph>{description[spaceType]}</ContentParagraph>
+        <ContentParagraph>
+          The outlined divisions are the official SOC 2018 occupation groups
+          (change the level under Viz Options). The data decides only where
+          they sit: related groups are placed close together, and occupations
+          are arranged by relatedness inside their group.
+        </ContentParagraph>
         {eciText}
         {layout ? (
           <Stats>
             {layout.stats.nNodes} occupations · {layout.stats.nLinks} links ·{" "}
-            {layout.stats.nContinents} high- and {layout.stats.nCountries}{" "}
-            low-aggregation knowledge clusters
+            {layout.stats.nGroups.high} broad, {layout.stats.nGroups.intermediate}{" "}
+            intermediate, {layout.stats.nGroups.major} major and{" "}
+            {layout.stats.nGroups.minor} minor SOC groups
           </Stats>
         ) : null}
         <ArticleLink
