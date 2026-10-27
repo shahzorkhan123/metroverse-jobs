@@ -47,6 +47,9 @@ __pycache__/
 
 # Notebook figures (generated on execution — do not commit)
 notebooks/.ipynb_checkpoints/
+notebooks/*/.ipynb_checkpoints/
+# Playground scratch exports (the site data lives in public/data/)
+notebooks/space-playground/outputs/
 # Local dev / test output
 dev-server.log
 test-results/

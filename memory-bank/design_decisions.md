@@ -58,6 +58,24 @@
 **Rationale**: BLS2 uses complexity metric derived from O*NET, similar purpose to education years
 **Trade-off**: Scales and meaning differ, but the UI pattern (gradient color) is identical
 
+## 13. Occupation Space + Job Space (2026-10-25)
+**Decision**: Two precomputed networks over detailed (level 4) SOC, both built by `scripts/pipeline/compute_space.py`:
+
+| | Occupation Space | Job Space ("propensity graph") |
+|---|---|---|
+| Matrix | M = 1[RCA ≥ 1], OES 2024 employment, 393 metros × 809 occ | M = 1 if O*NET 29.3 links DWA to job (768 jobs × 2,072 DWAs) |
+| Proximity | φ = co-occurrence / max(ubiquity) (Hidalgo et al. 2007) | same formula on shared DWAs |
+| Complexity | PCI/ECI, eigenvector of U⁻¹MᵀD⁻¹M (matches py-ecomplexity, r>0.999) | JCI/TCI: wage-seeded reflections, 20 iterations (this project's own exploratory construction; ported from user's unpublished JobsAndTasks Final.Rmd §4.1.3 — never cite it as a publication) |
+
+Layout: MST + top-k (avg degree 4–5) → Kamada-Kawai on MST → spring refine → clip 1–99th pct. Louvain at 2 levels (continents < 20 nodes merged). Positions shipped as fixed x/y.
+**Rationale**: Atlas/Metroverse practice (fixed layouts, MST backbone); faithful port of the user's 2022 research (JobsAndTasks).
+**Findings / trade-offs**:
+- JCI@20 is strongly smoothed (CV 0.64 → 0.09): it ranks *task families* (healthcare ≈$100k top, production ≈$72k bottom), not individual jobs. Rank stable from n≈10.
+- PCI vs JCI Spearman ρ = 0.05 — measure different things (where vs what).
+- Occupation-space clusters mix SOC families (top-group share 21%) vs Job Space 91%.
+- `complexity` field in US data files is now PCI min-max (level 4), parents = national emp-weighted mean; replaces GDP placeholder. India unchanged.
+- RCA is vs national (not peer groups).
+
 ## 12. Dynamic maxDigitLevel from meta catalog
 **Decision**: Compute max digit level from available level files rather than hardcoding
 **Rationale**: Different datasets may have different depth (BLS=4, future NAICS=6)

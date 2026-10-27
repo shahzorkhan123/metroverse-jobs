@@ -9,7 +9,12 @@ import { breakPoints } from "../../../styling/GlobalGrid";
 import PreChartRow from "../../../components/general/PreChartRow";
 import Chart from "./chart";
 import { ZoomLevel, NodeAction } from "./chart/createChart";
-import { NodeSizing, ColorBy, ClusterMode } from "../../../routing/routes";
+import {
+  NodeSizing,
+  ColorBy,
+  ClusterMode,
+  SpaceType,
+} from "../../../routing/routes";
 import useFluent from "../../../hooks/useFluent";
 import { Mode } from "../../general/searchIndustryInGraphDropdown";
 import PresenceToggle from "../legend/PresenceToggle";
@@ -57,7 +62,8 @@ const BenchmarkLegendContent = styled.div`
 `;
 
 interface Props {
-  cityId: number;
+  cityId: string;
+  spaceType: SpaceType;
   year: number;
   highlighted: string | undefined;
   preChartRowKey: string;
@@ -88,14 +94,17 @@ const ClusteredIndustrySpace = (props: Props) => {
     colorBy,
     zoomLevel,
     rcaThreshold,
+    spaceType,
   } = props;
   const windowDimensions = useWindowWidth();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [dimensions, setDimensions] = useState<
     { width: number; height: number } | undefined
   >(undefined);
+  // The space type is part of the key so switching spaces rebuilds the chart
   const chartKey = dimensions
     ? "industry-space-sized-to-container-key" +
+      spaceType +
       dimensions.width.toString() +
       dimensions.height.toString()
     : "industry-space-sized-to-container-key-0-0";
@@ -126,7 +135,7 @@ const ClusteredIndustrySpace = (props: Props) => {
           compositionType: true,
           clusterOverlayMode: true,
           nodeSizing: { rca: true },
-          colorBy: { nodes: true },
+          colorBy: { nodes: true, complexity: true },
           digitLevel: {
             sixDigitOnlyMessage: getString(
               "glossary-digit-level-disabled-industry-space",

@@ -1,15 +1,9 @@
+import { useMemo } from "react";
 import { useStaticData } from "../../../../dataProvider";
-import {
-  DigitLevel,
-  CompositionType,
-  defaultCompositionType,
-  isValidPeerGroup,
-  PeerGroup,
-} from "../../../../types/graphQL/graphQLTypes";
+import { BLSData } from "../../../../dataProvider/types";
+import { DigitLevel } from "../../../../types/graphQL/graphQLTypes";
 import useCurrentCityId from "../../../../hooks/useCurrentCityId";
 import { defaultYear } from "../../../../Utils";
-import useQueryParams from "../../../../hooks/useQueryParams";
-import useCurrentBenchmark from "../../../../hooks/useCurrentBenchmark";
 
 export enum RegionGroup {
   World = "world",
@@ -46,42 +40,94 @@ export interface SuccessResponse {
   c3Rca: ClusterRca[];
 }
 
-interface Variables {
-  cityId: number | null;
-  year: number;
-  level: DigitLevel;
-  peerGroup: PeerGroup | "";
-  partnerCityIds: [number] | [];
-  variable: "employ" | "company";
+/** Space clusters membership, when RCA is wanted for space knowledge clusters */
+export interface ClusterMembership {
+  nodes: { id: string; continent: string; country: string }[];
 }
 
+interface Variables {
+  cityId: string | null;
+  year: number;
+  clusters?: ClusterMembership;
+}
+
+/**
+ * Relative presence (Balassa RCA) of each occupation in a region, against
+ * the national economy:
+ *
+ *   RCA(r, o) = (emp(r, o) / emp(r)) / (emp(nat, o) / emp(nat))
+ *
+ * Totals use the region's major-group (level 1) records so shares are
+ * comparable across SOC levels.  Cluster RCA uses SOC major groups, or the
+ * Occupation/Job Space knowledge clusters when `clusters` is given.
+ */
 export const useClusterIntensityQuery = (variables: Variables) => {
   const { data: blsData, loading: blsLoading } = useStaticData();
+  const { cityId, year, clusters } = variables;
+  const clusterNodes = clusters ? clusters.nodes : undefined;
+  // Memoised so chart effects keyed on `data` only re-run when inputs change
+  return useMemo(
+    () =>
+      computeIntensity(blsData, blsLoading, {
+        cityId,
+        year,
+        clusters: clusterNodes ? { nodes: clusterNodes } : undefined,
+      }),
+    [blsData, blsLoading, cityId, year, clusterNodes],
+  );
+};
 
+const computeIntensity = (
+  blsData: BLSData | null,
+  blsLoading: boolean,
+  variables: Variables,
+) => {
   if (variables.cityId === null || blsLoading || !blsData) {
     return { loading: true, error: undefined, data: undefined };
   }
 
-  const cityId = variables.cityId.toString();
+  const cityId = variables.cityId;
   const regionData = blsData.regionData[cityId];
-  if (!regionData) {
+  const national = blsData.regions.find((r) => r.regionType === "National");
+  if (!regionData || !national) {
     return { loading: false, error: undefined, data: undefined };
   }
-
   const yearData = regionData[variables.year] || regionData[defaultYear];
-  if (!yearData) {
+  const nationalData = blsData.regionData[national.regionId]
+    ? blsData.regionData[national.regionId][variables.year] ||
+      blsData.regionData[national.regionId][defaultYear]
+    : undefined;
+  if (!yearData || !nationalData) {
     return { loading: false, error: undefined, data: undefined };
   }
 
-  // Build socCode → majorGroupId lookup
-  const socToMajorGroup: Record<string, string> = {};
+  const occInfo: Record<string, { majorGroupId: string; level: number }> = {};
   blsData.occupations.forEach((o) => {
-    socToMajorGroup[o.socCode] = o.majorGroupId;
+    occInfo[o.socCode] = { majorGroupId: o.majorGroupId, level: o.level };
   });
+  const isLevelOne = (code: string) =>
+    occInfo[code] ? occInfo[code].level === 1 : code.endsWith("-0000");
+
+  const nationalEmp: Record<string, number> = {};
+  let nationalTotal = 0;
+  nationalData.forEach((occ) => {
+    nationalEmp[occ.socCode] = occ.totEmp;
+    if (isLevelOne(occ.socCode)) nationalTotal += occ.totEmp;
+  });
+  const regionEmp: Record<string, number> = {};
+  let regionTotal = 0;
+  yearData.forEach((occ) => {
+    regionEmp[occ.socCode] = occ.totEmp;
+    if (isLevelOne(occ.socCode)) regionTotal += occ.totEmp;
+  });
+
+  const rcaOf = (regional: number, nationalValue: number) =>
+    regionTotal > 0 && nationalTotal > 0 && nationalValue > 0
+      ? regional / regionTotal / (nationalValue / nationalTotal)
+      : null;
 
   const naicsData: NaicsData[] = [];
   const naicsRca: NaicsRca[] = [];
-
   yearData.forEach((occ) => {
     naicsData.push({
       naicsId: occ.socCode,
@@ -90,66 +136,58 @@ export const useClusterIntensityQuery = (variables: Variables) => {
     });
     naicsRca.push({
       naicsId: occ.socCode,
-      rca: 1.0,
+      rca: rcaOf(occ.totEmp, nationalEmp[occ.socCode] || 0),
     });
-  });
-
-  // Aggregate by major group for cluster data
-  const majorGroupAgg: Record<string, { employ: number }> = {};
-  yearData.forEach((occ) => {
-    const mgId = socToMajorGroup[occ.socCode] || "00";
-    if (!majorGroupAgg[mgId]) {
-      majorGroupAgg[mgId] = { employ: 0 };
-    }
-    majorGroupAgg[mgId].employ += occ.totEmp;
   });
 
   const clusterData: ClusterData[] = [];
   const c1Rca: ClusterRca[] = [];
   const c3Rca: ClusterRca[] = [];
 
-  Object.entries(majorGroupAgg).forEach(([mgId, agg]) => {
-    clusterData.push({
-      clusterId: mgId,
-      level: 1,
-      numEmploy: agg.employ,
+  if (variables.clusters) {
+    // Occupation/Job Space knowledge clusters: sum member occupations
+    const agg: Record<string, { level: number; r: number; n: number }> = {};
+    variables.clusters.nodes.forEach((node) => {
+      [
+        { id: node.continent, level: 1 },
+        { id: node.country, level: 3 },
+      ].forEach(({ id, level }) => {
+        if (!agg[id]) agg[id] = { level, r: 0, n: 0 };
+        agg[id].r += regionEmp[node.id] || 0;
+        agg[id].n += nationalEmp[node.id] || 0;
+      });
     });
-    c1Rca.push({ clusterId: mgId, rca: 1.0 });
-    c3Rca.push({ clusterId: mgId, rca: 1.0 });
-  });
+    Object.keys(agg).forEach((id) => {
+      const { level, r, n } = agg[id];
+      clusterData.push({ clusterId: id, level, numEmploy: r });
+      (level === 1 ? c1Rca : c3Rca).push({ clusterId: id, rca: rcaOf(r, n) });
+    });
+  } else {
+    // SOC major groups (level-1 records)
+    yearData.forEach((occ) => {
+      if (isLevelOne(occ.socCode)) {
+        const mgId = occInfo[occ.socCode]
+          ? occInfo[occ.socCode].majorGroupId
+          : occ.socCode.substring(0, 2);
+        const rca = rcaOf(occ.totEmp, nationalEmp[occ.socCode] || 0);
+        clusterData.push({ clusterId: mgId, level: 1, numEmploy: occ.totEmp });
+        c1Rca.push({ clusterId: mgId, rca });
+        c3Rca.push({ clusterId: mgId, rca });
+      }
+    });
+  }
 
   const data: SuccessResponse = { clusterData, naicsData, naicsRca, c1Rca, c3Rca };
   return { loading: false, error: undefined, data };
 };
 
-const useRCAData = (level: DigitLevel) => {
+const useRCAData = (_level: DigitLevel, clusters?: ClusterMembership) => {
   const cityId = useCurrentCityId();
-  const { composition_type } = useQueryParams();
-  const { benchmark } = useCurrentBenchmark();
-
-  const defaultCompositionVariable =
-    defaultCompositionType === CompositionType.Companies ? "company" : "employ";
-  let variable: "employ" | "company" = defaultCompositionVariable;
-  if (composition_type === CompositionType.Companies) {
-    variable = "company";
-  } else if (composition_type === CompositionType.Employees) {
-    variable = "employ";
-  }
-
-  const peerGroup = isValidPeerGroup(benchmark) ? (benchmark as PeerGroup) : "";
-
-  const partnerCityIds: [number] | [] =
-    benchmark !== undefined && !isNaN(parseInt(benchmark, 10))
-      ? [parseInt(benchmark, 10)]
-      : [];
 
   const { loading, error, data } = useClusterIntensityQuery({
-    cityId: cityId !== null ? parseInt(cityId, 10) : null,
+    cityId,
     year: defaultYear,
-    level,
-    peerGroup,
-    partnerCityIds,
-    variable,
+    clusters,
   });
 
   return cityId !== null

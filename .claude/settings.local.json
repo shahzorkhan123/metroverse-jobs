@@ -97,7 +97,19 @@
       "Bash(xargs grep *)",
       "Bash(sed -n '96,110p' D:/Projects/metroverse-jobs/src/Utils.ts)",
       "Bash(sed -n '96,110p' D:/Projects/metroverse-jobs/src/Utils/index.ts)",
-      "Bash(xargs -I{} basename {})"
+      "Bash(xargs -I{} basename {})",
+      "Bash(sed -n '455,470p' D:/Projects/metroverse-jobs/scripts/pipeline/export_json.py)",
+      "Bash(sed -n '843,855p' D:/Projects/metroverse-jobs/scripts/pipeline/export_json.py)",
+      "Bash(jupyter nbconvert *)",
+      "Bash(2>&1)",
+      "Bash(awk '{print $1}')",
+      "Bash(xargs -I{} git show --stat {})",
+      "Bash(xargs -I{} git ls-tree -r --long {})",
+      "Bash(sort -k4 -rn)",
+      "Bash(git add *)",
+      "Bash(PYTHONIOENCODING=utf-8 python notebooks/india-state-analysis/india-state-analysis.py)",
+      "Bash(jupytext *)",
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/rebuild_analysis_db.py --lite)"
     ]
   }
 }

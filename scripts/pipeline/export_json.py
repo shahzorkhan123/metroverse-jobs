@@ -741,6 +741,8 @@ def export_meta(country_configs: list[dict],
         },
         "countryMetadata": country_metadata,
         "timeseriesFiles": timeseries_files,
+        # Written by compute_space (--space); preserved like timeseriesFiles
+        "spaceFiles": existing.get("spaceFiles", {}),
         "lastUpdated": date.today().isoformat(),
     }
 

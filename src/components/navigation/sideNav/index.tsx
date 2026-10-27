@@ -443,8 +443,11 @@ const SideNavigation = ({
 
   const tooltips: React.ReactElement[] = [];
 
-  const links = linkData.map((d, i) => {
-    const match = matchPath(history.location.pathname, baseLinkData[i].url);
+  const links = linkData.map((d) => {
+    // Use the datum's own url: linkData can briefly be longer than
+    // baseLinkData when the tab list shrinks (e.g. switching to a country
+    // without an Occupation Space)
+    const match = matchPath(history.location.pathname, d.url);
     const className = match ? acitveLinkClass : undefined;
     const beta = d.beta ? <BetaIcon>Beta</BetaIcon> : null;
     let url = d.url;

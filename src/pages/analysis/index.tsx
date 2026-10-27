@@ -97,6 +97,14 @@ const ReadLink = styled.span`
 
 const ARTICLES = [
   {
+    title: "Task Complexity Analysis",
+    date: "Oct 2026",
+    description:
+      "How complex are jobs and tasks, and how close are jobs to one another? This article explains the Job Complexity Index (wage-seeded reflections over O*NET tasks), occupation complexity from where jobs locate (PCI/ECI), and the Occupation Space and Job Space propensity graphs behind the Occupation Space tab.",
+    href: "analysis/task-complexity-analysis/task-complexity-analysis.html",
+    thumb: "analysis/task-complexity-analysis/figures/05_spaces.png",
+  },
+  {
     title: "India State Labour Market Analysis",
     date: "May 2026",
     description:

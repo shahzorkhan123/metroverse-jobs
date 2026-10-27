@@ -316,6 +316,8 @@ export interface SettingsOptions {
     | boolean
     | {
         nodes: boolean;
+        // Occupation Space: offer PCI and JCI instead of education
+        complexity?: boolean;
       };
   clusterLevel?:
     | boolean
@@ -905,10 +907,46 @@ const Settings = (props: Props) => {
       settingsOptions.colorBy.nodes
         ? getString("global-ui-node-color-by")
         : getString("global-ui-color-by");
+    const showComplexityMeasures =
+      typeof settingsOptions.colorBy === "object" &&
+      settingsOptions.colorBy.complexity === true;
     const defaultColorByText =
       settingsOptions.clusterLevel !== undefined
         ? "Knowledge Cluster (High aggregation)"
+        : showComplexityMeasures
+        ? "Occupation groups (SOC major group)"
         : "Industry groups (Sector level)";
+    const complexityButtons = showComplexityMeasures ? (
+      <>
+        <DigitLevelButton
+          onClick={() => updateSetting("color_by", ColorBy.pci)}
+          $selected={params.color_by === ColorBy.pci}
+        >
+          <span>
+            {getString("global-formatted-color-by", { type: ColorBy.pci })}
+          </span>
+        </DigitLevelButton>
+        <DigitLevelButton
+          onClick={() => updateSetting("color_by", ColorBy.jci)}
+          $selected={params.color_by === ColorBy.jci}
+        >
+          <span>
+            {getString("global-formatted-color-by", { type: ColorBy.jci })}
+          </span>
+        </DigitLevelButton>
+      </>
+    ) : (
+      <DigitLevelButton
+        onClick={() => updateSetting("color_by", ColorBy.education)}
+        $selected={params.color_by === ColorBy.education}
+      >
+        <span>
+          {getString("global-formatted-color-by", {
+            type: ColorBy.education,
+          })}
+        </span>
+      </DigitLevelButton>
+    );
     const defaultIsSelected =
       !params.color_by || params.color_by === ColorBy.sector;
     const rcaThreshold =
@@ -939,16 +977,7 @@ const Settings = (props: Props) => {
               {rcaThreshold}
             </div>
           </DigitLevelButton>
-          <DigitLevelButton
-            onClick={() => updateSetting("color_by", ColorBy.education)}
-            $selected={params.color_by === ColorBy.education}
-          >
-            <span>
-              {getString("global-formatted-color-by", {
-                type: ColorBy.education,
-              })}
-            </span>
-          </DigitLevelButton>
+          {complexityButtons}
           <DigitLevelButton
             onClick={() => updateSetting("color_by", ColorBy.wage)}
             $selected={params.color_by === ColorBy.wage}

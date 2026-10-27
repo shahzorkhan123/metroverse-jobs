@@ -116,6 +116,66 @@ export interface TimeSeriesFile {
   };
 }
 
+/** Knowledge-cluster hull in an Occupation/Job Space layout */
+export interface SpaceCluster {
+  clusterId: string;
+  clusterCode: number;
+  name: string;
+  center: number[];
+  polygon: number[][];
+  color: string;
+  size: number;
+  continent?: string;
+}
+
+/** Occupation Space / Job Space layout (space-{country}-{year}-{kind}.json) */
+export interface SpaceFile {
+  kind: 'occupation' | 'job';
+  nodes: {
+    id: string;
+    x: number;
+    y: number;
+    continent: string;
+    country: string;
+    /** Top-10 most proximate occupations (phi) */
+    edges: { trg: string; proximity: number }[];
+  }[];
+  /** Drawn backbone: maximum spanning tree + top-k links, [source, target, phi] */
+  links: [string, string, number][];
+  clusters: { continents: SpaceCluster[]; countries: SpaceCluster[] };
+  stats: {
+    nNodes: number;
+    nLinks: number;
+    avgDegree: number;
+    topK: number;
+    phiCutoff: number;
+    nContinents: number;
+    nCountries: number;
+  };
+}
+
+/** Complexity measures (complexity-{country}-{year}.json) */
+export interface ComplexityFile {
+  year: number;
+  /** Occupation Complexity Index (metro co-location, method of reflections) */
+  pci: { [socCode: string]: number };
+  /** Job Complexity Index (wage-seeded reflections over O*NET tasks), in $ */
+  jci: { [socCode: string]: number };
+  /** Region complexity (metros only) */
+  eci: { [regionId: string]: number };
+  diversity: { [regionId: string]: number };
+  ubiquity: { [socCode: string]: number };
+  tciTop: { id: string; name: string; tci: number }[];
+  stats: {
+    corrPciLogWage: number;
+    corrJciLogWage: number;
+    nPci: number;
+    nJci: number;
+    nRegionsEci: number;
+    nDwa: number;
+  };
+}
+
 /** Meta catalog file (bls-data.json) */
 export interface BLSMetaCatalog {
   datasets: {
@@ -135,6 +195,11 @@ export interface BLSMetaCatalog {
   timeseriesFiles?: {
     [country: string]: {
       [source: string]: { base: string; metro?: string };
+    };
+  };
+  spaceFiles?: {
+    [country: string]: {
+      [year: string]: { occupation: string; job: string; complexity: string };
     };
   };
   lastUpdated: string;

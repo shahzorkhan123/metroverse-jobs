@@ -12,7 +12,7 @@ export const CityRoutes = {
   CityGoodAtAbsolutePresence: "/city/:cityId/good-at/absolute",
   CityGoodAtAbsolutePresenceComparison:
     "/city/:cityId/good-at/absolute/comparison",
-  CityIndustrySpacePosition: "/city/:cityId/industry-position",
+  CityIndustrySpacePosition: "/city/:cityId/occupation-space",
   CityGrowthOpportunities: "/city/:cityId/growth-opportunities",
   CityGrowthOpportunitiesTable: "/city/:cityId/growth-opportunities/table",
   CitySimilarCities: "/city/:cityId/similar-cities",
@@ -71,7 +71,17 @@ export enum ColorBy {
   sector = "sector",
   education = "education",
   wage = "wage",
+  pci = "pci",
+  jci = "jci",
 }
+
+// Which network the Occupation Space tab shows
+export enum SpaceType {
+  occupation = "occupation",
+  job = "job",
+}
+
+export const defaultSpaceType: SpaceType = SpaceType.occupation;
 
 export enum CityNodeSizing {
   uniform = "uniform",
@@ -117,4 +127,5 @@ export interface GlobalQueryParams {
   city_color_by: CityColorBy | undefined;
   cluster_level: ClusterLevel | undefined;
   rca_threshold: string | undefined;
+  space: SpaceType | undefined;
 }

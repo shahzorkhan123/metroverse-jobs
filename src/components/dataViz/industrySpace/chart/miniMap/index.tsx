@@ -27,7 +27,10 @@ const Chart = (props: Props) => {
   const [chart, setChart] = useState<Chart>({ initialized: false });
 
   const layout = useLayoutData();
-  const { data } = useRCAData(DigitLevel.Six);
+  const { data } = useRCAData(
+    DigitLevel.Six,
+    layout.data ? { nodes: layout.data.nodes } : undefined,
+  );
 
   useEffect(() => {
     const chartNode = chartRef.current;

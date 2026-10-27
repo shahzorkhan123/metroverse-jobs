@@ -95,6 +95,8 @@ global-formatted-color-by = {
   *[sector] Sector
   [education] Years of education (based on U.S. average)
   [wage] Hourly wage (based on U.S. average)
+  [pci] Occupation complexity (PCI, metro co-location)
+  [jci] Job complexity (JCI, shared O*NET tasks)
 }
 
 global-formatted-peer-groups = {
@@ -293,7 +295,7 @@ cities-single-page-titles-question-2 = What is my region's\neconomic composition
 cities-single-page-titles-question-3 = How does my region's\neconomic composition\ncompare to its peer(s)?
 cities-single-page-titles-question-6 = Time Series
 
-cities-single-page-titles-question-4 = What is my region's position\nin the Industry Space?
+cities-single-page-titles-question-4 = Occupation Space
 cities-single-page-titles-question-5 = What are the growth\nopportunities?
 
 tooltip-number-employees = Number of Employees
@@ -315,7 +317,7 @@ glossary-composition = Generate the visualization based on estimated number of e
 glossary-composition-disabled = The composition type is disabled for this visualization
 glossary-digit-level = Visualize NAICS 2017 industries at various levels of detail
 glossary-digit-level-disabled = Digit levels are disabled for this visualization
-glossary-digit-level-disabled-industry-space = Industry Space is only available at the 6-digit level
+glossary-digit-level-disabled-industry-space = The Occupation Space is built from detailed (level 4) SOC occupations
 glossary-digit-level-disabled-swot = SWOT Analysis is only available at the 6-digit level
 glossary-cluster-vs-naics = Visualize the data by 1 of 2 aggregation methods: NAICS industry groups or Knowledge Clusters. Knowledge Clusters group industries based on their shared technological or productive capabilities.
 glossary-cluster-overlay = Knowledge Clusters group industries based on their shared technological or productive capabilities.  Choose "Outline", "Overlay" or "None" to see Knowledge Clusters at various levels of intensity.
@@ -591,7 +593,7 @@ about-research-html =
   </p>
   <h3>Complexity Scores</h3>
   <p>
-    Complexity scores are derived from O*NET task data and provide a measure of the cognitive and analytical demands of each occupation. These scores are min-max normalized per region to enable comparison across geographic areas.
+    For the United States, the complexity score is the Occupation Complexity Index (PCI). It is computed with the Atlas of Economic Complexity's method of reflections from the occupations that US metro areas specialise in, then scaled from 0 to 1. A task-based Job Complexity Index (JCI) from O*NET is shown on the Occupation Space tab. See the Task Complexity Analysis article on the Analysis page for the full method.
   </p>
   <h3>Related Research</h3>
   <p>
@@ -683,7 +685,7 @@ faq-list-Q5-a =
 faq-list-Q6-q = How is complexity calculated?
 faq-list-Q6-a =
   <p>
-    Complexity scores are derived from O*NET task data for each occupation. The scores reflect the cognitive and analytical demands of the work involved. Scores are min-max normalized per region so that they can be compared across different geographic areas.
+    For the United States, complexity is the Occupation Complexity Index (PCI): occupations found mainly in a few large, diversified metro areas score high, and occupations found everywhere score low. It comes from the method of reflections of the Atlas of Economic Complexity and is scaled from 0 to 1. The Occupation Space tab also shows a task-based Job Complexity Index (JCI) built from O*NET work activities and BLS wages. The Task Complexity Analysis article on the Analysis page explains both.
   </p>
   <p>
     In the treemap visualization, you can color occupations by their complexity score to see which occupation groups tend to be more complex.

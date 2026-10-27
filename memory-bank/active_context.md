@@ -1,10 +1,44 @@
 # Active Context
 
-## Current Focus (2026-10-25)
-Resuming after a ~6-month gap. Past session transcripts were deleted by Claude Code's auto-cleanup
-(`cleanupPeriodDays`, ran 2026-10-24); only prompt history survives in `~/.claude/history.jsonl`.
-Recovery attempt via `winfr` pending (user to run as admin). Context below reconstructed from that
-history + git.
+## Current Focus (2026-10-25, later session): Occupation Space + Job Space — UNCOMMITTED
+User asked: nothing committed/staged; they review first. Built & tested locally (24/24 Playwright, 52+9 pytest).
+- Pipeline: `scripts/pipeline/compute_space.py` (RCA, φ, ECI/PCI, wage-seeded JCI/TCI, backbone,
+  layout, Louvain, hulls, apply PCI to data files, register `spaceFiles` in bls-data.json).
+  Run: `python scripts/pipeline/run_pipeline.py --year 2024 --country us --space-only` (~60s).
+  `fetch_onet.py` rewritten (writes data/raw/onet_job_dwa.csv; old broken JCI removed).
+- Outputs: public/data/space-us-2024-{occupation,job}.json, complexity-us-2024.json; `complexity`
+  field in all bls-data-us-2024*.json now PCI-based.
+- Frontend: tab "Occupation Space" (route /city/:id/occupation-space, `?space=job`), US only;
+  hooks/useSpaceData.ts; useLayoutData/useRCAData rewritten (real RCA, string region ids);
+  createChart: backbone links, PCI/JCI colours, zoom labels; sideNav fix for shrinking tab list.
+- Notebooks: notebooks/space-playground (exploration knobs), notebooks/task-complexity-analysis
+  (article → public/analysis/task-complexity-analysis/*.html, card on Analysis page, Colab badge
+  works once pushed).
+- Open questions for user: JCI n=20 oversmooths (task-family bands); PCI vs JCI ρ=0.05.
+
+## Current Focus (2026-10-25, end of session)
+India PLFS weight/earnings fix is **done, committed and pushed to master** (`b104d7f`, `fb6d30f`,
+`0712de8`, `3192322`; also on branch `india-plfs-weights-fix`). "Deploy to GitHub Pages" workflow
+succeeded; "pages build and deployment" was still running at session end and the live site still
+served old data (372.4M workers, no usdExchangeRates). **First thing next session**: confirm the live
+India overview shows "₹165,141 (≈ $1,987 USD)" / "₹86.8 trillion (≈ $1.04 trillion USD)".
+Next session starts a different part of the project.
+
+### Open items carried forward
+- Push auth: Windows Credential Manager holds an expired GitHub token; `gh` is logged in (repo scope).
+  Pushed via `git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push`.
+  Permanent fix: `gh auth setup-git` (not configured yet as of session end).
+- PLFS time series national line = ILOSTAT total (583M, 2024) × MoSPI %, but states sum to PLFS 526M.
+- 2024 wages still below Table 50 for Managers (₹35.5k vs ₹43.0k) and Crafts (₹12.4k vs ₹15.4k).
+- Unpaid helpers (status 21) get occupation avg wage in gdp = emp × aMean → slight overstatement.
+- `public/serve.json` is unused (Playwright uses `tests/playwright/serve-build.js`); safe to delete.
+- Pending feature TODOs unchanged: Time Series CSV/PNG download, treemap CSV download.
+
+### Session transcripts
+Old Claude Code transcripts were deleted by auto-cleanup (`cleanupPeriodDays`, ran 2026-10-24); only
+prompt history survives in `~/.claude/history.jsonl`. `winfr /extensive` recovered nothing useful
+(2 jar fragments); `/regular` mode not yet tried. Consider `"cleanupPeriodDays": 99999` in
+`~/.claude/settings.json` (not set). History below reconstructed from prompt history + git.
 
 ## Session History Reconstructed (2026-03-08 → 2026-05-04)
 - **03-08**: Time series (BLS OES / ILOSTAT / PLFS), GDP spot-check of Management vs PDF.
@@ -27,7 +61,7 @@ history + git.
   merge "&" duplicates (Andaman & Nicobar, Jammu & Kashmir) and fold Daman & Diu / Dadra & Nagar
   Haveli into "Dadra and Nagar Haveli and Daman and Diu"; also needed in region dropdown JSON.
 
-## Uncommitted Work (git, as of 2026-10-25)
+## Uncommitted Work (git, as of 2026-10-25 start of session — ALL NOW COMMITTED, see Current Focus)
 - Staged: `scripts/rebuild_analysis_db.py` (`normalise_region()` alias maps), notebook `.py/.ipynb/.html`,
   figures, `data/analysis.db.gz`, `public/analysis/...html`.
 - Unstaged: `scripts/pipeline/export_json.py` (`_make_region_id` turns "&" → "and" before slugging),
@@ -48,7 +82,7 @@ history + git.
 - Remaining nuance: avg wage = Σgdp / Σemp includes occupations with `aMean = 0` (suppressed wages)
   in the denominator → understates wage in small states (e.g. Andaman occ 4). Consider excluding them.
 
-## PLFS Weight/Earnings Fix (2026-10-25, IN PROGRESS — uncommitted)
+## PLFS Weight/Earnings Fix (2026-10-25, DONE — committed + pushed)
 Spot-check vs PLFS showed labour income ₹61.6T ≈ 21% of GDP (too low). Root causes found in
 `scripts/pipeline/convert_dta_all_years.py`:
 1. Weight was `mult/1000` → official annual rule `mult/(no_qtr×100)` if NSS==NSC else `/(no_qtr×200)`.
@@ -67,7 +101,7 @@ Frontend (`overview/widgets/topRow/index.tsx`, `dataProvider/types.ts`):
 - "Estimated Income" → "Estimated Labour Income" + tooltip (not GDP).
 - USD equivalent shown when `countryMetadata.usdExchangeRates[year]` exists (type added).
 
-### Pending (resume here)
+### Checklist (completed)
 - [x] Re-run of all years completed + verified (2026-10-25). No "&" regions; states sum = national (1.000).
       | yr | workers | wage/mo | labour income | metros |
       | 2018 | 372.6M | ₹10,059 | ₹45.0T | 100 |  | 2019 | 380.5M | ₹10,763 | ₹49.1T | 104 |
@@ -90,7 +124,7 @@ Frontend (`overview/widgets/topRow/index.tsx`, `dataProvider/types.ts`):
 - Playwright webServer: `npx serve` + `public/serve.json` rewrites never worked (`/$1` literal, `:path*`
       encodes `/`); May-3 passes reused a dev server. Replaced with `tests/playwright/serve-build.js`.
       `public/serve.json` is now unused.
-- [ ] Commit (ready).
+- [x] Committed (3 commits + .gitignore) and pushed to master 2026-10-25.
 - Caveat: unpaid helpers (status 21) get the occupation avg wage in gdp = emp × aMean → slight overstatement.
 - Backup of pre-fix data: scratchpad `backup/` (bls-data*.json, bls.db) — session temp, may vanish.
 

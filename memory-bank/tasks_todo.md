@@ -5,19 +5,21 @@
 2. Gzip compression setup for production (large metro files: 17-23MB)
 
 ## Short-Term
-3. GitHub Actions CI/CD workflow (.github/workflows/deploy.yml)
-4. Deploy to GitHub Pages
+3. ~~GitHub Actions CI/CD workflow~~ (done)
+4. ~~Deploy to GitHub Pages~~ (done)
 5. Fix export_meta to merge with existing catalog (not overwrite)
 
 ## Medium-Term
-6. India state-level data — requires PLFS microdata processing with survey weights
+6. ~~India state-level data~~ (done, PLFS microdata)
 7. Multi-year support (2020-2024) — pipeline already supports --year flag
-8. RCA (Revealed Comparative Advantage) calculations per region
-9. Industry/Occupation Space network graph visualization
-10. Growth Opportunities (PSWOT-style chart)
+8. ~~RCA per region~~ (done 2026-10-25: real RCA vs national in industrySpace/chart/useRCAData.ts; fixes Good At)
+9. ~~Occupation Space network graph~~ (done 2026-10-25: Occupation Space + Job Space tab, US only)
+10. Growth Opportunities (PSWOT-style chart) — next: density ω from space phi (see playground §6), COG
 11. Similar Regions comparison feature
+12. Validate Job Space proximity against O*NET Career Changers matrix / CPS flows
+13. India Occupation Space (needs NCO→SOC crosswalk or richer state × NCO data)
 
 ## Long-Term
-12. Additional countries (UK ONS, EU Eurostat via ISCO)
-13. O*NET task complexity integration (real scores, not GDP proxy)
-14. Time-series animations (employment trends over years)
+14. Additional countries (UK ONS, EU Eurostat via ISCO)
+15. ~~O*NET task complexity integration~~ (done 2026-10-25: PCI replaces GDP proxy; JCI in complexity file)
+16. Time-series animations (employment trends over years)

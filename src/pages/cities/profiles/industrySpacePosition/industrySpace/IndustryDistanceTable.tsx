@@ -152,7 +152,7 @@ const IndustryDistanceTable = (props: Props) => {
                 onMouseLeave={clearHovered}
                 onClick={onMouseClick}
               >
-                {parent ? parent.name : ""}
+                {parentIndustry ? parentIndustry.name : parent ? parent.name : ""}
               </TableCell>
             </React.Fragment>
           );
@@ -166,7 +166,7 @@ const IndustryDistanceTable = (props: Props) => {
             <div>
               <Table>
                 <HeaderCell style={{ top: titleHeight }}>
-                  {getString("global-ui-related-industry")}
+                  Related Occupation
                 </HeaderCell>
                 <HeaderCell style={{ top: titleHeight }}>
                   {getString("global-ui-sector")}

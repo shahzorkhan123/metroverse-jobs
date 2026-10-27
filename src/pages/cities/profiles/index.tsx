@@ -3,6 +3,8 @@ import EconomicComposition from "./economicComposition";
 import Overview from "./overview";
 import GoodAt from "./goodAt";
 import TimeSeries from "./timeSeries";
+import IndustrySpacePosition from "./industrySpacePosition";
+import { useSpaceFiles } from "../../../hooks/useSpaceData";
 import { Switch, useHistory, matchPath, Route } from "react-router-dom";
 import {
   CityRoutes,
@@ -53,6 +55,7 @@ const City = () => {
   );
   const cityId = useCurrentCityId();
   const prevCityId = usePrevious(cityId);
+  const spaceFiles = useSpaceFiles();
 
   const [showOverviewTooltip, setShowOverviewTooltip] =
     useState<boolean>(false);
@@ -130,6 +133,21 @@ const City = () => {
             url: createRoute.city(CityRoutes.CityTimeSeries, cityId),
             removeParams: [] as (keyof GlobalQueryParams)[],
           },
+          // Occupation Space only exists for countries with space files (US)
+          ...(spaceFiles
+            ? [
+                {
+                  label: getStringWithNewLines(
+                    "cities-single-page-titles-question-4",
+                  ),
+                  url: createRoute.city(
+                    CityRoutes.CityIndustrySpacePosition,
+                    cityId,
+                  ),
+                  removeParams: [] as (keyof GlobalQueryParams)[],
+                },
+              ]
+            : []),
         ]
       : [];
 
@@ -143,6 +161,12 @@ const City = () => {
         />
         <Route path={CityRoutes.CityGoodAt} component={GoodAt} />
         <Route path={CityRoutes.CityTimeSeries} component={TimeSeries} />
+        {spaceFiles ? (
+          <Route
+            path={CityRoutes.CityIndustrySpacePosition}
+            component={IndustrySpacePosition}
+          />
+        ) : null}
       </Switch>
     </InnerPage>
   );

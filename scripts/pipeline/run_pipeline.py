@@ -1,6 +1,7 @@
 """CLI orchestrator for the BLS data pipeline."""
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -82,6 +83,15 @@ def main():
         help="Export time-series JSON files (BLS OES + ILOSTAT)",
     )
     parser.add_argument(
+        "--space", action="store_true", default=False,
+        help="After export: compute Occupation Space + Job Space, PCI/ECI "
+             "and JCI (US only), and replace the GDP complexity placeholder",
+    )
+    parser.add_argument(
+        "--space-only", action="store_true", default=False,
+        help="Only run the --space step on the existing public/data JSON",
+    )
+    parser.add_argument(
         "--db-path", type=str, default=None,
         help=f"SQLite database path (default: {config.DB_PATH})",
     )
@@ -98,6 +108,10 @@ def main():
     country_long = (_short_to_long.get(country_lower)
                     or _three_to_long.get(country_lower)
                     or "USA")
+
+    if args.space_only:
+        run_space_step(args.country.lower(), args.year)
+        return
 
     print("=== BLS Data Pipeline ===")
     print(f"  Year: {args.year}")
@@ -130,17 +144,16 @@ def main():
             print(f"  ERROR fetching BLS data: {e}")
             sys.exit(1)
 
-        # Optionally fetch O*NET data
+        # O*NET job x task data (used by --space)
         try:
             from scripts.pipeline import fetch_onet
-            print("Fetching O*NET complexity data...")
-            fetch_onet.fetch_and_compute_complexity()
+            fetch_onet.fetch_and_extract()
             print()
         except ImportError as e:
             print(f"  WARNING: Skipping O*NET fetch (missing: {e})")
         except Exception as e:
             print(f"  WARNING: O*NET fetch failed: {e}")
-            print("  Continuing with GDP-based complexity placeholder...")
+            print("  --space will need data/raw/db_29_3_excel.zip")
 
     # Ensure data directory exists
     db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -274,10 +287,37 @@ def main():
                 export_timeseries.export_oes()
             export_timeseries.export_ilostat()
 
+        if args.space:
+            run_space_step(config.country_short(country_long), args.year)
+
         print("\nPipeline complete!")
 
     finally:
         conn.close()
+
+
+def run_space_step(country: str, year: int) -> None:
+    """Occupation Space + Job Space + complexity from the published JSON."""
+    print("\n--- OCCUPATION SPACE / JOB SPACE ---\n")
+    if country != "us":
+        print(f"  Skipping: spaces are US-only (country={country})")
+        return
+    from scripts.pipeline import compute_space
+    onet_zip = config.RAW_DIR / "db_29_3_excel.zip"
+    if not onet_zip.exists():
+        from scripts.pipeline import fetch_onet
+        onet_zip, _ = fetch_onet.fetch_and_extract()
+    summary = compute_space.compute_all(config.PUBLIC_DATA_DIR, onet_zip,
+                                        country=country, year=year)
+    compute_space.register_space_files(config.PUBLIC_DATA_DIR, country, year)
+    with open(config.PUBLIC_DATA_DIR / f"complexity-{country}-{year}.json",
+              encoding="utf-8") as f:
+        complexity = json.load(f)
+    n = compute_space.apply_complexity_to_json(config.PUBLIC_DATA_DIR, complexity,
+                                               country, year)
+    print(f"  Complexity (PCI) written into {n} {country}-{year} data files")
+    for kind, stats in summary.items():
+        print(f"  {kind}: {stats}")
 
 
 if __name__ == "__main__":

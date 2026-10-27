@@ -190,6 +190,19 @@ Three modes, controlled by `AggregationMode` enum in `routing/routes.ts` and `?a
 - `useClusterMap` re-exports `useSectorMap` — both give the same color map with SOC IDs
 - `ClusterCompositionTreeMap` uses `useSectorMap()` NOT the old hardcoded `clusterColorMap`
 
+## Occupation Space / Job Space (US only)
+
+- Tab "Occupation Space" → `CityRoutes.CityIndustrySpacePosition` (`/city/:cityId/occupation-space`), `?space=occupation|job`
+- Shown only when `meta.spaceFiles[country]` exists (`useSpaceFiles()` in `src/hooks/useSpaceData.ts`)
+- Data: `space-us-2024-{occupation,job}.json` (nodes x/y, top-10 `edges`, backbone `links`, cluster hulls) + `complexity-us-2024.json` (pci, jci, eci, tciTop)
+- Built by `scripts/pipeline/compute_space.py`: `python scripts/pipeline/run_pipeline.py --year 2024 --country us --space-only`
+  - Occupation Space: metro RCA ≥ 1 co-location φ; PCI/ECI (method of reflections)
+  - Job Space: shared O*NET DWAs φ; wage-seeded JCI/TCI (20 iterations)
+  - Also rewrites `complexity` in all `bls-data-us-2024*.json` (PCI min-max) and registers `spaceFiles` in `bls-data.json` (preserved by export_meta)
+- Renderer: original Metroverse `components/dataViz/industrySpace` (d3 SVG) — `useLayoutData` joins on socCode; `useRCAData` = real RCA vs national (also used by Good At)
+- Notebooks: `notebooks/space-playground/` (exploration) and `notebooks/task-complexity-analysis/` (article on Analysis page)
+- Tests: `tests/test_compute_space.py`; Playwright "Occupation Space" block
+
 ## Time Series State Breakdown
 
 On Time Series tab, when viewing a national region with a source that has state data (BLS OES, PLFS — not ILOSTAT):

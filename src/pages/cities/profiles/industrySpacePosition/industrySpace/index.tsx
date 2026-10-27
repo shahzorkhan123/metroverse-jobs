@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useCurrentSpaceType } from "../../../../../hooks/useSpaceData";
 import UtilityBar from "../../../../../components/navigation/secondaryHeader/UtilityBar";
 import ClusteredIndustrySpace from "../../../../../components/dataViz/industrySpace";
 import {
@@ -61,6 +62,13 @@ const IndustrySpacePosition = (props: Props) => {
     year: defaultYear,
   });
   const { data: rcaData } = useRCAData(DigitLevel.Six);
+  const spaceType = useCurrentSpaceType();
+
+  // A selected occupation may not exist in the other space
+  useEffect(() => {
+    setHighlighted(undefined);
+    setZoomLevel(ZoomLevel.Cluster1);
+  }, [spaceType]);
 
   let legend: React.ReactElement<any> | null;
   if (
@@ -71,8 +79,20 @@ const IndustrySpacePosition = (props: Props) => {
     )
   ) {
     legend = <IntensityLegend />;
-  } else if (color_by === ColorBy.education) {
-    legend = <EducationLegend />;
+  } else if (color_by === ColorBy.education || color_by === ColorBy.pci) {
+    legend = (
+      <EducationLegend
+        lowLabel="Low occupation complexity (PCI)"
+        highLabel="High occupation complexity (PCI)"
+      />
+    );
+  } else if (color_by === ColorBy.jci) {
+    legend = (
+      <EducationLegend
+        lowLabel="Low job complexity (JCI)"
+        highLabel="High job complexity (JCI)"
+      />
+    );
   } else if (color_by === ColorBy.wage) {
     legend = <WageLegend />;
   } else {
@@ -117,7 +137,7 @@ const IndustrySpacePosition = (props: Props) => {
       nodeSizingMinText = formatNumberLong(min ? min : 0);
       nodeSizingMaxText = formatNumberLong(max ? max : 0);
     } else if (nodeSizing === NodeSizing.cityEmployees && rcaData) {
-      nodeSizingTitle = "Node Size by Number of Employees in City";
+      nodeSizingTitle = "Node Size by Number of Employees in Region";
       const [min, max] = extent(
         rcaData.naicsData
           .map((d) => d.numEmploy)
@@ -218,7 +238,8 @@ const IndustrySpacePosition = (props: Props) => {
       <ContentGrid>
         {sideContent}
         <ClusteredIndustrySpace
-          cityId={parseInt(cityId, 10)}
+          cityId={cityId}
+          spaceType={spaceType}
           year={defaultYear}
           compositionType={defaultCompositionType}
           highlighted={highlighted}

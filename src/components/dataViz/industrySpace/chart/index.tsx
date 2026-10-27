@@ -136,7 +136,12 @@ const Root = styled.div`
 
     .industry-nodes-label {
       stroke: #fff;
-      stroke-width: 0.1px;
+      stroke-width: 0.25px;
+      pointer-events: none;
+    }
+
+    .industry-link {
+      opacity: 0.6;
     }
 
     .industry-ring-label {
@@ -325,7 +330,10 @@ const Chart = (props: Props) => {
   const [chart, setChart] = useState<Chart>({ initialized: false });
 
   const layout = useLayoutData();
-  const { loading, data } = useRCAData(DigitLevel.Six);
+  const { loading, data } = useRCAData(
+    DigitLevel.Six,
+    layout.data ? { nodes: layout.data.nodes } : undefined,
+  );
 
   const aggregateIndustryDataMap = useAggregateIndustryMap({
     level: DigitLevel.Six,
@@ -441,7 +449,7 @@ const Chart = (props: Props) => {
   }, [chart]);
 
   const loadingOverlay =
-    loading || (!chart.initialized && width && height) ? (
+    loading || layout.loading || (!chart.initialized && width && height) ? (
       <LoadingBlock />
     ) : null;
 
@@ -485,7 +493,7 @@ const Chart = (props: Props) => {
                 : undefined
             }
           >
-            Single&nbsp;Industries
+            Single&nbsp;Occupations
           </span>
         </BreadCrumb>
       </BreadCrumbContainer>

@@ -463,6 +463,29 @@ const createChart = (input: Input) => {
     .attr("class", "industry-cluster-hovered")
     .style("display", "none");
 
+  // Backbone links (maximum spanning tree + top-k neighbours), drawn under
+  // the nodes so the structure of the space is visible as in the Atlas
+  const nodeById: { [id: string]: { x: number; y: number } } = {};
+  data.nodes.forEach((n) => (nodeById[n.id] = n));
+  const linkData = (data.links || []).filter(
+    ([s, t]) => nodeById[s] && nodeById[t],
+  );
+  const links = g
+    .append("g")
+    .attr("class", "industry-links")
+    .style("pointer-events", "none")
+    .selectAll(".industry-link")
+    .data(linkData)
+    .enter()
+    .append("line")
+    .attr("class", "industry-link")
+    .attr("x1", ([s]) => (xScale(nodeById[s].x) as number) + margin.left)
+    .attr("y1", ([s]) => (yScale(nodeById[s].y) as number) + margin.top)
+    .attr("x2", ([, t]) => (xScale(nodeById[t].x) as number) + margin.left)
+    .attr("y2", ([, t]) => (yScale(nodeById[t].y) as number) + margin.top)
+    .attr("stroke", "#c8c8c8")
+    .attr("stroke-width", ([, , phi]) => 0.2 + phi * 0.8);
+
   const nodeOpacity = state.zoom < 5 ? 0.5 : 0.75;
   const nodes = g
     .selectAll(".industry-node")
@@ -499,22 +522,23 @@ const createChart = (input: Input) => {
       if (d.rca !== undefined) {
         rows.push(["Relative Presence:", d.rca.toFixed(3)]);
       }
-      if (state.colorBy === ColorBy.wage) {
-        rows.push([
-          "Hourly wage (based on U.S. average):",
-          "$" + d.hourlyWage.toFixed(2),
-        ]);
+      rows.push([
+        "Mean annual wage (U.S.):",
+        "$" + formatNumber(Math.round(d.hourlyWage)),
+      ]);
+      if (d.pci !== null) {
+        rows.push(["Occupation complexity (PCI):", d.pci.toFixed(2)]);
       }
-      if (state.colorBy === ColorBy.education) {
+      if (d.jci !== null) {
         rows.push([
-          "Years of education (based on U.S. average):",
-          d.yearsEducation.toFixed(2),
+          "Job complexity (JCI, task-based):",
+          "$" + formatNumber(Math.round(d.jci)),
         ]);
       }
       const clickText =
         state.active && state.active.datum && state.active.datum.id === d.id
           ? "Click to zoom out"
-          : "Click to see related industries";
+          : "Click to see related occupations";
       tooltipEl.innerHTML = getStandardTooltip({
         title: d.name ? d.name : "",
         color: rgba(d.industryColor, 0.3),
@@ -598,15 +622,22 @@ const createChart = (input: Input) => {
 
   const nodeLabels = g.append("g").attr("class", "industry-nodes-label-group");
 
-  nodeLabels.selectAll(".industry-nodes-label");
-  // .data(data.nodes)
-  // .enter().append('text')
-  // .attr('class', 'industry-nodes-label')
-  // .attr('x', d => xScale(d.x) as number + margin.left)
-  // .attr('y', d => yScale(d.y) as number + margin.top + (radius * 1.45))
-  // .style('font-size', textAndSpacingSize * 1 + 'px')
-  // .style('font-size', textAndSpacingSize * 0.55 + 'px')
-  // .text(d => ellipsisText(d.name as string, 20));
+  // Label the largest occupations first; the rest appear when zoomed in far
+  const labelRank: { [id: string]: number } = {};
+  data.nodes
+    .slice()
+    .sort((a, b) => b.globalSumNumEmploy - a.globalSumNumEmploy)
+    .forEach((n, i) => (labelRank[n.id] = i));
+  const nodeLabelText = nodeLabels
+    .selectAll(".industry-nodes-label")
+    .data(data.nodes)
+    .enter()
+    .append("text")
+    .attr("class", "industry-nodes-label")
+    .attr("x", (d) => (xScale(d.x) as number) + margin.left)
+    .attr("y", (d) => (yScale(d.y) as number) + margin.top + radius * 1.6)
+    .style("font-size", textAndSpacingSize * 0.75 + "px")
+    .text((d) => ellipsisText(d.name as string, 28));
 
   nodeLabels.style("display", "none");
 
@@ -885,6 +916,8 @@ const createChart = (input: Input) => {
 
       nodeLabels.style("display", "none");
 
+      links.style("display", "none");
+
       state.active.element.style("display", "block");
 
       if (state.zoomLevel !== ZoomLevel.Node) {
@@ -943,9 +976,14 @@ const createChart = (input: Input) => {
 
       if (state.zoom > 3.5) {
         nodeLabels.style("opacity", 1).style("display", "block");
+        const shown = state.zoom > 8 ? Infinity : state.zoom > 5.5 ? 400 : 150;
+        nodeLabelText.style("display", (d) =>
+          labelRank[d.id] < shown ? "block" : "none",
+        );
       } else {
         nodeLabels.style("display", "none");
       }
+      links.style("display", "block");
 
       if (state.zoom > 3.5) {
         if (state.zoomLevel !== ZoomLevel.Node) {
@@ -1172,8 +1210,10 @@ const createChart = (input: Input) => {
   function updateNodeColor(colorBy: ColorBy) {
     nodes
       .each((d) => {
-        if (colorBy === ColorBy.education) {
-          d.color = d.educationColor;
+        if (colorBy === ColorBy.education || colorBy === ColorBy.pci) {
+          d.color = d.pciColor;
+        } else if (colorBy === ColorBy.jci) {
+          d.color = d.jciColor;
         } else if (colorBy === ColorBy.wage) {
           d.color = d.wageColor;
         } else {

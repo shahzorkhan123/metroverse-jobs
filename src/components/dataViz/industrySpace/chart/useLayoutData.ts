@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { useGlobalIndustryMap } from "../../../../hooks/useGlobalIndustriesData";
-import { useGlobalClusterMap } from "../../../../hooks/useGlobalClusterData";
-import LAYOUT_DATA from "./data/layout_data.json";
-import { ClassificationNaicsIndustry } from "../../../../types/graphQL/graphQLTypes";
+import { useEffect, useMemo } from "react";
+import { scaleLinear } from "d3-scale";
 import {
   wageColorRange,
   educationColorRange,
 } from "../../../../styling/styleUtils";
 import useSectorMap from "../../../../hooks/useSectorMap";
-import { useAggregateIndustryMap } from "../../../../hooks/useAggregateIndustriesData";
-import { DigitLevel } from "../../../../types/graphQL/graphQLTypes";
+import { useStaticData } from "../../../../dataProvider";
+import {
+  useSpaceLayout,
+  useComplexityData,
+} from "../../../../hooks/useSpaceData";
+import { SpaceType } from "../../../../routing/routes";
 import { defaultYear } from "../../../../Utils";
-import { scaleLinear } from "d3-scale";
 
 interface ContinentCluster {
   center: number[];
@@ -34,14 +34,14 @@ interface Clusters {
 }
 
 interface Edge {
-  trg: ClassificationNaicsIndustry["id"];
+  trg: string;
   proximity: number;
 }
 
 interface Node {
-  id: ClassificationNaicsIndustry["id"];
-  name: ClassificationNaicsIndustry["name"];
-  code: ClassificationNaicsIndustry["code"];
+  id: string;
+  name: string;
+  code: string;
   industryColor: string;
   color: string;
   sectorName: string;
@@ -54,15 +54,23 @@ interface Node {
   radius?: number;
   globalSumNumCompany: number;
   globalSumNumEmploy: number;
+  /** Complexity used by ColorBy.education (= PCI scaled 0-1) */
   yearsEducation: number;
+  /** National mean annual wage */
   hourlyWage: number;
+  pci: number | null;
+  jci: number | null;
   educationColor: string;
   wageColor: string;
+  pciColor: string;
+  jciColor: string;
 }
 
 export interface LayoutData {
+  kind: SpaceType;
   clusters: Clusters;
   nodes: Node[];
+  links: [string, string, number][];
   global: {
     companySizeByScale: (value: number) => number;
     employSizeByScale: (value: number) => number;
@@ -77,159 +85,152 @@ interface Output {
 
 export const lowIntensityNodeColor = "#dddddd";
 
-const useLayoutData = (): Output => {
-  const [output, setOutput] = useState<Output>({
-    loading: true,
-    error: undefined,
-    data: undefined,
-  });
+const median = (values: number[]) => {
+  const sorted = values.slice().sort((a, b) => a - b);
+  return sorted.length ? sorted[Math.floor(sorted.length / 2)] : 0;
+};
 
-  const dynamicColorMap = useSectorMap();
-  const { loading, error, data: industryData } = useGlobalIndustryMap();
+const divergingScale = (values: number[], range: string[]) => {
+  const scale = scaleLinear<string>()
+    .domain([Math.min(...values), median(values), Math.max(...values)])
+    .range(range)
+    .clamp(true);
+  return (value: number) => scale(value) as string;
+};
+
+/**
+ * Occupation Space / Job Space layout joined to SOC occupation data.
+ *
+ * Nodes and cluster hulls come from space-{country}-{year}-{kind}.json
+ * (scripts/pipeline/compute_space.py); names, colours and national totals
+ * come from the level-4 occupation data, which is lazy-loaded here.
+ */
+const useLayoutData = (kind?: SpaceType): Output => {
+  const sectorMap = useSectorMap();
+  const sectorKey = sectorMap.map((s) => s.id + s.color).join("|");
   const {
-    loading: clusterLoading,
-    error: clusterError,
-    data: clusterData,
-  } = useGlobalClusterMap();
-
-  const { loading: loadingIndustryMapData, data: industryMapData } =
-    useAggregateIndustryMap({ level: DigitLevel.Six, year: defaultYear });
+    data: blsData,
+    loadLevel,
+    loadedLevels,
+    maxDigitLevel,
+  } = useStaticData();
+  const space = useSpaceLayout(kind);
+  const complexity = useComplexityData();
 
   useEffect(() => {
-    if (!output.data) {
-      if (error) {
-        setOutput({ loading: false, error, data: undefined });
-      } else if (clusterError) {
-        setOutput({ loading: false, error: clusterError, data: undefined });
-      } else if (
-        industryData &&
-        !loading &&
-        industryMapData &&
-        !loadingIndustryMapData &&
-        !clusterLoading &&
-        clusterData
-      ) {
-        const { globalMinMax, industries } = industryMapData;
-        const minCompanySizeBy =
-          globalMinMax && globalMinMax.minSumNumCompany
-            ? globalMinMax.minSumNumCompany
-            : 0.001;
-        const maxCompanySizeBy =
-          globalMinMax && globalMinMax.maxSumNumCompany
-            ? globalMinMax.maxSumNumCompany
-            : 1;
-        const companySizeByScale = scaleLinear()
-          .domain([minCompanySizeBy, maxCompanySizeBy])
-          .range([3, 15]) as (val: number) => number;
-
-        const minEmploySizeBy =
-          globalMinMax && globalMinMax.minSumNumEmploy
-            ? globalMinMax.minSumNumEmploy
-            : 0.001;
-        const maxEmploySizeBy =
-          globalMinMax && globalMinMax.maxSumNumEmploy
-            ? globalMinMax.maxSumNumEmploy
-            : 1;
-        const employSizeByScale = scaleLinear()
-          .domain([minEmploySizeBy, maxEmploySizeBy])
-          .range([3, 15]) as (val: number) => number;
-
-        const educationColorScale = scaleLinear()
-          .domain([
-            globalMinMax.minYearsEducation,
-            globalMinMax.medianYearsEducation,
-            globalMinMax.maxYearsEducation,
-          ])
-          .range(educationColorRange as any) as any;
-        const wageColorScale = scaleLinear()
-          .domain([
-            globalMinMax.minHourlyWage,
-            globalMinMax.medianHourlyWage,
-            globalMinMax.maxHourlyWage,
-          ])
-          .range(wageColorRange as any) as any;
-
-        const data: Output["data"] = {
-          clusters: {
-            continents: LAYOUT_DATA.clusters.continents.map((c) => {
-              const cluster = clusterData[c.clusterId.toString()];
-              const name = cluster && cluster.name ? cluster.name : "---";
-              return { ...c, name };
-            }),
-            countries: LAYOUT_DATA.clusters.countries.map((c) => {
-              const cluster = clusterData[c.clusterId.toString()];
-              const name = cluster && cluster.name ? cluster.name : "---";
-              return { ...c, name };
-            }),
-          },
-          nodes: LAYOUT_DATA.nodes.map((n) => {
-            const industry = industryData[n.id.toString()];
-            const parent = industryData[industry.naicsIdTopParent.toString()];
-            const parentIndustry = dynamicColorMap.find(
-              (s) => s.id === industry.naicsIdTopParent.toString(),
-            );
-            const globalIndustry = industries[industry.naicsId];
-            const yearsEducation = globalIndustry
-              ? globalIndustry.yearsEducationRank
-              : 0;
-            const hourlyWage = globalIndustry
-              ? globalIndustry.hourlyWageRank
-              : 0;
-            const yearsEducationRank = globalIndustry
-              ? globalIndustry.yearsEducationRank
-              : 0;
-            const hourlyWageRank = globalIndustry
-              ? globalIndustry.hourlyWageRank
-              : 0;
-            return {
-              ...n,
-              id: industry.naicsId,
-              name: industry.name,
-              code: industry.code,
-              industryColor: parentIndustry
-                ? parentIndustry.color
-                : lowIntensityNodeColor,
-              color: parentIndustry
-                ? parentIndustry.color
-                : lowIntensityNodeColor,
-              sectorName: parent && parent.name ? parent.name : "",
-              edges: n.edges.map((e) => ({
-                trg: e.trg.toString(),
-                proximity: e.proximity,
-              })),
-              globalSumNumCompany: globalIndustry
-                ? globalIndustry.sumNumCompany
-                : 0,
-              globalSumNumEmploy: globalIndustry
-                ? globalIndustry.sumNumEmploy
-                : 0,
-              yearsEducation,
-              hourlyWage,
-              educationColor: educationColorScale(yearsEducationRank),
-              wageColor: wageColorScale(hourlyWageRank),
-            };
-          }),
-          global: {
-            companySizeByScale,
-            employSizeByScale,
-          },
-        };
-        setOutput({ loading: false, error: undefined, data });
+    for (let lvl = 3; lvl <= Math.min(4, maxDigitLevel); lvl++) {
+      if (!loadedLevels.includes(lvl)) {
+        loadLevel(lvl);
       }
     }
-  }, [
-    output,
-    loading,
-    error,
-    industryData,
-    industryMapData,
-    loadingIndustryMapData,
-    clusterLoading,
-    clusterError,
-    clusterData,
-  ]);
+  }, [loadLevel, loadedLevels, maxDigitLevel]);
 
-  return output;
+  const levelFourLoaded = loadedLevels.includes(4);
+
+  const data = useMemo((): LayoutData | undefined => {
+    if (!space.data || !complexity.data || !blsData || !levelFourLoaded) {
+      return undefined;
+    }
+    const colorBySector: { [id: string]: { color: string; name: string } } =
+      {};
+    sectorMap.forEach((s) => (colorBySector[s.id] = s));
+
+    const occupations: {
+      [code: string]: { name: string; majorGroupId: string };
+    } = {};
+    blsData.occupations.forEach((o) => {
+      occupations[o.socCode] = { name: o.name, majorGroupId: o.majorGroupId };
+    });
+
+    const nationalId = blsData.regions.find(
+      (r) => r.regionType === "National",
+    );
+    const nationalRecords =
+      nationalId && blsData.regionData[nationalId.regionId]
+        ? blsData.regionData[nationalId.regionId][defaultYear] || []
+        : [];
+    const nationalBySoc: { [code: string]: { emp: number; gdp: number; wage: number } } = {};
+    nationalRecords.forEach((r) => {
+      nationalBySoc[r.socCode] = { emp: r.totEmp, gdp: r.gdp, wage: r.aMean };
+    });
+
+    const { pci, jci } = complexity.data;
+    const nodeCodes = space.data.nodes.map((n) => n.id);
+    const wages = nodeCodes
+      .map((c) => (nationalBySoc[c] ? nationalBySoc[c].wage : 0))
+      .filter((v) => v > 0);
+    const pcis = nodeCodes.filter((c) => pci[c] !== undefined).map((c) => pci[c]);
+    const jcis = nodeCodes.filter((c) => jci[c] !== undefined).map((c) => jci[c]);
+    const wageColorScale = divergingScale(wages, wageColorRange);
+    const pciColorScale = divergingScale(pcis, educationColorRange);
+    const jciColorScale = divergingScale(jcis, educationColorRange);
+    const pciMin = Math.min(...pcis);
+    const pciMax = Math.max(...pcis);
+
+    const emps = nodeCodes.map((c) => (nationalBySoc[c] ? nationalBySoc[c].emp : 0));
+    const gdps = nodeCodes.map((c) => (nationalBySoc[c] ? nationalBySoc[c].gdp : 0));
+    const employSizeByScale = scaleLinear()
+      .domain([Math.min(...emps), Math.max(...emps)])
+      .range([3, 15]) as (val: number) => number;
+    const companySizeByScale = scaleLinear()
+      .domain([Math.min(...gdps), Math.max(...gdps)])
+      .range([3, 15]) as (val: number) => number;
+
+    const nodes: Node[] = space.data.nodes.map((n) => {
+      const occ = occupations[n.id];
+      const majorGroupId = occ ? occ.majorGroupId : n.id.substring(0, 2);
+      const sector = colorBySector[majorGroupId];
+      const sectorColor = sector ? sector.color : lowIntensityNodeColor;
+      const nat = nationalBySoc[n.id];
+      const nodePci = pci[n.id] !== undefined ? pci[n.id] : null;
+      const nodeJci = jci[n.id] !== undefined ? jci[n.id] : null;
+      return {
+        ...n,
+        name: occ ? occ.name : n.id,
+        code: n.id,
+        industryColor: sectorColor,
+        color: sectorColor,
+        sectorName: sector ? sector.name : "",
+        globalSumNumEmploy: nat ? nat.emp : 0,
+        globalSumNumCompany: nat ? nat.gdp : 0,
+        hourlyWage: nat ? nat.wage : 0,
+        yearsEducation:
+          nodePci !== null && pciMax > pciMin
+            ? (nodePci - pciMin) / (pciMax - pciMin)
+            : 0,
+        pci: nodePci,
+        jci: nodeJci,
+        wageColor: nat ? wageColorScale(nat.wage) : lowIntensityNodeColor,
+        pciColor: nodePci !== null ? pciColorScale(nodePci) : lowIntensityNodeColor,
+        educationColor:
+          nodePci !== null ? pciColorScale(nodePci) : lowIntensityNodeColor,
+        jciColor: nodeJci !== null ? jciColorScale(nodeJci) : lowIntensityNodeColor,
+      };
+    });
+
+    return {
+      kind: space.data.kind as SpaceType,
+      clusters: {
+        continents: space.data.clusters.continents.map((c) => ({ ...c })),
+        countries: space.data.clusters.countries.map((c) => ({
+          ...c,
+          continent: c.continent as string,
+        })),
+      },
+      nodes,
+      links: space.data.links,
+      global: { companySizeByScale, employSizeByScale },
+    };
+    // sectorKey stands in for sectorMap, which is a new array every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [space.data, complexity.data, blsData, levelFourLoaded, sectorKey]);
+
+  const error = space.error || complexity.error;
+  return {
+    loading: !data && !error,
+    error,
+    data,
+  };
 };
 
 export default useLayoutData;

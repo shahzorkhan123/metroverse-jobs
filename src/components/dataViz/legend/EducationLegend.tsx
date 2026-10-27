@@ -49,10 +49,12 @@ const Labels = styled.div`
 
 interface Props {
   fullWidth?: boolean;
+  lowLabel?: string;
+  highLabel?: string;
 }
 
 const IntensityLegend = (props: Props) => {
-  const { fullWidth } = props;
+  const { fullWidth, lowLabel, highLabel } = props;
   const Root = fullWidth ? FullWidthRoot : StandardRoot;
   const getString = useFluent();
 
@@ -60,8 +62,8 @@ const IntensityLegend = (props: Props) => {
     <Root className={joyrideClassNames.colorLegendNoFilter}>
       <Content>
         <Labels>
-          <div>{getString("global-education-low")}</div>
-          <div>{getString("global-education-high")}</div>
+          <div>{lowLabel ? lowLabel : getString("global-education-low")}</div>
+          <div>{highLabel ? highLabel : getString("global-education-high")}</div>
         </Labels>
         <Bar />
       </Content>
