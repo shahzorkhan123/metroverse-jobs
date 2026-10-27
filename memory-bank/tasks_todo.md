@@ -17,6 +17,8 @@
 10. Growth Opportunities (PSWOT-style chart) — next: density ω from space phi (see playground §6), COG
 11. Similar Regions comparison feature
 12. Validate Job Space proximity against O*NET Career Changers matrix / CPS flows
+13a. Article/design note: older (Hidalgo 2007 / classic Atlas / Metroverse) vs newer (Atlas 10, 2025) space model, and why we use the older one (see plan file "Later (documentation)")
+13b. Occupation Space divisions from SOC 2018 hierarchy + group-aware layout + division-level setting (awaiting user go-ahead)
 13. India Occupation Space (needs NCO→SOC crosswalk or richer state × NCO data)
 
 ## Long-Term

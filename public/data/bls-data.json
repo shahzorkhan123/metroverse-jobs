@@ -506,5 +506,14 @@
       }
     }
   },
-  "lastUpdated": "2026-10-25"
+  "lastUpdated": "2026-10-25",
+  "spaceFiles": {
+    "us": {
+      "2024": {
+        "occupation": "space-us-2024-occupation.json",
+        "job": "space-us-2024-job.json",
+        "complexity": "complexity-us-2024.json"
+      }
+    }
+  }
 }
